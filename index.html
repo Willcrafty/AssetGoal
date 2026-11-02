@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AssetGoal Mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0F0A08;
+      color: #FDFBF7;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mobile-container {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background-color: #170F0B;
+      position: relative;
+      padding-bottom: 90px;
+      box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+    .card-dark {
+      background-color: #241711;
+      border: 1px solid #3D2A20;
+    }
+    .accent-brass {
+      color: #E2B887;
+    }
+    .bg-brass {
+      background-color: #E2B887;
+    }
+    .border-brass {
+      border-color: #E2B887;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 14px;
+      background: #170F0B;
+      border-radius: 7px;
+      border: 1px solid #3D2A20;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #E2B887;
+      cursor: pointer;
+      border: 2px solid #241711;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body class="bg-black">
+
+<div class="mobile-container">
+  
+  <!-- Header Bar -->
+  <header class="p-5 pb-3 flex items-center justify-between sticky top-0 bg-[#170F0B]/90 backdrop-blur-md z-30 border-b border-[#2A1C14]">
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-full bg-brass/20 flex items-center justify-center border border-brass/40">
+        <span class="text-xs font-bold text-[#E2B887]">AG</span>
+      </div>
+      <span class="font-bold text-lg tracking-tight text-[#FDFBF7]">AssetGoal</span>
+    </div>
+    <button onclick="switchTab('pro')" id="header-pro-btn" class="px-3 py-1.5 rounded-full bg-brass/10 border border-brass/30 text-xs font-semibold text-[#E2B887] flex items-center gap-1 active:scale-95 transition-transform">
+      ⚡ Unlock Pro ($9.99)
+    </button>
+  </header>
+
+  <!-- ================= TAB 1: HOME PAGE ================= -->
+  <main id="tab-home" class="p-5 space-y-6">
+    <div>
+      <p class="text-xs font-medium text-[#A38A7E]">Good evening 👋</p>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Your money</h1>
+    </div>
+
+    <section class="rounded-3xl p-6 space-y-4 bg-gradient-to-br from-[#4A3425] to-[#241711] border border-[#806344]/70 shadow-xl">
+      <div>
+        <p class="text-sm font-semibold text-[#E2B887]">Ready for your next step?</p>
+        <p class="text-xs text-[#D7C6B8] mt-1">Money left after this month’s bills and extras</p>
+        <h2 id="home-net-cashflow" class="text-5xl font-extrabold tracking-tight text-[#FDFBF7] mt-3">$0</h2>
+        <p class="text-xs text-[#D7C6B8] mt-2">Available this month</p>
+      </div>
+      <button onclick="switchTab('goals')" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl active:scale-95 transition">
+        Make a plan for it →
+      </button>
+      <details class="border-t border-white/10 pt-3">
+        <summary class="cursor-pointer list-none flex justify-between items-center text-sm font-semibold text-[#E8D8C8]">
+          <span>See your monthly breakdown</span><span aria-hidden="true">⌄</span>
+        </summary>
+        <div class="grid grid-cols-2 gap-3 pt-4">
+          <div>
+            <p class="text-xs text-[#D7C6B8]">Income</p>
+            <p id="home-monthly-income" class="text-sm font-bold text-[#FDFBF7]">$0</p>
+          </div>
+          <div>
+            <p class="text-xs text-[#D7C6B8]">Regular bills</p>
+            <p id="home-monthly-expenses" class="text-sm font-bold text-[#FDFBF7]">$0</p>
+          </div>
+          <button onclick="switchTab('oneoffs')" class="col-span-2 flex justify-between items-center text-xs text-left bg-black/10 rounded-xl px-3 py-2">
+            <span class="text-[#D7C6B8]">Extras this month</span>
+            <span id="home-oneoff-total" class="font-bold text-[#FDFBF7]">$0 <span>›</span></span>
+          </button>
+          <button onclick="switchTab('cashflow')" class="col-span-2 text-left text-xs font-semibold text-[#E2B887]">Update income or bills →</button>
+        </div>
+      </details>
+    </section>
+
+    <!-- Active Goals Section Header -->
+    <div class="flex justify-between items-center">
+      <h3 class="font-bold text-base text-[#FDFBF7]">Your savings plans</h3>
+      <button onclick="switchTab('goals')" class="text-xs text-[#E2B887] font-semibold">See plans →</button>
+    </div>
+
+    <!-- Goals Carousel -->
+    <div class="flex space-x-4 overflow-x-auto no-scrollbar pb-2" id="home-goals-carousel">
+      <!-- Dynamic Goal Cards inserted here -->
+    </div>
+
+    <!-- Dynamic Growth Chart & Timeframe Selector -->
+    <div class="card-dark p-4 rounded-2xl space-y-3">
+      <div class="flex justify-between items-center">
+        <h4 class="text-xs font-bold text-[#A38A7E] uppercase tracking-wider">How your savings could grow</h4>
+        <span id="chart-apy-badge" class="text-[10px] text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-2 py-0.5 rounded">Estimate</span>
+      </div>
+
+      <div class="flex justify-between items-center text-xs bg-[#170F0B] rounded-xl px-3 py-2">
+        <span id="home-interest-label" class="text-[#A38A7E]">Estimated interest growth:</span>
+        <span id="home-interest-earned" class="font-bold text-emerald-400">$0</span>
+      </div>
+      <p id="chart-investment-note" class="text-[11px] text-[#A38A7E]"></p>
+
+      <!-- Timeframe Selector Tabs -->
+      <div class="grid grid-cols-5 gap-1 bg-[#170F0B] p-1 rounded-xl border border-[#3D2A20] text-center">
+        <button onclick="setHorizon(1)" id="hz-1" class="py-1 text-[11px] font-bold rounded-lg text-[#A38A7E]">1Y</button>
+        <button onclick="setHorizon(5)" id="hz-5" class="py-1 text-[11px] font-bold rounded-lg text-[#A38A7E]">5Y</button>
+        <button onclick="setHorizon(10)" id="hz-10" class="py-1 text-[11px] font-bold rounded-lg text-[#A38A7E]">10Y</button>
+        <button onclick="setHorizon(20)" id="hz-20" class="py-1 text-[11px] font-bold rounded-lg text-[#A38A7E]">20Y</button>
+        <button onclick="setHorizon(50)" id="hz-50" class="py-1 text-[11px] font-bold rounded-lg text-[#A38A7E]">50Y</button>
+      </div>
+
+      <div class="h-44 w-full">
+        <canvas id="homeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card-dark p-4 rounded-2xl space-y-3">
+      <div class="flex justify-between items-center">
+        <h4 class="text-xs font-bold text-[#A38A7E] uppercase tracking-wider">Retirement savings estimate</h4>
+        <span id="home-retirement-summary" class="text-[10px] text-emerald-400"></span>
+      </div>
+      <div class="h-44 w-full">
+        <canvas id="retirementChart"></canvas>
+      </div>
+    </div>
+  </main>
+
+
+  <!-- ================= TAB 2: CASH FLOW / PAYCHECK CALCULATOR ================= -->
+  <main id="tab-cashflow" class="p-5 space-y-5 hidden">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Recurring Income & Bills</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">Add your take-home pay and the bills you pay each month.</p>
+    </div>
+
+    <div class="card-dark p-5 rounded-2xl border-emerald-500/30">
+      <p class="text-xs font-semibold text-[#A38A7E]">MONEY LEFT AFTER BILLS</p>
+      <p id="calc-net-remainder" class="text-3xl font-extrabold text-emerald-400 mt-1">$406</p>
+      <p class="text-xs text-[#A38A7E] mt-1">about this much each month</p>
+      <div class="mt-4 pt-3 border-t border-[#3D2A20] flex justify-between text-xs">
+        <span class="text-[#A38A7E]">Monthly bills</span>
+        <span id="calc-total-expenses" class="font-bold text-[#FDFBF7]">$650</span>
+      </div>
+    </div>
+
+    <div class="card-dark p-5 rounded-2xl space-y-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-base text-[#FDFBF7]">Regular monthly bills</h2>
+          <p class="text-[11px] text-[#A38A7E] mt-1">Add bills you pay every month.</p>
+        </div>
+        <span id="expense-count-badge" class="text-[10px] text-[#A38A7E]"></span>
+      </div>
+
+      <div class="space-y-2" id="expenses-sliders-container"></div>
+
+      <div class="pt-3 border-t border-[#3D2A20] space-y-3">
+        <div class="grid grid-cols-[1fr_110px] gap-2">
+          <label class="sr-only" for="new-exp-name">Bill name</label>
+          <input type="text" id="new-exp-name" placeholder="🏷️ Bill name (e.g. Internet)" oninput="updateFormActions()" class="min-w-0 bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+          <label class="sr-only" for="new-exp-val">Monthly amount</label>
+          <input type="number" id="new-exp-val" min="0.01" step="0.01" placeholder="💵 Per month" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+        </div>
+        <button id="add-expense-btn" disabled onclick="addCustomExpense()" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
+          + Add monthly bill
+        </button>
+        <p id="expense-form-error" class="hidden text-xs text-red-400" role="alert"></p>
+      </div>
+    </div>
+
+    <details class="card-dark rounded-2xl">
+      <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-base text-[#FDFBF7]">Set up your income</h2>
+          <p class="text-[11px] text-[#A38A7E] mt-1">Used to estimate your monthly amount.</p>
+        </div>
+        <span aria-hidden="true" class="text-[#E2B887]">＋</span>
+      </summary>
+      <div class="px-5 pb-5 space-y-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div id="single-paycheck-field">
+            <label for="check-amount" class="text-xs font-semibold text-[#A38A7E] block mb-1">Take-home pay</label>
+            <input type="number" id="check-amount" min="0" step="0.01" value="1056" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+          </div>
+          <div>
+            <label for="pay-frequency" class="text-xs font-semibold text-[#A38A7E] block mb-1">Paid</label>
+            <select id="pay-frequency" onchange="handlePayFrequencyChange()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+              <option value="52">Every week</option>
+              <option value="26">Every 2 weeks</option>
+              <option value="24">Twice a month</option>
+              <option value="12" selected>Once a month</option>
+            </select>
+          </div>
+        </div>
+        <div id="recent-paychecks" class="hidden space-y-2">
+          <div>
+            <p class="text-xs font-semibold text-[#A38A7E]">Enter your last 4 take-home paychecks</p>
+            <p id="paycheck-average-hint" class="text-[11px] text-[#A38A7E] mt-1">We’ll average the checks you enter.</p>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <label class="sr-only" for="recent-check-1">Paycheck 1 amount</label>
+            <input type="number" id="recent-check-1" min="0" step="0.01" placeholder="Check 1 ($)" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+            <label class="sr-only" for="recent-check-2">Paycheck 2 amount</label>
+            <input type="number" id="recent-check-2" min="0" step="0.01" placeholder="Check 2 ($)" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+            <label class="sr-only" for="recent-check-3">Paycheck 3 amount</label>
+            <input type="number" id="recent-check-3" min="0" step="0.01" placeholder="Check 3 ($)" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+            <label class="sr-only" for="recent-check-4">Paycheck 4 amount</label>
+            <input type="number" id="recent-check-4" min="0" step="0.01" placeholder="Check 4 ($)" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+          </div>
+        </div>
+        <div class="flex justify-between items-center text-xs pt-3 border-t border-[#3D2A20]">
+          <span class="text-[#A38A7E]">Estimated take-home per month</span>
+          <span id="calc-monthly-income" class="font-extrabold text-[#E2B887]">$1,056</span>
+        </div>
+      </div>
+    </details>
+  </main>
+
+  <!-- ================= ONE-OFF INCOME & EXPENSES ================= -->
+  <main id="tab-oneoffs" class="p-5 space-y-5 hidden">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Recent Activity</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">Keep up with the extra money coming in and going out.</p>
+    </div>
+
+    <div class="card-dark p-4 rounded-2xl space-y-3">
+      <label for="transaction-month" class="text-xs font-semibold text-[#A38A7E] block">🗓️ Choose a month</label>
+      <select id="transaction-month" onchange="changeTransactionMonth(this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3"></select>
+      <p id="transaction-history-note" class="text-[11px] text-[#A38A7E]"></p>
+      <button id="transaction-pro-upgrade" onclick="switchTab('pro')" class="hidden text-xs font-bold text-[#E2B887]">Unlock full history with Pro →</button>
+    </div>
+
+    <section class="card-dark p-5 rounded-2xl space-y-4">
+      <div>
+        <p id="oneoff-month-title" class="text-xs font-semibold text-[#A38A7E] uppercase tracking-wider">This month</p>
+        <h2 class="text-lg font-bold text-[#FDFBF7] mt-1">Monthly money summary</h2>
+      </div>
+      <div class="space-y-2">
+        <p class="text-[10px] font-bold text-[#A38A7E] uppercase tracking-wider">Money in</p>
+        <div class="flex justify-between text-sm"><span class="text-[#D7C6B8]">Regular income</span><span id="oneoff-monthly-income" class="font-semibold text-[#FDFBF7]">$0</span></div>
+        <div class="flex justify-between text-sm"><span class="text-[#D7C6B8]">Extra income</span><span id="oneoff-income-total" class="font-semibold text-emerald-400">$0</span></div>
+      </div>
+      <div class="space-y-2 pt-3 border-t border-[#3D2A20]">
+        <p class="text-[10px] font-bold text-[#A38A7E] uppercase tracking-wider">Money out</p>
+        <div class="flex justify-between text-sm"><span class="text-[#D7C6B8]">Regular bills</span><span id="oneoff-fixed-expenses" class="font-semibold text-[#FDFBF7]">$0</span></div>
+        <details class="pl-3">
+          <summary class="cursor-pointer text-xs text-[#A38A7E]">See regular bills</summary>
+          <div id="statement-fixed-list" class="pt-2 space-y-2"></div>
+        </details>
+        <div class="flex justify-between text-sm"><span class="text-[#D7C6B8]">Extra spending</span><span id="oneoff-expense-total" class="font-semibold text-red-400">$0</span></div>
+      </div>
+      <p id="oneoff-budget-note" class="text-[10px] text-[#A38A7E]"></p>
+      <div class="pt-3 border-t border-[#3D2A20] flex justify-between items-center">
+        <span class="text-sm font-bold text-[#FDFBF7]">Left this month</span>
+        <span id="oneoff-available" class="text-2xl font-extrabold text-emerald-400">$0</span>
+      </div>
+    </section>
+
+    <details class="card-dark rounded-2xl">
+      <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
+        <div><h2 class="font-bold text-base text-[#FDFBF7]">Add an extra</h2><p class="text-xs text-[#A38A7E] mt-1">Record a one-time expense or income.</p></div>
+        <span aria-hidden="true" class="text-[#E2B887]">＋</span>
+      </summary>
+      <div class="px-5 pb-5 space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="transaction-type" class="text-xs font-semibold text-[#A38A7E] block mb-1">Type</label>
+          <select id="transaction-type" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+          </select>
+        </div>
+        <div>
+          <label for="transaction-amount" class="text-xs font-semibold text-[#A38A7E] block mb-1">💵 Amount</label>
+          <input type="number" id="transaction-amount" min="0.01" step="0.01" placeholder="$0.00" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+        </div>
+      </div>
+      <div class="space-y-1">
+        <label for="transaction-description" class="text-xs font-semibold text-[#A38A7E] block">🏷️ What was it for? <span class="font-normal">(optional)</span></label>
+        <input type="text" id="transaction-description" placeholder="e.g. Car repair or birthday money" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+      </div>
+      <div class="space-y-1">
+        <label for="transaction-date" class="text-xs font-semibold text-[#A38A7E] block">🗓️ Date</label>
+        <input type="date" id="transaction-date" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+      </div>
+      <button id="save-transaction-btn" disabled onclick="addOneOffTransaction()" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">Save extra</button>
+      <p id="transaction-form-error" class="hidden text-xs text-red-400" role="alert"></p>
+      </div>
+    </details>
+
+    <details class="card-dark rounded-2xl" open>
+      <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
+        <h2 id="transaction-list-title" class="font-bold text-base text-[#FDFBF7]">This month’s activity</h2>
+        <span id="transaction-count" class="text-[11px] text-[#A38A7E]"></span>
+      </summary>
+      <div id="transaction-list" class="px-5 pb-5 space-y-2"></div>
+    </details>
+
+  </main>
+
+
+  <!-- ================= TAB 3: GOALS & RETIREMENT ALLOCATION ENGINE ================= -->
+  <main id="tab-goals" class="p-5 space-y-6 hidden">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Savings Plan</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">Choose what you’re saving for and how much to set aside.</p>
+    </div>
+
+    <div class="card-dark p-4 rounded-2xl space-y-2">
+      <div class="flex justify-between text-sm font-semibold">
+        <span class="text-[#FDFBF7]">Monthly leftover planned</span>
+        <span id="allocation-total-label" class="text-[#E2B887]">0% of 100%</span>
+      </div>
+      <div class="h-2 rounded-full bg-[#170F0B] overflow-hidden">
+        <div id="allocation-total-bar" class="h-full bg-brass rounded-full transition-all" style="width:0%"></div>
+      </div>
+      <p id="allocation-room-label" class="text-[11px] text-[#A38A7E]">100% available to plan</p>
+    </div>
+
+    <details class="card-dark rounded-2xl">
+      <summary class="cursor-pointer list-none p-4 flex justify-between items-center">
+        <div><h3 class="text-sm font-bold text-[#FDFBF7]">Customize estimates</h3><p class="text-[11px] text-[#A38A7E] mt-1">Optional interest and loan assumptions</p></div>
+        <span aria-hidden="true" class="text-[#E2B887]">＋</span>
+      </summary>
+      <div class="px-4 pb-4 space-y-3">
+        <div class="flex justify-between items-center">
+          <label for="num-hysa" class="text-xs text-[#A38A7E]">Savings interest rate</label>
+          <input type="number" id="num-hysa" value="4.5" step="0.25" oninput="handleHysaChange(this.value, this)" class="w-20 bg-[#170F0B] border border-[#3D2A20] text-right text-xs text-emerald-400 font-bold rounded px-2 py-1">
+        </div>
+        <input type="range" id="slider-hysa" min="0" max="10" step="0.25" value="4.5" oninput="handleHysaChange(this.value, this)">
+      </div>
+    </details>
+
+    <details class="card-dark rounded-2xl border-dashed border-brass/40">
+      <summary class="cursor-pointer list-none p-4 flex justify-between items-center">
+        <div><h3 class="text-sm font-bold text-[#E2B887]">+ Add a savings goal</h3><p class="text-[11px] text-[#A38A7E] mt-1">What are you saving up for?</p></div>
+        <span id="goal-count-badge" class="text-[10px] text-[#A38A7E]">0/2 Free Slots</span>
+      </summary>
+      <div class="px-4 pb-4 space-y-3">
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" id="new-goal-name" placeholder="🏷️ Goal name" oninput="updateFormActions()" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+        <input type="text" inputmode="decimal" id="new-goal-cost" placeholder="💵 Goal amount" oninput="updateFormActions()" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" inputmode="decimal" id="new-goal-start" placeholder="Already saved ($)" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+        <select id="new-goal-type" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+          <option value="car">🚗 Auto Purchase</option>
+          <option value="house">🏠 House / Real Estate</option>
+          <option value="general">💎 General Asset</option>
+        </select>
+      </div>
+      <button id="add-goal-btn" disabled onclick="addCustomGoal()" class="w-full py-2.5 bg-brass text-[#170F0B] font-bold text-xs rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
+        Save goal
+      </button>
+      </div>
+    </details>
+
+    <!-- Dynamic Goals Container -->
+    <div class="space-y-5" id="goals-list-container">
+      <!-- Rendered dynamically -->
+    </div>
+
+    <!-- Roth IRA Retirement Module -->
+    <details class="card-dark rounded-2xl border-emerald-500/40 mt-4" id="roth-ira-module">
+      <summary class="cursor-pointer list-none p-4">
+      <div class="flex justify-between items-center">
+        <div><h4 class="font-bold text-sm text-emerald-400">🌱 Retirement savings</h4><p class="text-xs text-[#A38A7E] mt-1">Customize your long-term plan</p></div>
+        <span id="ret-alloc-badge" class="text-xs font-extrabold text-emerald-400">$0/mo</span>
+      </div>
+      </summary>
+      <div class="px-4 pb-4 space-y-4">
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <div>
+          <label class="text-[10px] text-[#A38A7E]">Current Age</label>
+          <input type="number" id="ret-curr-age" value="20" oninput="handleRetirementInput('currAge', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded p-2 text-[#FDFBF7]">
+        </div>
+        <div>
+          <label class="text-[10px] text-[#A38A7E]">Retirement Age</label>
+          <input type="number" id="ret-target-age" value="60" oninput="handleRetirementInput('targetAge', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded p-2 text-[#FDFBF7]">
+        </div>
+      </div>
+      <div>
+        <label class="text-[10px] text-[#A38A7E] flex justify-between mb-1">
+          <span>Estimated yearly growth (%)</span>
+          <span id="ret-rate-val" class="font-bold text-emerald-400">8.0% APY</span>
+        </label>
+        <input type="range" id="ret-rate-slider" min="0" max="15" step="0.5" value="8.0" oninput="handleRetirementInput('returnRate', this.value)">
+      </div>
+      <div>
+        <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
+          <span>Share of monthly leftover</span>
+          <span id="ret-alloc-val" class="font-bold text-emerald-400">20%</span>
+        </label>
+        <input type="range" id="ret-alloc-slider" min="0" max="100" step="1" value="20" oninput="handleRetirementInput('allocPercent', this.value)">
+        <p id="ret-allocation-summary" class="text-[11px] text-[#A38A7E]"></p>
+        </div>
+      </div>
+      </details>
+      <div class="p-2.5 bg-[#170F0B] rounded-xl flex justify-between text-[11px] border border-[#3D2A20]">
+        <span class="text-[#A38A7E]">Projected Nest Egg:</span>
+        <span id="ret-nest-egg-val" class="font-bold text-emerald-400">$0</span>
+      </div>
+  </main>
+
+
+  <!-- ================= TAB 4: SQUAD LEADERBOARD ================= -->
+  <main id="tab-squad" class="p-5 space-y-6 hidden">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Squad progress</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">Compare monthly goal progress with sample friends. Your saved balance and dollar amounts stay private.</p>
+    </div>
+
+    <div class="space-y-3" id="squad-list-container">
+      <!-- Rendered dynamically -->
+    </div>
+  </main>
+
+
+  <!-- ================= TAB 5: PRO PAYWALL ================= -->
+  <main id="tab-pro" class="p-5 space-y-6 hidden">
+    <div class="card-dark p-6 rounded-3xl text-center border-brass space-y-4 relative overflow-hidden">
+      <span class="text-4xl">👑</span>
+      <h2 class="text-2xl font-extrabold text-[#FDFBF7]">AssetGoal Lifetime Pro</h2>
+      <p class="text-xs text-[#A38A7E]">Pay $9.99 once. Own forever. Zero monthly subscriptions.</p>
+      
+      <div class="text-left space-y-3 py-2 text-xs border-y border-[#3D2A20]">
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span><strong>Unlimited Goal Pipelines</strong> (Free capped at 2)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span><strong>Paystub OCR Camera Scanner</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span><strong>Advanced Retirement Tax Optimization</strong></span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-emerald-400 font-bold">✓</span>
+          <span><strong>Browse older activity history</strong></span>
+        </div>
+      </div>
+
+      <button onclick="unlockProTier()" id="pro-buy-btn" class="w-full py-3.5 bg-brass text-[#170F0B] font-extrabold text-sm rounded-xl shadow-lg active:scale-95 transition">
+        Unlock Lifetime Access — $9.99
+      </button>
+    </div>
+  </main>
+
+  <!-- ================= BOTTOM NAVIGATION BAR ================= -->
+  <nav class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#170F0B]/95 backdrop-blur-md border-t border-[#2A1C14] px-1 py-3 flex justify-around z-40">
+    <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-brass">
+      <span class="text-base">🏠</span>
+      <span class="text-[9px] font-semibold mt-0.5">Home</span>
+    </button>
+    <button onclick="switchTab('goals')" id="nav-goals" class="flex flex-col items-center text-[#A38A7E]">
+      <span class="text-base">🎯</span>
+      <span class="text-[9px] font-semibold mt-0.5">Plan</span>
+    </button>
+    <button onclick="switchTab('squad')" id="nav-squad" class="flex flex-col items-center text-[#A38A7E]">
+      <span class="text-base">⚡</span>
+      <span class="text-[9px] font-semibold mt-0.5">Squad</span>
+    </button>
+    <button onclick="switchTab('oneoffs')" id="nav-oneoffs" class="flex flex-col items-center text-[#A38A7E]">
+      <span class="text-base">🧾</span>
+      <span class="text-[9px] font-semibold mt-0.5">Activity</span>
+    </button>
+    <button onclick="switchTab('cashflow')" id="nav-cashflow" class="flex flex-col items-center text-[#A38A7E]">
+      <span class="text-base">🔁</span>
+      <span class="text-[9px] font-semibold mt-0.5">Recurring</span>
+    </button>
+  </nav>
+
+</div>
+
+<script>
+  let state = {
+    isPro: false,
+    hysaRate: 4.5,
+    chartHorizonYears: 3,
+    monthlyIncome: 1056,
+    paycheckAmount: 1056,
+    payPeriodsPerYear: 12,
+    paycheckAmounts: ['', '', '', ''],
+    transactions: [],
+    monthlyBudgets: {},
+    squadGoalId: null,
+    expenses: [
+      { id: 'rent', name: 'Housing / Rent', amount: 300, max: 2500, step: 25 },
+      { id: 'bills', name: 'Subscriptions & Phone', amount: 100, max: 1000, step: 10 },
+      { id: 'food', name: 'Food & Living', amount: 250, max: 1500, step: 25 }
+    ],
+    get totalExpenses() { 
+      return this.expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0); 
+    },
+    get netCashflow() { 
+      return this.monthlyIncome - this.totalExpenses; 
+    },
+    get currentMonthCashflow() {
+      return this.netCashflow + getCurrentMonthOneOffNet();
+    },
+    retirement: {
+      currAge: 20,
+      targetAge: 60,
+      returnRate: 8.0,
+      allocPercent: 20
+    },
+    goals: [
+      { id: 1, name: 'Nissan 350Z', type: 'car', totalCost: 12000, startingSaved: 1500, downPercent: 20, loanTermMonths: 48, interestRate: 6.5, allocPercent: 40 },
+      { id: 2, name: 'First House', type: 'house', totalCost: 250000, startingSaved: 5000, downPercent: 10, loanTermMonths: 360, interestRate: 6.5, allocPercent: 40 }
+    ]
+  };
+
+  let homeChart = null;
+  let retirementChart = null;
+  let selectedOneOffMonth = null;
+  let editingTransactionId = null;
+
+  function getMonthKey(date) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  function createMonthlyBudget() {
+    return {
+      income: Number(state.monthlyIncome) || 0,
+      fixedExpenses: Number(state.totalExpenses) || 0,
+      expenseItems: state.expenses.map(expense => ({
+        id: String(expense.id),
+        name: String(expense.name),
+        amount: Number(expense.amount) || 0
+      }))
+    };
+  }
+
+  function ensureMonthlyBudget(monthKey) {
+    const currentMonth = getMonthKey(new Date());
+    let budget = state.monthlyBudgets[monthKey];
+    let changed = false;
+    if(!budget) {
+      budget = createMonthlyBudget();
+      state.monthlyBudgets[monthKey] = budget;
+      changed = true;
+    }
+
+    if(monthKey === currentMonth) {
+      const income = Number(state.monthlyIncome) || 0;
+      const fixedExpenses = Number(state.totalExpenses) || 0;
+      const expenseItems = state.expenses.map(expense => ({
+        id: String(expense.id),
+        name: String(expense.name),
+        amount: Number(expense.amount) || 0
+      }));
+      if(budget.income !== income || budget.fixedExpenses !== fixedExpenses ||
+        JSON.stringify(budget.expenseItems) !== JSON.stringify(expenseItems)) changed = true;
+      budget.income = income;
+      budget.fixedExpenses = fixedExpenses;
+      budget.expenseItems = expenseItems;
+    }
+
+    if(changed) saveData();
+    return budget;
+  }
+
+  function getDateKey(date) {
+    return `${getMonthKey(date)}-${String(date.getDate()).padStart(2, '0')}`;
+  }
+
+  function shiftMonth(monthKey, offset) {
+    const [year, month] = monthKey.split('-').map(Number);
+    const date = new Date(year, month - 1 + offset, 1);
+    return getMonthKey(date);
+  }
+
+  function formatMonth(monthKey) {
+    const [year, month] = monthKey.split('-').map(Number);
+    return new Date(year, month - 1, 1).toLocaleDateString(undefined, {
+      month: 'long',
+      year: 'numeric'
+    });
+  }
+
+  function getCurrentMonthOneOffNet() {
+    const currentMonth = getMonthKey(new Date());
+    return state.transactions.reduce((total, transaction) => {
+      if(transaction.date.slice(0, 7) !== currentMonth) return total;
+      const amount = Number(transaction.amount) || 0;
+      return total + (transaction.type === 'income' ? amount : -amount);
+    }, 0);
+  }
+
+  function getMonthlySavingsRoom() {
+    return Math.max(0, state.netCashflow);
+  }
+
+  function getCurrentPeriodInvestmentRoom() {
+    return Math.max(0, state.currentMonthCashflow);
+  }
+
+  function estimateMonthsToGoal(remaining, monthlyContribution, monthlyRate) {
+    if(remaining <= 0) return 0;
+    if(monthlyContribution <= 0) return Infinity;
+    if(monthlyRate <= 0) return Math.ceil(remaining / monthlyContribution);
+    return Math.ceil(Math.log((remaining * monthlyRate / monthlyContribution) + 1) / Math.log(1 + monthlyRate));
+  }
+
+  function formatProjectionOffset(monthsFromNow) {
+    if(monthsFromNow <= 0) return 'this month';
+    const years = Math.floor(monthsFromNow / 12);
+    const months = monthsFromNow % 12;
+    const parts = [];
+    if(years) parts.push(`${years} ${years === 1 ? 'year' : 'years'}`);
+    if(months) parts.push(`${months} ${months === 1 ? 'month' : 'months'}`);
+    return `${parts.join(' ')} from now`;
+  }
+
+  function formatProjectionMonth(monthsFromNow) {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth() + monthsFromNow, 1)
+      .toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  }
+
+  function formatGoalTimeline(months) {
+    if(!Number.isFinite(months)) return 'Add a monthly amount to see an estimate';
+    if(months === 0) return 'Already there';
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    return `About ${years} ${years === 1 ? 'year' : 'years'}, ${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'} — ${months} months total`;
+  }
+
+  function getTotalAllocationPercent(excludedGoalId = null, excludeRetirement = false) {
+    const goalPercent = state.goals.reduce((total, goal) =>
+      total + (goal.id === excludedGoalId ? 0 : Math.max(0, Number(goal.allocPercent) || 0)), 0);
+    return goalPercent + (excludeRetirement ? 0 : Math.max(0, Number(state.retirement.allocPercent) || 0));
+  }
+
+  function normalizeAllocationPercents() {
+    state.goals.forEach(goal => {
+      goal.allocPercent = Math.max(0, Number(goal.allocPercent) || 0);
+    });
+    state.retirement.allocPercent = Math.max(0, Number(state.retirement.allocPercent) || 0);
+    const total = getTotalAllocationPercent();
+    if(total <= 100) return;
+
+    const scale = 100 / total;
+    state.goals.forEach(goal => {
+      goal.allocPercent = Math.floor(Math.max(0, Number(goal.allocPercent) || 0) * scale);
+    });
+    state.retirement.allocPercent =
+      Math.floor(Math.max(0, Number(state.retirement.allocPercent) || 0) * scale);
+  }
+
+  function updateAllocationControls() {
+    const total = getTotalAllocationPercent();
+    const remaining = Math.max(0, 100 - total);
+    const totalLabel = document.getElementById('allocation-total-label');
+    const totalBar = document.getElementById('allocation-total-bar');
+    const roomLabel = document.getElementById('allocation-room-label');
+    if(totalLabel) totalLabel.innerText = `${Number(total.toFixed(2))}% of 100%`;
+    if(totalBar) totalBar.style.width = `${Math.min(100, total)}%`;
+    if(roomLabel) roomLabel.innerText = remaining > 0
+      ? `${Number(remaining.toFixed(2))}% available to plan`
+      : 'Your monthly leftover is fully planned';
+
+    state.goals.forEach(goal => {
+      const percent = Math.max(0, Number(goal.allocPercent) || 0);
+      const availableForGoal = Math.min(100, 100 - getTotalAllocationPercent(goal.id));
+      const slider = document.getElementById(`goal-allocation-${goal.id}`);
+      const summary = document.getElementById(`goal-allocation-summary-${goal.id}`);
+      if(slider) slider.max = String(Math.max(percent, availableForGoal));
+      if(summary) summary.innerText =
+        `$${Math.round(getCurrentPeriodInvestmentRoom() * percent / 100).toLocaleString()} available this month. ` +
+        `${Number(Math.max(0, availableForGoal - percent).toFixed(2))}% left for other plans.`;
+    });
+
+    const retirementPercent = Math.max(0, Number(state.retirement.allocPercent) || 0);
+    const availableForRetirement = Math.min(100, 100 - getTotalAllocationPercent(null, true));
+    const retirementSlider = document.getElementById('ret-alloc-slider');
+    const retirementSummary = document.getElementById('ret-allocation-summary');
+    if(retirementSlider) retirementSlider.max = String(Math.max(retirementPercent, availableForRetirement));
+    if(retirementSummary) retirementSummary.innerText =
+      `$${Math.round(getCurrentPeriodInvestmentRoom() * retirementPercent / 100).toLocaleString()} available this month. ` +
+      `${Number(Math.max(0, availableForRetirement - retirementPercent).toFixed(2))}% left for other plans.`;
+  }
+
+  function loadSavedData() {
+    const saved = localStorage.getItem('assetgoal_state_v13');
+    if(saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        state.isPro = parsed.isPro || false;
+        state.hysaRate = parsed.hysaRate !== undefined ? parsed.hysaRate : 4.5;
+        state.chartHorizonYears = parsed.chartHorizonYears || 3;
+        state.monthlyIncome = parsed.monthlyIncome || 1056;
+        state.payPeriodsPerYear = [12, 24, 26, 52].includes(Number(parsed.payPeriodsPerYear))
+          ? Number(parsed.payPeriodsPerYear)
+          : 12;
+        state.paycheckAmount = parsed.paycheckAmount !== undefined
+          ? parsed.paycheckAmount
+          : state.monthlyIncome;
+        if(Array.isArray(parsed.paycheckAmounts)) {
+          state.paycheckAmounts = Array.from({ length: 4 }, (_, index) => {
+            const amount = parsed.paycheckAmounts[index];
+            return amount !== '' && Number.isFinite(Number(amount)) && Number(amount) >= 0
+              ? Number(amount)
+              : '';
+          });
+        }
+        if(Array.isArray(parsed.transactions)) {
+          state.transactions = parsed.transactions.filter(transaction =>
+            transaction &&
+            Number.isFinite(Number(transaction.id)) &&
+            typeof transaction.date === 'string' &&
+            /^\d{4}-\d{2}-\d{2}$/.test(transaction.date) &&
+            ['income', 'expense'].includes(transaction.type) &&
+            Number.isFinite(Number(transaction.amount)) &&
+            Number(transaction.amount) > 0
+          );
+        }
+        if(parsed.monthlyBudgets && typeof parsed.monthlyBudgets === 'object' && !Array.isArray(parsed.monthlyBudgets)) {
+          state.monthlyBudgets = Object.fromEntries(Object.entries(parsed.monthlyBudgets)
+            .filter(([monthKey, budget]) =>
+              /^\d{4}-\d{2}$/.test(monthKey) &&
+              budget &&
+              Number.isFinite(Number(budget.income)) &&
+              Number.isFinite(Number(budget.fixedExpenses))
+            )
+            .map(([monthKey, budget]) => [monthKey, {
+              income: Number(budget.income),
+              fixedExpenses: Number(budget.fixedExpenses),
+              expenseItems: Array.isArray(budget.expenseItems)
+                ? budget.expenseItems.filter(expense =>
+                  expense &&
+                  typeof expense.name === 'string' &&
+                  Number.isFinite(Number(expense.amount)) &&
+                  Number(expense.amount) >= 0
+                ).map(expense => ({
+                  id: String(expense.id || expense.name),
+                  name: expense.name,
+                  amount: Number(expense.amount)
+                }))
+                : [],
+              allocations: Array.isArray(budget.allocations) ? budget.allocations.filter(allocation =>
+                allocation &&
+                typeof allocation.id === 'string' &&
+                typeof allocation.name === 'string' &&
+                Number.isFinite(Number(allocation.amount)) &&
+                Number(allocation.amount) >= 0 &&
+                ['goal', 'retirement', 'other'].includes(allocation.type)
+              ).map(allocation => ({
+                id: allocation.id,
+                type: allocation.type,
+                goalId: allocation.goalId,
+                name: allocation.name,
+                amount: Number(allocation.amount)
+              })) : []
+            }]));
+        }
+        if(parsed.expenses && Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
+        if(parsed.retirement) state.retirement = parsed.retirement;
+        if(parsed.goals) state.goals = parsed.goals;
+        if(parsed.squadGoalId !== undefined && parsed.squadGoalId !== null) {
+          state.squadGoalId = parsed.squadGoalId;
+        }
+        normalizeAllocationPercents();
+      } catch(e) { console.error(e); }
+    }
+  }
+
+  function saveData() {
+    localStorage.setItem('assetgoal_state_v13', JSON.stringify({
+      isPro: state.isPro,
+      hysaRate: state.hysaRate,
+      chartHorizonYears: state.chartHorizonYears,
+      monthlyIncome: state.monthlyIncome,
+      paycheckAmount: state.paycheckAmount,
+      payPeriodsPerYear: state.payPeriodsPerYear,
+      paycheckAmounts: state.paycheckAmounts,
+      transactions: state.transactions,
+      monthlyBudgets: state.monthlyBudgets,
+      squadGoalId: state.squadGoalId,
+      expenses: state.expenses,
+      retirement: state.retirement,
+      goals: state.goals
+    }));
+  }
+
+  function switchTab(tabId) {
+    ['home', 'cashflow', 'oneoffs', 'goals', 'squad', 'pro'].forEach(t => {
+      document.getElementById(`tab-${t}`).classList.add('hidden');
+      const navBtn = document.getElementById(`nav-${t}`);
+      if(navBtn) {
+        navBtn.classList.remove('text-brass');
+        navBtn.classList.add('text-[#A38A7E]');
+      }
+    });
+    document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+    if(tabId === 'squad') renderSquad();
+    const activeNav = document.getElementById(`nav-${tabId}`);
+    if(activeNav) {
+      activeNav.classList.remove('text-[#A38A7E]');
+      activeNav.classList.add('text-brass');
+    }
+    renderApp();
+    window.scrollTo(0, 0);
+  }
+
+  function setHorizon(years) {
+    state.chartHorizonYears = years;
+    saveData();
+    renderApp();
+  }
+
+  function calculateIncome() {
+    state.payPeriodsPerYear = parseFloat(document.getElementById('pay-frequency').value);
+    let checkAmount = state.paycheckAmount;
+    if(state.payPeriodsPerYear === 52 || state.payPeriodsPerYear === 26) {
+      state.paycheckAmounts = [1, 2, 3, 4].map(index => {
+        const value = document.getElementById(`recent-check-${index}`).value;
+        return value === '' ? '' : Math.max(0, parseFloat(value) || 0);
+      });
+      const checks = state.paycheckAmounts.filter(amount => amount !== '');
+      checkAmount = checks.length ? checks.reduce((total, amount) => total + amount, 0) / checks.length : 0;
+      const hint = document.getElementById('paycheck-average-hint');
+      hint.innerText = checks.length
+        ? `Average of ${checks.length} ${checks.length === 1 ? 'paycheck' : 'paychecks'}: $${checkAmount.toLocaleString(undefined, { maximumFractionDigits: 2 })}`
+        : 'Enter at least one paycheck to calculate your monthly estimate.';
+    } else {
+      state.paycheckAmount = Math.max(0, parseFloat(document.getElementById('check-amount').value) || 0);
+      checkAmount = state.paycheckAmount;
+    }
+
+    state.monthlyIncome = Math.round(checkAmount * state.payPeriodsPerYear / 12);
+    saveData();
+    updateSummaryDisplays();
+    renderOneOffs();
+  }
+
+  function handlePayFrequencyChange() {
+    const previousFrequency = state.payPeriodsPerYear;
+    const newFrequency = parseFloat(document.getElementById('pay-frequency').value);
+    if((previousFrequency === 26 || previousFrequency === 52) &&
+      newFrequency !== 26 && newFrequency !== 52) {
+      const checks = state.paycheckAmounts.filter(amount => amount !== '');
+      if(checks.length) {
+        state.paycheckAmount = checks.reduce((total, amount) => total + amount, 0) / checks.length;
+      }
+      document.getElementById('check-amount').value = state.paycheckAmount;
+    }
+
+    state.payPeriodsPerYear = newFrequency;
+    const usesRecentChecks = newFrequency === 26 || newFrequency === 52;
+    document.getElementById('single-paycheck-field').classList.toggle('hidden', usesRecentChecks);
+    document.getElementById('recent-paychecks').classList.toggle('hidden', !usesRecentChecks);
+    calculateIncome();
+  }
+
+  function availableOneOffMonths() {
+    const currentMonth = getMonthKey(new Date());
+    const minimumMonth = state.isPro
+      ? [...state.transactions.map(transaction => transaction.date.slice(0, 7)), ...Object.keys(state.monthlyBudgets)]
+        .reduce((oldest, savedMonth) => savedMonth < oldest ? savedMonth : oldest, shiftMonth(currentMonth, -119))
+      : shiftMonth(currentMonth, -2);
+    const months = [];
+    for(let month = currentMonth; month >= minimumMonth; month = shiftMonth(month, -1)) {
+      months.push(month);
+    }
+    return months;
+  }
+
+  function changeTransactionMonth(monthKey) {
+    const months = availableOneOffMonths();
+    selectedOneOffMonth = months.includes(monthKey) ? monthKey : months[0];
+    setTransactionDateForMonth(selectedOneOffMonth);
+    renderOneOffs();
+    updateFormActions();
+  }
+
+  function setTransactionDateForMonth(monthKey) {
+    const dateInput = document.getElementById('transaction-date');
+    const currentMonth = getMonthKey(new Date());
+    const [year, month] = monthKey.split('-').map(Number);
+    const firstDay = `${monthKey}-01`;
+    const lastDate = new Date(year, month, 0).getDate();
+    const lastDay = monthKey === currentMonth
+      ? getDateKey(new Date())
+      : `${monthKey}-${String(lastDate).padStart(2, '0')}`;
+    dateInput.min = firstDay;
+    dateInput.max = lastDay;
+    dateInput.value = monthKey === currentMonth ? lastDay : firstDay;
+  }
+
+  function renderOneOffs() {
+    const monthSelect = document.getElementById('transaction-month');
+    if(!monthSelect) return;
+    const months = availableOneOffMonths();
+    if(!months.includes(selectedOneOffMonth)) selectedOneOffMonth = months[0];
+    monthSelect.innerHTML = months.map(month =>
+      `<option value="${month}">${formatMonth(month)}${month === getMonthKey(new Date()) ? ' (current)' : ''}</option>`
+    ).join('');
+    monthSelect.value = selectedOneOffMonth;
+
+    const upgradeButton = document.getElementById('transaction-pro-upgrade');
+    document.getElementById('transaction-history-note').innerText = state.isPro
+      ? 'Your activity is saved by month. Pro lets you browse older history.'
+      : 'Your history is saved. Free accounts can browse this month and the 2 previous months.';
+    upgradeButton.classList.toggle('hidden', state.isPro);
+
+    const monthTransactions = state.transactions.filter(transaction =>
+      transaction.date.slice(0, 7) === selectedOneOffMonth
+    );
+    const income = monthTransactions.reduce((total, transaction) =>
+      total + (transaction.type === 'income' ? Number(transaction.amount) : 0), 0);
+    const expenses = monthTransactions.reduce((total, transaction) =>
+      total + (transaction.type === 'expense' ? Number(transaction.amount) : 0), 0);
+    const net = income - expenses;
+    const budget = ensureMonthlyBudget(selectedOneOffMonth);
+    const recurringRemainder = budget.income - budget.fixedExpenses;
+    const available = recurringRemainder + net;
+    document.getElementById('oneoff-month-title').innerText = formatMonth(selectedOneOffMonth);
+    document.getElementById('transaction-list-title').innerText = `${formatMonth(selectedOneOffMonth)} activity`;
+    document.getElementById('oneoff-monthly-income').innerText = `$${budget.income.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    document.getElementById('oneoff-fixed-expenses').innerText = `−$${budget.fixedExpenses.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    const fixedExpenseItems = budget.expenseItems.length
+      ? budget.expenseItems
+      : budget.fixedExpenses > 0
+        ? [{ name: 'Regular bills', amount: budget.fixedExpenses }]
+        : [];
+    document.getElementById('statement-fixed-list').innerHTML = fixedExpenseItems.length
+      ? fixedExpenseItems.map(expense => `
+        <div class="flex justify-between gap-3 text-xs">
+          <span class="text-[#A38A7E] truncate">${escapeHtml(expense.name)}</span>
+          <span class="text-[#D7C6B8]">−$${Number(expense.amount).toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+        </div>
+      `).join('')
+      : '<p class="text-xs text-[#A38A7E]">No regular bills recorded.</p>';
+    document.getElementById('oneoff-income-total').innerText = `$${income.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    document.getElementById('oneoff-expense-total').innerText = `$${expenses.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    const availableEl = document.getElementById('oneoff-available');
+    const availableText = `${available < 0 ? '−' : ''}$${Math.abs(available).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    availableEl.innerText = availableText;
+    availableEl.className = `text-2xl font-extrabold ${available < 0 ? 'text-red-400' : 'text-emerald-400'}`;
+    document.getElementById('oneoff-budget-note').innerText = selectedOneOffMonth === getMonthKey(new Date())
+      ? 'Current recurring income and bills follow your Recurring settings.'
+      : 'Saved by month. Months without a saved statement start with your current regular income and bills.';
+    document.getElementById('transaction-count').innerText =
+      `${monthTransactions.length} ${monthTransactions.length === 1 ? 'item' : 'items'}`;
+
+    const transactionList = document.getElementById('transaction-list');
+    transactionList.innerHTML = monthTransactions.length
+      ? [...monthTransactions].sort((a, b) => b.date.localeCompare(a.date)).map(transaction => `
+        <div class="flex items-center gap-3 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3">
+          <span aria-hidden="true" class="w-9 h-9 rounded-full ${transaction.type === 'income' ? 'bg-emerald-950/50 text-emerald-400' : 'bg-red-950/40 text-red-400'} flex items-center justify-center font-bold">${transaction.type === 'income' ? '+' : '−'}</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-[#FDFBF7] truncate">${escapeHtml(transaction.description || (transaction.type === 'income' ? 'Extra income' : 'Extra expense'))}</p>
+            <p class="text-[11px] text-[#A38A7E]">${transaction.date}</p>
+          </div>
+          ${editingTransactionId === transaction.id ? `
+            <div class="flex items-center gap-1">
+              <span class="text-sm text-[#A38A7E]">$</span>
+              <input id="edit-transaction-amount-${transaction.id}" type="number" min="0.01" step="0.01" value="${Number(transaction.amount)}" aria-label="Edit amount for ${escapeHtml(transaction.description || 'transaction')}" onkeydown="handleTransactionEditKey(event, ${transaction.id})" class="w-24 bg-[#241711] border border-brass rounded-lg p-2 text-right text-sm font-bold text-[#FDFBF7] focus:outline-none">
+              <button onclick="saveOneOffAmount(${transaction.id})" aria-label="Save amount" class="px-2 py-1 rounded-lg bg-brass text-[#170F0B] text-xs font-bold">Save</button>
+              <button onclick="cancelOneOffAmountEdit()" aria-label="Cancel amount edit" class="px-2 py-1 rounded-lg border border-[#3D2A20] text-[#A38A7E] text-xs">Cancel</button>
+            </div>
+          ` : `
+            <button onclick="editOneOffAmount(${transaction.id})" aria-label="Edit amount ${transaction.type === 'income' ? 'plus' : 'minus'} $${Number(transaction.amount).toLocaleString(undefined, { maximumFractionDigits: 2 })}" title="Click to edit amount" class="text-sm font-bold ${transaction.type === 'income' ? 'text-emerald-400' : 'text-red-400'} hover:underline">${transaction.type === 'income' ? '+' : '−'}$${Number(transaction.amount).toLocaleString(undefined, { maximumFractionDigits: 2 })}</button>
+          `}
+          <button onclick="deleteOneOffTransaction(${transaction.id})" aria-label="Remove ${escapeHtml(transaction.description || 'transaction')}" class="w-8 h-8 rounded-full text-[#A38A7E] hover:text-red-400 text-lg">×</button>
+        </div>
+      `).join('')
+      : `<p class="text-sm text-[#A38A7E] bg-[#170F0B] rounded-xl p-4">Nothing extra recorded for ${formatMonth(selectedOneOffMonth)} yet.</p>`;
+    if(editingTransactionId !== null) {
+      document.getElementById(`edit-transaction-amount-${editingTransactionId}`)?.focus();
+    }
+  }
+
+  function editOneOffAmount(id) {
+    if(!state.transactions.some(transaction => transaction.id === id)) return;
+    editingTransactionId = id;
+    renderOneOffs();
+  }
+
+  function cancelOneOffAmountEdit() {
+    editingTransactionId = null;
+    renderOneOffs();
+  }
+
+  function handleTransactionEditKey(event, id) {
+    if(event.key === 'Enter') {
+      event.preventDefault();
+      saveOneOffAmount(id);
+    } else if(event.key === 'Escape') {
+      cancelOneOffAmountEdit();
+    }
+  }
+
+  function saveOneOffAmount(id) {
+    const transaction = state.transactions.find(item => item.id === id);
+    const input = document.getElementById(`edit-transaction-amount-${id}`);
+    const amount = input ? Number(input.value) : NaN;
+    if(!transaction || !Number.isFinite(amount) || amount <= 0) {
+      if(input) {
+        input.setCustomValidity('Enter an amount greater than zero.');
+        input.reportValidity();
+      }
+      return;
+    }
+
+    transaction.amount = amount;
+    editingTransactionId = null;
+    saveData();
+    renderOneOffs();
+    updateSummaryDisplays();
+  }
+
+  function updateFormActions() {
+    const transactionAmount = Number(document.getElementById('transaction-amount')?.value);
+    const transactionDate = document.getElementById('transaction-date')?.value || '';
+    const transactionButton = document.getElementById('save-transaction-btn');
+    if(transactionButton) {
+      transactionButton.disabled = !Number.isFinite(transactionAmount) || transactionAmount <= 0 ||
+        transactionDate.slice(0, 7) !== selectedOneOffMonth;
+    }
+
+    const expenseName = document.getElementById('new-exp-name')?.value.trim() || '';
+    const expenseAmount = Number(document.getElementById('new-exp-val')?.value);
+    const expenseButton = document.getElementById('add-expense-btn');
+    if(expenseButton) expenseButton.disabled = !expenseName || !Number.isFinite(expenseAmount) || expenseAmount <= 0;
+
+    const goalName = document.getElementById('new-goal-name')?.value.trim() || '';
+    const goalCost = Number((document.getElementById('new-goal-cost')?.value || '').replace(/,/g, ''));
+    const goalButton = document.getElementById('add-goal-btn');
+    if(goalButton) {
+      goalButton.disabled = !goalName || !Number.isFinite(goalCost) || goalCost <= 0 ||
+        (!state.isPro && state.goals.length >= 2);
+    }
+
+  }
+
+  function addOneOffTransaction() {
+    const date = document.getElementById('transaction-date').value;
+    const amount = parseFloat(document.getElementById('transaction-amount').value);
+    const type = document.getElementById('transaction-type').value;
+    const description = document.getElementById('transaction-description').value.trim();
+    const error = document.getElementById('transaction-form-error');
+    if(!date || date.slice(0, 7) !== selectedOneOffMonth) {
+      error.innerText = 'Choose a date in the selected month.';
+      error.classList.remove('hidden');
+      return;
+    }
+    if(!Number.isFinite(amount) || amount <= 0) {
+      error.innerText = 'Enter an amount greater than zero.';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    let id = Date.now();
+    while(state.transactions.some(transaction => Number(transaction.id) === id)) id++;
+    state.transactions.push({
+      id,
+      date,
+      type,
+      amount,
+      description: description || (type === 'income' ? 'Extra income' : 'Extra expense')
+    });
+    document.getElementById('transaction-amount').value = '';
+    document.getElementById('transaction-description').value = '';
+    error.classList.add('hidden');
+    saveData();
+    renderOneOffs();
+    updateSummaryDisplays();
+    updateFormActions();
+  }
+
+  function deleteOneOffTransaction(id) {
+    state.transactions = state.transactions.filter(transaction => transaction.id !== id);
+    if(editingTransactionId === id) editingTransactionId = null;
+    saveData();
+    renderOneOffs();
+    updateSummaryDisplays();
+  }
+
+  function handleExpenseInput(id, val) {
+    const exp = state.expenses.find(e => e.id === id);
+    if(exp) {
+      exp.amount = val === '' ? 0 : Math.max(0, parseFloat(val) || 0);
+      saveData();
+      updateSummaryDisplays();
+      renderOneOffs();
+    }
+  }
+
+  function deleteExpense(id) {
+    state.expenses = state.expenses.filter(e => e.id !== id);
+    saveData();
+    renderExpensesList();
+    renderOneOffs();
+    updateSummaryDisplays();
+  }
+
+  function addCustomExpense() {
+    const nameInput = document.getElementById('new-exp-name');
+    const valInput = document.getElementById('new-exp-val');
+    const name = nameInput.value.trim();
+    const amount = parseFloat(valInput.value);
+    const error = document.getElementById('expense-form-error');
+    if(!name || !Number.isFinite(amount) || amount <= 0) {
+      error.innerText = !name ? 'Add a name for this bill.' : 'Enter a monthly amount greater than zero.';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    state.expenses.push({
+      id: 'exp_' + Date.now(),
+      name,
+      amount
+    });
+
+    nameInput.value = '';
+    valInput.value = '';
+    error.classList.add('hidden');
+    saveData();
+    renderApp();
+    updateFormActions();
+  }
+
+  function renderExpensesList() {
+    const container = document.getElementById('expenses-sliders-container');
+    document.getElementById('expense-count-badge').innerText =
+      `${state.expenses.length} ${state.expenses.length === 1 ? 'bill' : 'bills'}`;
+    container.innerHTML = state.expenses.length ? state.expenses.map(e => `
+      <div class="flex items-center gap-3 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3">
+        <span aria-hidden="true" class="w-9 h-9 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
+        <label for="expense-amount-${e.id}" class="flex-1 min-w-0 text-sm font-semibold text-[#FDFBF7] truncate">${escapeHtml(e.name)}</label>
+        <div class="flex items-center gap-1">
+          <span aria-hidden="true" class="text-sm text-[#A38A7E]">$</span>
+          <input id="expense-amount-${e.id}" type="number" min="0" step="0.01" value="${e.amount}" aria-label="${escapeHtml(e.name)} monthly amount" oninput="handleExpenseInput('${e.id}', this.value)" class="w-24 bg-transparent text-right text-sm font-bold text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-brass rounded p-1">
+        </div>
+        <button onclick="deleteExpense('${e.id}')" aria-label="Remove ${escapeHtml(e.name)}" title="Remove bill" class="w-8 h-8 rounded-full text-[#A38A7E] hover:text-red-400 hover:bg-red-950/40 text-lg">×</button>
+      </div>
+    `).join('') : '<p class="text-sm text-[#A38A7E] bg-[#170F0B] rounded-xl p-4">No monthly bills yet. Add one below to get started.</p>';
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[character]);
+  }
+
+  function handleHysaChange(val, source) {
+    const parsed = val === '' ? 0 : parseFloat(val);
+    state.hysaRate = Number.isFinite(parsed) ? parsed : 0;
+    const numberInput = document.getElementById('num-hysa');
+    const sliderInput = document.getElementById('slider-hysa');
+    if(source === sliderInput) numberInput.value = val;
+    else sliderInput.value = state.hysaRate;
+    saveData();
+    document.getElementById('chart-apy-badge').innerText = 'Interest estimate';
+    state.goals.forEach(goal => recalculateGoalCard(goal.id));
+    updateSummaryDisplays();
+  }
+
+  function handleGoalInput(goalId, field, rawVal) {
+    const goal = state.goals.find(g => g.id === goalId);
+    if(!goal) return;
+
+    if(rawVal === '') {
+      goal[field] = '';
+    } else {
+      const num = parseFloat(rawVal.replace(/,/g, ''));
+      goal[field] = isNaN(num) ? '' : num;
+    }
+
+    if(field === 'allocPercent') {
+      const available = Math.max(0, 100 - getTotalAllocationPercent(goalId));
+      goal.allocPercent = Math.min(available, Math.max(0, Number(goal[field]) || 0));
+      const slider = document.getElementById(`goal-allocation-${goalId}`);
+      if(slider) slider.value = String(goal.allocPercent);
+    }
+    saveData();
+    updateSummaryDisplays();
+  }
+
+  function formatGoalAmount(input) {
+    const raw = input.value.replace(/,/g, '').trim();
+    if(raw === '') return;
+    const amount = Number(raw);
+    if(Number.isFinite(amount)) input.value = amount.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  }
+
+  function formatGoalAmountValue(value) {
+    const amount = Number(value);
+    return Number.isFinite(amount) ? amount.toLocaleString('en-US', { maximumFractionDigits: 2 }) : '';
+  }
+
+  function recalculateGoalCard(goalId) {
+    const goal = state.goals.find(g => g.id === goalId);
+    if(!goal) return;
+
+    const timeEl = document.getElementById(`time-${goalId}`);
+    const finEl = document.getElementById(`fin-${goalId}`);
+    const loanEl = document.getElementById(`loan-${goalId}`);
+    const allocValEl = document.getElementById(`val-${goalId}-allocPercent`);
+
+    if(allocValEl) allocValEl.innerText = `${goal.allocPercent || 0}%`;
+
+    const totalCost = parseFloat(goal.totalCost) || 0;
+    const downPercent = parseFloat(goal.downPercent) || 0;
+    const startingSaved = parseFloat(goal.startingSaved) || 0;
+    const allocPercent = parseFloat(goal.allocPercent) || 0;
+    const interestRate = parseFloat(goal.interestRate) || 0;
+    const loanTermMonths = parseFloat(goal.loanTermMonths) || 0;
+
+    const targetDown = totalCost * (downPercent / 100);
+    const remaining = Math.max(0, targetDown - startingSaved);
+    const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocPercent / 100);
+    const recurringAlloc = getMonthlySavingsRoom() * (allocPercent / 100);
+    const r = (state.hysaRate / 100) / 12;
+
+    const monthsToGoal = estimateMonthsToGoal(remaining, recurringAlloc, r);
+    const contributionEl = document.getElementById(`contribution-${goalId}`);
+    if(contributionEl) contributionEl.innerText = `$${Math.round(monthlyAlloc).toLocaleString()}/mo`;
+    const homeContributionEl = document.getElementById(`home-monthly-contribution-${goalId}`);
+    if(homeContributionEl) homeContributionEl.innerText = `$${Math.round(monthlyAlloc).toLocaleString()}/mo`;
+    if(timeEl) timeEl.innerText = formatGoalTimeline(monthsToGoal);
+
+    const loanPrincipal = Math.max(0, totalCost - targetDown);
+    const estLoan = calculateMonthlyLoanPayment(loanPrincipal, interestRate, loanTermMonths);
+
+    if(finEl) finEl.innerText = `$${Math.round(loanPrincipal).toLocaleString()} financed`;
+    if(loanEl) loanEl.innerText = `$${estLoan}/mo`;
+  }
+
+  function handleRetirementInput(field, rawVal) {
+    if(rawVal === '') {
+      state.retirement[field] = '';
+    } else {
+      const num = parseFloat(rawVal);
+      state.retirement[field] = isNaN(num) ? '' : num;
+    }
+    if(field === 'allocPercent') {
+      const available = Math.max(0, 100 - getTotalAllocationPercent(null, true));
+      state.retirement.allocPercent = Math.min(available, Math.max(0, Number(state.retirement.allocPercent) || 0));
+      document.getElementById('ret-alloc-slider').value = String(state.retirement.allocPercent);
+    }
+    saveData();
+    updateSummaryDisplays();
+  }
+
+  function recalculateRetirementModule() {
+    const ret = state.retirement;
+    const badge = document.getElementById('ret-alloc-badge');
+    const rateVal = document.getElementById('ret-rate-val');
+    const allocVal = document.getElementById('ret-alloc-val');
+    const nestEggEl = document.getElementById('ret-nest-egg-val');
+
+    const retMonthlyPmt = getCurrentPeriodInvestmentRoom() * ((parseFloat(ret.allocPercent) || 0) / 100);
+    if(badge) badge.innerText = `$${Math.round(retMonthlyPmt).toLocaleString()} this month`;
+    const homeRetMonthly = document.getElementById('home-retirement-contribution');
+    if(homeRetMonthly) homeRetMonthly.innerText = `$${Math.round(retMonthlyPmt).toLocaleString()}`;
+    if(rateVal) rateVal.innerText = `${ret.returnRate || 0}% APY`;
+    if(allocVal) allocVal.innerText = `${ret.allocPercent || 0}%`;
+
+    const currAge = parseFloat(ret.currAge) || 20;
+    const targetAge = parseFloat(ret.targetAge) || 60;
+    const returnRate = parseFloat(ret.returnRate) || 0;
+    const retYears = Math.max(1, targetAge - currAge);
+    const retMonths = retYears * 12;
+    const retR = (returnRate / 100) / 12;
+    const nestEgg = retR > 0 ? Math.round(retMonthlyPmt * ((Math.pow(1 + retR, retMonths) - 1) / retR)) : Math.round(retMonthlyPmt * retMonths);
+
+    if(nestEggEl) nestEggEl.innerText = `$${nestEgg.toLocaleString()}`;
+  }
+
+  function deleteGoal(goalId) {
+    state.goals = state.goals.filter(g => g.id !== goalId);
+    saveData();
+    renderApp();
+  }
+
+  function addCustomGoal() {
+    if(!state.isPro && state.goals.length >= 2) {
+      alert("Free tier capped at 2 goals. Upgrade to Pro for unlimited goals!");
+      switchTab('pro');
+      return;
+    }
+
+    const name = document.getElementById('new-goal-name').value.trim() || 'Custom Asset';
+    const cost = parseFloat(document.getElementById('new-goal-cost').value.replace(/,/g, '')) || 15000;
+    const start = parseFloat(document.getElementById('new-goal-start').value.replace(/,/g, '')) || 0;
+    const type = document.getElementById('new-goal-type').value;
+
+    state.goals.push({
+      id: Date.now(),
+      name,
+      type,
+      totalCost: cost,
+      startingSaved: start,
+      downPercent: type === 'car' ? 20 : 10,
+      loanTermMonths: type === 'house' ? 360 : 60,
+      interestRate: 6.5,
+      allocPercent: Math.min(10, Math.max(0, 100 - getTotalAllocationPercent()))
+    });
+
+    document.getElementById('new-goal-name').value = '';
+    document.getElementById('new-goal-cost').value = '';
+    document.getElementById('new-goal-start').value = '';
+    saveData();
+    renderApp();
+    updateFormActions();
+  }
+
+  function calculateMonthlyLoanPayment(principal, annualRate, termMonths) {
+    if(principal <= 0 || termMonths <= 0) return 0;
+    const r = (annualRate / 100) / 12;
+    if(r === 0) return Math.round(principal / termMonths);
+    return Math.round(principal * (r * Math.pow(1 + r, termMonths)) / (Math.pow(1 + r, termMonths) - 1));
+  }
+
+  function unlockProTier() {
+    state.isPro = true;
+    saveData();
+    alert("🎉 Pro Unlocked!");
+    switchTab('home');
+  }
+
+  function updateSummaryDisplays() {
+    document.getElementById('home-monthly-income').innerText = `$${state.monthlyIncome.toLocaleString()}`;
+    document.getElementById('calc-monthly-income').innerText = `$${state.monthlyIncome.toLocaleString()}`;
+    document.getElementById('home-monthly-expenses').innerText = `$${state.totalExpenses.toLocaleString()}`;
+    document.getElementById('calc-total-expenses').innerText = `$${state.totalExpenses.toLocaleString()}`;
+    const currentCashflow = state.currentMonthCashflow;
+    const currentCashflowEl = document.getElementById('home-net-cashflow');
+    currentCashflowEl.innerText = `${currentCashflow < 0 ? '−' : ''}$${Math.abs(currentCashflow).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    currentCashflowEl.className = `text-3xl font-black mt-0.5 ${currentCashflow < 0 ? 'text-red-400' : 'text-[#E2B887]'}`;
+    const recurringRemainderEl = document.getElementById('calc-net-remainder');
+    recurringRemainderEl.innerText = `${state.netCashflow < 0 ? '−' : ''}$${Math.abs(state.netCashflow).toLocaleString()}`;
+    recurringRemainderEl.className = `text-3xl font-extrabold mt-1 ${state.netCashflow < 0 ? 'text-red-400' : 'text-emerald-400'}`;
+    const oneOffNet = getCurrentMonthOneOffNet();
+    const oneOffTotal = document.getElementById('home-oneoff-total');
+    oneOffTotal.innerHTML = `${oneOffNet > 0 ? '+' : oneOffNet < 0 ? '−' : ''}$${Math.abs(oneOffNet).toLocaleString(undefined, { maximumFractionDigits: 2 })} <span class="text-[#A38A7E]">›</span>`;
+    oneOffTotal.className = `font-bold ${oneOffNet > 0 ? 'text-emerald-400' : oneOffNet < 0 ? 'text-red-400' : 'text-[#FDFBF7]'}`;
+    
+    const months = state.chartHorizonYears * 12;
+    const r = (state.hysaRate / 100) / 12;
+    const totalAllocPct = state.goals.reduce((s, g) => s + (parseFloat(g.allocPercent) || 0), 0) + (parseFloat(state.retirement.allocPercent) || 0);
+    const allocationRate = Math.min(100, totalAllocPct) / 100;
+    const recurringSavings = getMonthlySavingsRoom() * allocationRate;
+    const currentMonthSavings = getCurrentPeriodInvestmentRoom() * allocationRate;
+    let projectedBalance = 0;
+    let totalContributed = 0;
+    for(let month = 1; month <= months; month++) {
+      const contribution = month === 1 ? currentMonthSavings : recurringSavings;
+      projectedBalance = projectedBalance * (1 + r) + contribution;
+      totalContributed += contribution;
+    }
+    const interestEarned = Math.max(0, Math.round(projectedBalance - totalContributed));
+    
+    document.getElementById('home-interest-label').innerText =
+      `Estimated interest growth (${state.chartHorizonYears} ${state.chartHorizonYears === 1 ? 'year' : 'years'}):`;
+    document.getElementById('home-interest-earned').innerText = `+$${interestEarned.toLocaleString()}`;
+    document.getElementById('chart-investment-note').innerText = currentCashflow < 0
+      ? 'This month is below zero after Activity, so no new money is added to savings.'
+      : `$${getCurrentPeriodInvestmentRoom().toLocaleString(undefined, { maximumFractionDigits: 2 })} available to plan this month after Activity.`;
+    state.goals.forEach(goal => recalculateGoalCard(goal.id));
+    recalculateRetirementModule();
+    updateAllocationControls();
+    renderChart();
+  }
+
+  function renderGoalsList() {
+    const allocContainer = document.getElementById('goals-list-container');
+    
+    if(state.goals.length === 0) {
+      allocContainer.innerHTML = `
+        <div class="card-dark p-6 rounded-2xl text-center space-y-2 border-dashed border-[#3D2A20]">
+          <p class="text-sm text-[#FDFBF7]">No savings goals yet.</p>
+          <p class="text-xs text-[#A38A7E]">Add one when you’re ready to start saving for something.</p>
+        </div>
+      `;
+    } else {
+      allocContainer.innerHTML = state.goals.map(g => {
+        const totalCost = parseFloat(g.totalCost) || 0;
+        const downPercent = parseFloat(g.downPercent) || 0;
+        const targetDown = totalCost * (downPercent / 100);
+        const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
+        const monthlyAlloc = getCurrentPeriodInvestmentRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
+        const recurringAlloc = getMonthlySavingsRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
+        const r = (state.hysaRate / 100) / 12;
+        const monthsToGoal = estimateMonthsToGoal(remaining, recurringAlloc, r);
+
+        const loanPrincipal = Math.max(0, totalCost - targetDown);
+        const estLoan = calculateMonthlyLoanPayment(loanPrincipal, parseFloat(g.interestRate) || 0, parseFloat(g.loanTermMonths) || 0);
+
+        return `
+          <article class="card-dark p-4 rounded-2xl space-y-3">
+            <div class="flex justify-between items-center">
+              <div class="min-w-0">
+                <h4 class="font-bold text-base text-[#FDFBF7] truncate">${escapeHtml(g.name)}</h4>
+                <p class="text-xs text-[#A38A7E] mt-1">Saving toward your ${g.type === 'house' ? 'home' : g.type === 'car' ? 'car' : 'goal'}</p>
+              </div>
+              <button onclick="deleteGoal(${g.id})" aria-label="Remove ${escapeHtml(g.name)}" class="text-xs text-[#A38A7E] hover:text-red-400 px-2.5 py-1 rounded-lg">Remove</button>
+            </div>
+
+            <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center">
+              <div>
+                <p class="text-xs text-[#A38A7E]">Available for this goal this month</p>
+                <p id="contribution-${g.id}" class="text-lg font-extrabold text-[#E2B887]">$${Math.round(monthlyAlloc).toLocaleString()}</p>
+              </div>
+              <p class="text-right text-xs text-[#A38A7E]"><span id="time-${g.id}" class="font-semibold text-emerald-400">${formatGoalTimeline(monthsToGoal)}</span><br>to your savings target</p>
+            </div>
+
+            <details class="border-t border-[#3D2A20] pt-3">
+              <summary class="cursor-pointer list-none text-xs font-semibold text-[#E2B887]">Edit goal details and estimates <span aria-hidden="true">⌄</span></summary>
+              <div class="pt-3 space-y-3">
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <label class="text-[10px] text-[#A38A7E]">💵 Goal cost</label>
+                    <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.totalCost)}" oninput="handleGoalInput(${g.id}, 'totalCost', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-[#A38A7E]">Already saved</label>
+                    <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.startingSaved)}" oninput="handleGoalInput(${g.id}, 'startingSaved', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-xs pt-1">
+                  <div>
+                    <label class="text-[10px] text-[#A38A7E]">Amount to put down (%)</label>
+                    <input type="number" value="${g.downPercent}" oninput="handleGoalInput(${g.id}, 'downPercent', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-[#A38A7E]">Loan interest (%)</label>
+                    <input type="number" step="0.25" value="${g.interestRate}" oninput="handleGoalInput(${g.id}, 'interestRate', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-[#A38A7E]">Loan length (months)</label>
+                    <input type="number" step="12" value="${g.loanTermMonths}" oninput="handleGoalInput(${g.id}, 'loanTermMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                  </div>
+                </div>
+
+                <div>
+                  <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
+                    <span>Share of monthly leftover</span>
+                    <span id="val-${g.id}-allocPercent" class="text-xs text-[#E2B887] font-bold">${g.allocPercent || 0}%</span>
+                  </label>
+                  <input id="goal-allocation-${g.id}" type="range" min="0" max="100" step="1" value="${g.allocPercent || 0}" oninput="handleGoalInput(${g.id}, 'allocPercent', this.value)">
+                  <p id="goal-allocation-summary-${g.id}" class="text-[11px] text-[#A38A7E]"></p>
+                </div>
+
+                <div class="p-2.5 bg-[#170F0B] rounded-xl flex justify-between text-[11px] border border-[#3D2A20]">
+                  <div>
+                    <p class="text-[#A38A7E]">Estimated loan amount</p>
+                    <p id="fin-${g.id}" class="text-xs font-bold text-[#FDFBF7]">$${Math.round(loanPrincipal).toLocaleString()}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="text-[#A38A7E]">Estimated monthly payment</p>
+                    <p id="loan-${g.id}" class="font-bold text-[#E2B887]">$${estLoan}/mo</p>
+                  </div>
+                </div>
+              </div>
+            </details>
+          </article>
+        `;
+      }).join('');
+    }
+
+    recalculateRetirementModule();
+    updateAllocationControls();
+  }
+
+  function renderApp() {
+    updateSummaryDisplays();
+    renderOneOffs();
+    document.getElementById('goal-count-badge').innerText = state.isPro ? `${state.goals.length} Goals (Pro)` : `${state.goals.length}/2 Free`;
+    document.getElementById('chart-apy-badge').innerText = 'Estimate';
+
+    [1, 5, 10, 20, 50].forEach(y => {
+      const btn = document.getElementById(`hz-${y}`);
+      if(btn) {
+        btn.className = state.chartHorizonYears === y 
+          ? "py-1 text-[11px] font-bold rounded-lg bg-brass text-[#170F0B]"
+          : "py-1 text-[11px] font-bold rounded-lg text-[#A38A7E]";
+      }
+    });
+
+    // Render Home Carousel
+    const carousel = document.getElementById('home-goals-carousel');
+    let carouselHtml = state.goals.length === 0 ? `
+      <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2 text-center">
+        <p class="text-xs text-[#A38A7E]">No goals added yet.</p>
+        <button onclick="switchTab('goals')" class="text-xs text-[#E2B887] font-bold">Add Goal →</button>
+      </div>
+    ` : state.goals.map(g => {
+      const totalCost = parseFloat(g.totalCost) || 0;
+      const targetDown = totalCost * ((parseFloat(g.downPercent) || 0) / 100);
+      const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
+      const monthlyAlloc = getCurrentPeriodInvestmentRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
+      const recurringAlloc = getMonthlySavingsRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
+      const r = (state.hysaRate / 100) / 12;
+      const months = estimateMonthsToGoal(remaining, recurringAlloc, r);
+
+      return `
+        <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2">
+          <div class="flex justify-between items-start">
+            <h4 class="font-bold text-xs text-[#FDFBF7] truncate max-w-[140px]">${escapeHtml(g.name)}</h4>
+            <span class="text-[10px] bg-brass/20 text-[#E2B887] px-2 py-0.5 rounded">$${Math.round(monthlyAlloc).toLocaleString()} this month</span>
+          </div>
+          <div class="text-xs text-[#A38A7E]">Savings target: <span class="text-[#FDFBF7] font-bold">$${Math.round(targetDown).toLocaleString()}</span></div>
+          <div class="text-xs text-[#A38A7E]">Going toward it this month: <span id="home-monthly-contribution-${g.id}" class="text-[#FDFBF7] font-bold">$${Math.round(monthlyAlloc).toLocaleString()}</span></div>
+          <div class="text-xs text-[#A38A7E]">Estimated time: <span id="home-time-${g.id}" class="text-emerald-400 font-bold">${formatGoalTimeline(months)}</span></div>
+        </div>
+      `;
+    }).join('');
+
+    const retAlloc = parseFloat(state.retirement.allocPercent) || 0;
+    const retMonthly = getCurrentPeriodInvestmentRoom() * (retAlloc / 100);
+    carouselHtml += `
+      <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2 border-emerald-500/30">
+        <div class="flex justify-between items-start">
+          <h4 class="font-bold text-xs text-emerald-400">🌱 Retirement savings</h4>
+          <span class="text-[10px] bg-emerald-950/60 text-emerald-400 px-2 py-0.5 rounded">$${Math.round(retMonthly).toLocaleString()} this month</span>
+        </div>
+        <div class="text-xs text-[#A38A7E]">Going toward retirement this month: <span id="home-retirement-contribution" class="text-[#FDFBF7] font-bold">$${Math.round(retMonthly)}</span></div>
+      </div>
+    `;
+    carousel.innerHTML = carouselHtml;
+
+    renderExpensesList();
+    renderGoalsList();
+    updateAllocationControls();
+    renderChart();
+    renderSquad();
+  }
+
+  function renderChart() {
+    const totalAllocPct = state.goals.reduce((sum, goal) => sum + (parseFloat(goal.allocPercent) || 0), 0) + (parseFloat(state.retirement.allocPercent) || 0);
+    const allocationScale = totalAllocPct > 100 ? 100 / totalAllocPct : 1;
+    const horizonMonths = state.chartHorizonYears * 12;
+    const currentAge = parseFloat(state.retirement.currAge) || 20;
+    const targetAge = parseFloat(state.retirement.targetAge) || 60;
+    const retirementMonths = Math.max(12, (targetAge - currentAge) * 12);
+    const projectionMonths = Math.max(horizonMonths, retirementMonths, 1200);
+    const hysaRate = (parseFloat(state.hysaRate) || 0) / 1200;
+    let initialSurplus = 0;
+    const goalFunds = state.goals.map(goal => {
+      const targetDown = (parseFloat(goal.totalCost) || 0) * ((parseFloat(goal.downPercent) || 0) / 100);
+      const fund = {
+        goal,
+        balance: Math.max(0, parseFloat(goal.startingSaved) || 0),
+        targetDown,
+        monthlyContribution: getMonthlySavingsRoom() * ((parseFloat(goal.allocPercent) || 0) / 100) * allocationScale,
+        reachedMonth: null,
+        active: true
+      };
+      if((parseFloat(goal.totalCost) || 0) > 0 && fund.balance >= targetDown) {
+        initialSurplus += fund.balance - targetDown;
+        fund.balance = 0;
+        fund.reachedMonth = 0;
+        fund.active = false;
+      }
+      return fund;
+    });
+
+    let retirementBalance = 0;
+    const retirementRate = (parseFloat(state.retirement.returnRate) || 0) / 1200;
+    const retirementContribution = getMonthlySavingsRoom() *
+      ((parseFloat(state.retirement.allocPercent) || 0) / 100) * allocationScale;
+    const currentAllocationBase = getCurrentPeriodInvestmentRoom();
+    const currentRetirementContribution = currentAllocationBase *
+      ((parseFloat(state.retirement.allocPercent) || 0) / 100) * allocationScale;
+    const redirectSurplus = (amount, month) => {
+      let remaining = amount;
+      while(remaining > 0) {
+        const activeFunds = goalFunds.filter(fund => fund.active);
+        if(activeFunds.length === 0) {
+          retirementBalance += remaining;
+          return;
+        }
+
+        const activeAllocation = activeFunds.reduce((sum, fund) =>
+          sum + (parseFloat(fund.goal.allocPercent) || 0), 0);
+        let nextSurplus = 0;
+        activeFunds.forEach(fund => {
+          const allocation = activeAllocation > 0
+            ? remaining * (parseFloat(fund.goal.allocPercent) || 0) / activeAllocation
+            : remaining / activeFunds.length;
+          fund.balance += allocation;
+          if((parseFloat(fund.goal.totalCost) || 0) > 0 && fund.balance >= fund.targetDown) {
+            nextSurplus += fund.balance - fund.targetDown;
+            fund.balance = 0;
+            fund.reachedMonth = month;
+            fund.active = false;
+          }
+        });
+        remaining = nextSurplus;
+      }
+    };
+    redirectSurplus(initialSurplus, 0);
+    const portfolioValues = [goalFunds.reduce((sum, fund) => sum + fund.balance, retirementBalance)];
+    const retirementValues = [Math.round(retirementBalance)];
+
+    for(let month = 1; month <= projectionMonths; month++) {
+      const activeFunds = goalFunds.filter(fund => fund.active);
+      let completionSurplus = 0;
+      const monthRetirementContribution = month === 1 ? currentRetirementContribution : retirementContribution;
+      if(activeFunds.length > 0) {
+        activeFunds.forEach(fund => {
+          const contribution = month === 1
+            ? currentAllocationBase * ((parseFloat(fund.goal.allocPercent) || 0) / 100) * allocationScale
+            : fund.monthlyContribution;
+          fund.balance = fund.balance * (1 + hysaRate) + contribution;
+          if((parseFloat(fund.goal.totalCost) || 0) > 0 && fund.balance >= fund.targetDown) {
+            completionSurplus += Math.max(0, fund.balance - fund.targetDown);
+            fund.balance = 0;
+            fund.reachedMonth = month;
+            fund.active = false;
+          }
+        });
+      } else {
+        const redirectedContribution = goalFunds.length === 0
+          ? monthRetirementContribution
+          : month === 1
+            ? currentAllocationBase * allocationScale
+            : getMonthlySavingsRoom() * allocationScale;
+        retirementBalance = retirementBalance * (1 + retirementRate) + redirectedContribution;
+      }
+
+      if(activeFunds.length > 0) {
+        retirementBalance = retirementBalance * (1 + retirementRate) + monthRetirementContribution;
+        redirectSurplus(completionSurplus, month);
+      }
+      if(month <= horizonMonths) {
+        portfolioValues.push(Math.round(goalFunds.reduce((sum, fund) => sum + fund.balance, retirementBalance)));
+      }
+      if(month <= retirementMonths) retirementValues.push(Math.round(retirementBalance));
+    }
+
+    goalFunds.forEach(fund => {
+      const time = fund.reachedMonth === null
+        ? 'Not set yet'
+        : formatGoalTimeline(fund.reachedMonth);
+      const timeEl = document.getElementById(`time-${fund.goal.id}`);
+      const homeTimeEl = document.getElementById(`home-time-${fund.goal.id}`);
+      if(timeEl) timeEl.innerText = time;
+      if(homeTimeEl) homeTimeEl.innerText = time;
+    });
+    const nestEggEl = document.getElementById('ret-nest-egg-val');
+    if(nestEggEl) nestEggEl.innerText = `$${retirementValues[retirementValues.length - 1].toLocaleString()}`;
+
+    const chartLabels = Array.from({ length: horizonMonths + 1 }, (_, month) => {
+      if(month === 0) return 'Now';
+      if(state.chartHorizonYears === 1 && month % 3 === 0) return `${month}M`;
+      return month % 12 === 0 ? `${month / 12}Y` : '';
+    });
+    const goalColors = ['#E2B887', '#F87171', '#60A5FA', '#A3E635', '#C084FC', '#FB923C'];
+    const goalMilestones = goalFunds
+      .filter(fund => fund.reachedMonth !== null && fund.reachedMonth <= horizonMonths)
+      .map((fund, index) => ({
+        label: `${fund.goal.name} purchased · $${fund.targetDown.toLocaleString()} down`,
+        color: goalColors[index % goalColors.length],
+        data: portfolioValues.map((value, month) => month === fund.reachedMonth ? value : null)
+      }));
+
+    const ctx = document.getElementById('homeChart').getContext('2d');
+    if(homeChart) homeChart.destroy();
+
+    homeChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: chartLabels,
+        datasets: [{
+          label: 'Savings after goal purchases',
+          data: portfolioValues,
+          borderColor: '#10B981',
+          backgroundColor: 'rgba(16, 185, 129, 0.1)',
+          pointRadius: 0,
+          fill: true,
+          tension: 0.15
+        }, ...goalMilestones.map(milestone => ({
+          label: milestone.label,
+          data: milestone.data,
+          showLine: false,
+          borderColor: milestone.color,
+          backgroundColor: milestone.color,
+          pointRadius: 5,
+          pointHoverRadius: 7
+        }))]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: true, labels: { color: '#A38A7E', boxWidth: 8, font: { size: 9 } } },
+          tooltip: {
+            callbacks: {
+              title: items => items.length ? formatProjectionMonth(items[0].dataIndex) : '',
+              label: context => `${context.dataset.label}: $${Math.round(context.parsed.y).toLocaleString()} (${formatProjectionOffset(context.dataIndex)})`
+            }
+          }
+        },
+        scales: {
+          x: { grid: { color: '#2A1C14' }, ticks: { color: '#A38A7E', font: { size: 10 } } },
+          y: { grid: { color: '#2A1C14' }, ticks: { color: '#A38A7E', font: { size: 10 }, callback: value => `$${Number(value).toLocaleString()}` } }
+        }
+      }
+    });
+
+    const retirementLabels = Array.from({ length: retirementMonths + 1 }, (_, month) => {
+      if(month === 0) return `${currentAge}`;
+      return month % 12 === 0 ? `${currentAge + month / 12}` : '';
+    });
+    document.getElementById('home-retirement-summary').innerText = `$${retirementValues[retirementValues.length - 1].toLocaleString()} at age ${currentAge + retirementMonths / 12}`;
+
+    const retirementCtx = document.getElementById('retirementChart').getContext('2d');
+    if(retirementChart) retirementChart.destroy();
+    retirementChart = new Chart(retirementCtx, {
+      type: 'line',
+      data: {
+        labels: retirementLabels,
+        datasets: [{
+          label: 'Projected retirement balance',
+          data: retirementValues,
+          borderColor: '#60A5FA',
+          backgroundColor: 'rgba(96, 165, 250, 0.12)',
+          pointRadius: 0,
+          fill: true,
+          tension: 0.2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              title: items => items.length ? formatProjectionMonth(items[0].dataIndex) : '',
+              label: context => `${context.dataset.label}: $${Math.round(context.parsed.y).toLocaleString()} (${formatProjectionOffset(context.dataIndex)})`
+            }
+          }
+        },
+        scales: {
+          x: { title: { display: true, text: 'Age', color: '#A38A7E', font: { size: 10 } }, grid: { color: '#2A1C14' }, ticks: { color: '#A38A7E', font: { size: 10 } } },
+          y: { grid: { color: '#2A1C14' }, ticks: { color: '#A38A7E', font: { size: 10 }, callback: value => `$${Number(value).toLocaleString()}` } }
+        }
+      }
+    });
+  }
+
+  function renderSquad() {
+    const squadContainer = document.getElementById('squad-list-container');
+    if(state.goals.length === 0) {
+      squadContainer.innerHTML = `
+        <div class="card-dark p-5 rounded-2xl text-center space-y-3">
+          <p class="text-sm text-[#FDFBF7]">Add a savings goal to compare monthly progress.</p>
+          <button onclick="switchTab('goals')" class="text-xs text-[#E2B887] font-bold">Create a goal →</button>
+        </div>
+      `;
+      return;
+    }
+
+    const goal = state.goals.find(item => String(item.id) === String(state.squadGoalId)) || state.goals[0];
+    state.squadGoalId = goal.id;
+    const target = (Number(goal.totalCost) || 0) * ((Number(goal.downPercent) || 0) / 100);
+    const monthlyContribution = getCurrentPeriodInvestmentRoom() * ((Number(goal.allocPercent) || 0) / 100);
+    const monthlyProgress = target > 0 ? monthlyContribution / target * 100 : 0;
+    const friends = [
+      { initials: 'AM', name: 'Alex M.', goal: 'Porsche 911 GT3', monthlyProgress: 2.4 },
+      { initials: 'JR', name: 'Jordan R.', goal: 'Travel fund', monthlyProgress: 1.8 }
+    ];
+    const progressCard = (person, value, isYou = false) => `
+      <div class="card-dark p-3 rounded-2xl space-y-2 ${isYou ? 'border-brass' : 'opacity-90'}">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-3 min-w-0">
+            <div class="w-10 h-10 flex-shrink-0 rounded-full ${isYou ? 'bg-brass/20 text-[#E2B887]' : 'bg-white/10 text-white'} flex items-center justify-center font-bold">${person.initials}</div>
+            <div class="min-w-0">
+              <h4 class="font-bold text-sm text-[#FDFBF7]">${escapeHtml(person.name)}</h4>
+              <p class="text-xs text-[#A38A7E] truncate">${escapeHtml(person.goal)}</p>
+            </div>
+          </div>
+          <div class="text-right pl-2">
+            <span class="text-sm font-bold ${isYou ? 'text-[#E2B887]' : 'text-white'}">${value.toFixed(1)}%</span>
+            <p class="text-[10px] text-[#A38A7E]">of goal / month</p>
+          </div>
+        </div>
+        <div class="h-1.5 rounded-full bg-[#170F0B] overflow-hidden" role="progressbar" aria-label="${escapeHtml(person.name)} monthly goal progress" aria-valuenow="${value.toFixed(1)}" aria-valuemin="0" aria-valuemax="100">
+          <div class="h-full rounded-full ${isYou ? 'bg-brass' : 'bg-white/50'}" style="width:${Math.min(100, value)}%"></div>
+        </div>
+      </div>
+    `;
+
+    squadContainer.innerHTML = `
+      <label for="squad-goal-select" class="block text-xs font-semibold text-[#A38A7E]">Choose the goal to compare</label>
+      <select id="squad-goal-select" onchange="setSquadGoal(this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+        ${state.goals.map(item => `<option value="${escapeHtml(String(item.id))}" ${String(item.id) === String(goal.id) ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}
+      </select>
+      <h2 class="pt-2 text-xs font-bold uppercase tracking-wide text-[#A38A7E]">Monthly progress comparison</h2>
+      ${progressCard({ initials: 'WM', name: 'You', goal: goal.name }, monthlyProgress, true)}
+      ${friends.map(friend => progressCard(friend, friend.monthlyProgress)).join('')}
+      <p class="text-[10px] leading-relaxed text-[#A38A7E]">Progress is shown as a percentage of the savings target added this month—not as a dollar amount or your current balance. Friend profiles are examples; friend syncing isn’t connected yet.</p>
+    `;
+  }
+
+  function setSquadGoal(goalId) {
+    const goal = state.goals.find(item => String(item.id) === String(goalId));
+    if(!goal) return;
+    state.squadGoalId = goal.id;
+    saveData();
+    renderSquad();
+  }
+
+  window.onload = () => {
+    loadSavedData();
+    selectedOneOffMonth = getMonthKey(new Date());
+    setTransactionDateForMonth(selectedOneOffMonth);
+    document.getElementById('slider-hysa').value = state.hysaRate;
+    document.getElementById('num-hysa').value = state.hysaRate;
+    document.getElementById('check-amount').value = state.paycheckAmount;
+    document.getElementById('pay-frequency').value = state.payPeriodsPerYear;
+    state.paycheckAmounts.forEach((amount, index) => {
+      document.getElementById(`recent-check-${index + 1}`).value = amount;
+    });
+    const usesRecentChecks = state.payPeriodsPerYear === 26 || state.payPeriodsPerYear === 52;
+    document.getElementById('single-paycheck-field').classList.toggle('hidden', usesRecentChecks);
+    document.getElementById('recent-paychecks').classList.toggle('hidden', !usesRecentChecks);
+    
+    // Set Roth IRA initial input values
+    document.getElementById('ret-curr-age').value = state.retirement.currAge;
+    document.getElementById('ret-target-age').value = state.retirement.targetAge;
+    document.getElementById('ret-rate-slider').value = state.retirement.returnRate;
+    document.getElementById('ret-alloc-slider').value = state.retirement.allocPercent;
+
+    calculateIncome();
+    renderOneOffs();
+    updateFormActions();
+    renderApp();
+  };
+</script>
+</body>
+</html>
