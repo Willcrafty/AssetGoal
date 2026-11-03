@@ -444,8 +444,8 @@
     </details>
 
     <details class="card-dark rounded-2xl border-dashed border-brass/40">
-      <summary class="cursor-pointer list-none p-4 flex justify-between items-center">
-        <div><h3 class="text-sm font-bold text-[#E2B887]">+ Add a savings goal</h3><p class="text-[11px] text-[#A38A7E] mt-1">What are you saving up for?</p></div>
+      <summary onclick="handleAddGoalClick(event)" class="cursor-pointer list-none p-4 flex justify-between items-center">
+        <div><h3 id="goal-add-title" class="text-sm font-bold text-[#E2B887]">+ Add a savings goal</h3><p id="goal-add-description" class="text-[11px] text-[#A38A7E] mt-1">What are you saving up for?</p></div>
         <span id="goal-count-badge" class="text-[10px] text-[#A38A7E]">0/2 Free Slots</span>
       </summary>
       <div class="px-4 pb-4 space-y-3">
@@ -749,9 +749,11 @@
   function formatGoalTimeline(months) {
     if(!Number.isFinite(months)) return 'Add a monthly amount to see an estimate';
     if(months === 0) return 'Already there';
+    if(months < 12) return `About ${months} ${months === 1 ? 'month' : 'months'}`;
     const years = Math.floor(months / 12);
     const remainingMonths = months % 12;
-    return `About ${years} ${years === 1 ? 'year' : 'years'}, ${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'} — ${months} months total`;
+    const duration = `${years} ${years === 1 ? 'year' : 'years'}${remainingMonths ? `, ${remainingMonths} ${remainingMonths === 1 ? 'month' : 'months'}` : ''}`;
+    return `About ${duration} — ${months} months total`;
   }
 
   function getTotalAllocationPercent(excludedGoalId = null, excludeRetirement = false) {
@@ -1194,8 +1196,7 @@
     const goalCost = Number((document.getElementById('new-goal-cost')?.value || '').replace(/,/g, ''));
     const goalButton = document.getElementById('add-goal-btn');
     if(goalButton) {
-      goalButton.disabled = !goalName || !Number.isFinite(goalCost) || goalCost <= 0 ||
-        (!state.isPro && state.goals.length >= 2);
+      goalButton.disabled = !goalName || !Number.isFinite(goalCost) || goalCost <= 0;
     }
 
   }
@@ -1478,9 +1479,15 @@
     deleteGoal(goal.id);
   }
 
+  function handleAddGoalClick(event) {
+    if(!state.isPro && state.goals.length >= 2) {
+      event.preventDefault();
+      switchTab('pro');
+    }
+  }
+
   function addCustomGoal() {
     if(!state.isPro && state.goals.length >= 2) {
-      alert("Free tier capped at 2 goals. Upgrade to Pro for unlimited goals!");
       switchTab('pro');
       return;
     }
@@ -1593,74 +1600,75 @@
         const estLoan = calculateMonthlyLoanPayment(loanPrincipal, parseFloat(g.interestRate) || 0, parseFloat(g.loanTermMonths) || 0);
 
         return `
-          <article class="card-dark p-4 rounded-2xl space-y-3">
-            <div class="flex justify-between items-center">
-              <div class="min-w-0">
-                <h4 class="font-bold text-base text-[#FDFBF7] truncate">${escapeHtml(g.name)}</h4>
+          <details class="card-dark p-4 rounded-2xl relative">
+            <summary class="cursor-pointer list-none space-y-3">
+              <div class="pr-16">
+                <h4 class="font-bold text-base text-[#FDFBF7] break-words">${escapeHtml(g.name)}</h4>
                 <p class="text-xs text-[#A38A7E] mt-1">Saving toward your ${g.type === 'house' ? 'home' : g.type === 'car' ? 'car' : 'goal'}</p>
               </div>
-              <button onclick="requestGoalDeletion(${g.id})" aria-label="Remove ${escapeHtml(g.name)}" class="text-xs text-[#A38A7E] hover:text-red-400 px-2.5 py-1 rounded-lg">Remove</button>
-            </div>
-
-            <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center">
-              <div>
-                <p class="text-xs text-[#A38A7E]">Available for this goal this month</p>
-                <p id="contribution-${g.id}" class="text-lg font-extrabold text-[#E2B887]">$${Math.round(monthlyAlloc).toLocaleString()}</p>
-              </div>
-              <p class="text-right text-xs text-[#A38A7E]"><span id="time-${g.id}" class="font-semibold text-emerald-400">${formatGoalTimeline(monthsToGoal)}</span><br>to your savings target</p>
-            </div>
-
-            <details class="border-t border-[#3D2A20] pt-3">
-              <summary class="cursor-pointer list-none text-xs font-semibold text-[#E2B887]">Edit goal details and estimates <span aria-hidden="true">⌄</span></summary>
-              <div class="pt-3 space-y-3">
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <label class="text-[10px] text-[#A38A7E]">Goal cost ($)</label>
-                    <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.totalCost)}" oninput="handleGoalInput(${g.id}, 'totalCost', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
-                  </div>
-                  <div>
-                    <label class="text-[10px] text-[#A38A7E]">Already saved</label>
-                    <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.startingSaved)}" oninput="handleGoalInput(${g.id}, 'startingSaved', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
-                  </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-2 text-xs pt-1">
-                  <div>
-                    <label class="text-[10px] text-[#A38A7E]">Amount to put down (%)</label>
-                    <input type="number" value="${g.downPercent}" oninput="handleGoalInput(${g.id}, 'downPercent', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
-                  </div>
-                  <div>
-                    <label class="text-[10px] text-[#A38A7E]">Loan interest (%)</label>
-                    <input type="number" step="0.25" value="${g.interestRate}" oninput="handleGoalInput(${g.id}, 'interestRate', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
-                  </div>
-                  <div>
-                    <label class="text-[10px] text-[#A38A7E]">Loan length (months)</label>
-                    <input type="number" step="12" value="${g.loanTermMonths}" oninput="handleGoalInput(${g.id}, 'loanTermMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
-                  </div>
-                </div>
-
+              <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center gap-3">
                 <div>
-                  <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
-                    <span>Share of monthly leftover</span>
-                    <span id="val-${g.id}-allocPercent" class="text-xs text-[#E2B887] font-bold">${g.allocPercent || 0}%</span>
-                  </label>
-                  <input id="goal-allocation-${g.id}" type="range" min="0" max="100" step="1" value="${g.allocPercent || 0}" oninput="handleGoalInput(${g.id}, 'allocPercent', this.value)">
-                  <p id="goal-allocation-summary-${g.id}" class="text-[11px] text-[#A38A7E]"></p>
+                  <p class="text-xs text-[#A38A7E]">Available for this goal this month</p>
+                  <p id="contribution-${g.id}" class="text-lg font-extrabold text-[#E2B887]">$${Math.round(monthlyAlloc).toLocaleString()}</p>
                 </div>
-
-                <div class="p-2.5 bg-[#170F0B] rounded-xl flex justify-between text-[11px] border border-[#3D2A20]">
-                  <div>
-                    <p class="text-[#A38A7E]">Estimated loan amount</p>
-                    <p id="fin-${g.id}" class="text-xs font-bold text-[#FDFBF7]">$${Math.round(loanPrincipal).toLocaleString()}</p>
-                  </div>
-                  <div class="text-right">
-                    <p class="text-[#A38A7E]">Estimated monthly payment</p>
-                    <p id="loan-${g.id}" class="font-bold text-[#E2B887]">$${estLoan}/mo</p>
-                  </div>
-                </div>
+                <p class="text-right text-xs text-[#A38A7E]"><span id="time-${g.id}" class="font-semibold text-emerald-400">${formatGoalTimeline(monthsToGoal)}</span><br>to your savings target</p>
               </div>
-            </details>
-          </article>
+            </summary>
+            <button onclick="requestGoalDeletion(${g.id})" aria-label="Remove ${escapeHtml(g.name)}" class="absolute right-4 top-4 text-xs text-[#A38A7E] hover:text-red-400 px-2.5 py-1 rounded-lg">Remove</button>
+
+            <div class="pt-3 space-y-3">
+              <details class="border-t border-[#3D2A20] pt-3">
+                <summary class="cursor-pointer list-none text-xs font-semibold text-[#E2B887]">Edit goal details and estimates <span aria-hidden="true">⌄</span></summary>
+                <div class="pt-3 space-y-3">
+                  <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                      <label class="text-[10px] text-[#A38A7E]">Goal cost ($)</label>
+                      <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.totalCost)}" oninput="handleGoalInput(${g.id}, 'totalCost', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                    </div>
+                    <div>
+                      <label class="text-[10px] text-[#A38A7E]">Already saved</label>
+                      <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.startingSaved)}" oninput="handleGoalInput(${g.id}, 'startingSaved', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2 text-xs pt-1">
+                    <div>
+                      <label class="text-[10px] text-[#A38A7E]">Amount to put down (%)</label>
+                      <input type="number" value="${g.downPercent}" oninput="handleGoalInput(${g.id}, 'downPercent', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                    </div>
+                    <div>
+                      <label class="text-[10px] text-[#A38A7E]">Loan interest (%)</label>
+                      <input type="number" step="0.25" value="${g.interestRate}" oninput="handleGoalInput(${g.id}, 'interestRate', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                    </div>
+                    <div>
+                      <label class="text-[10px] text-[#A38A7E]">Loan length (months)</label>
+                      <input type="number" step="12" value="${g.loanTermMonths}" oninput="handleGoalInput(${g.id}, 'loanTermMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
+                      <span>Share of monthly leftover</span>
+                      <span id="val-${g.id}-allocPercent" class="text-xs text-[#E2B887] font-bold">${g.allocPercent || 0}%</span>
+                    </label>
+                    <input id="goal-allocation-${g.id}" type="range" min="0" max="100" step="1" value="${g.allocPercent || 0}" oninput="handleGoalInput(${g.id}, 'allocPercent', this.value)">
+                    <p id="goal-allocation-summary-${g.id}" class="text-[11px] text-[#A38A7E]"></p>
+                  </div>
+
+                  <div class="p-2.5 bg-[#170F0B] rounded-xl flex justify-between text-[11px] border border-[#3D2A20]">
+                    <div>
+                      <p class="text-[#A38A7E]">Estimated loan amount</p>
+                      <p id="fin-${g.id}" class="text-xs font-bold text-[#FDFBF7]">$${Math.round(loanPrincipal).toLocaleString()}</p>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-[#A38A7E]">Estimated monthly payment</p>
+                      <p id="loan-${g.id}" class="font-bold text-[#E2B887]">$${estLoan}/mo</p>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </details>
         `;
       }).join('');
     }
@@ -1672,6 +1680,13 @@
   function renderApp() {
     updateSummaryDisplays();
     renderOneOffs();
+    const goalLimitReached = !state.isPro && state.goals.length >= 2;
+    document.getElementById('goal-add-title').textContent =
+      goalLimitReached ? 'Unlock more savings goals' : '+ Add a savings goal';
+    document.getElementById('goal-add-description').textContent =
+      goalLimitReached ? 'Upgrade to Pro to add another goal.' : 'What are you saving up for?';
+    document.getElementById('add-goal-btn').textContent =
+      goalLimitReached ? 'Upgrade to Pro' : 'Save goal';
     document.getElementById('goal-count-badge').innerText = state.isPro ? `${state.goals.length} Goals (Pro)` : `${state.goals.length}/2 Free`;
     document.getElementById('chart-apy-badge').innerText = 'Estimate';
 
