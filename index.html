@@ -642,6 +642,15 @@
   let selectedOneOffMonth = null;
   let editingTransactionId = null;
   const freeExpenseLimit = 3;
+  const goalTypeSettings = {
+    general: { label: 'General Asset', target: 'your asset', downPercent: 100, loanTermMonths: 0, interestRate: 0 },
+    car: { label: 'Auto Purchase', target: 'your car', downPercent: 20, loanTermMonths: 60, interestRate: 6.5 },
+    house: { label: 'House / Real Estate', target: 'your home', downPercent: 10, loanTermMonths: 360, interestRate: 6.5 }
+  };
+
+  function getGoalDownPercent(goal) {
+    return goal.type === 'general' ? 100 : Number(goal.downPercent) || 0;
+  }
 
   function getMonthKey(date) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
@@ -886,7 +895,21 @@
         }
         if(parsed.expenses && Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
         if(parsed.retirement) state.retirement = parsed.retirement;
-        if(parsed.goals) state.goals = parsed.goals;
+        if(Array.isArray(parsed.goals)) {
+          state.goals = parsed.goals.map(goal => {
+            const isLegacyGeneralDefault = goal &&
+              goal.type === 'general' &&
+              ((Number(goal.downPercent) === 10 && Number(goal.loanTermMonths) === 60 &&
+                Number(goal.interestRate) === 6.5) ||
+                (Number(goal.downPercent) === 100 && Number(goal.loanTermMonths) === 0 &&
+                  Number(goal.interestRate) === 6.5) ||
+                (Number(goal.downPercent) === 100 && Number(goal.loanTermMonths) === 60 &&
+                  Number(goal.interestRate) === 0));
+            return isLegacyGeneralDefault
+              ? { ...goal, downPercent: 100, loanTermMonths: 0, interestRate: 0 }
+              : goal;
+          });
+        }
         if(parsed.squadGoalId !== undefined && parsed.squadGoalId !== null) {
           state.squadGoalId = parsed.squadGoalId;
         }
@@ -1380,13 +1403,12 @@
     if(allocValEl) allocValEl.innerText = `${goal.allocPercent || 0}%`;
 
     const totalCost = parseFloat(goal.totalCost) || 0;
-    const downPercent = parseFloat(goal.downPercent) || 0;
     const startingSaved = parseFloat(goal.startingSaved) || 0;
     const allocPercent = parseFloat(goal.allocPercent) || 0;
     const interestRate = parseFloat(goal.interestRate) || 0;
     const loanTermMonths = parseFloat(goal.loanTermMonths) || 0;
 
-    const targetDown = totalCost * (downPercent / 100);
+    const targetDown = totalCost * (getGoalDownPercent(goal) / 100);
     const remaining = Math.max(0, targetDown - startingSaved);
     const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocPercent / 100);
     const recurringAlloc = getMonthlySavingsRoom() * (allocPercent / 100);
@@ -1496,6 +1518,11 @@
     const cost = parseFloat(document.getElementById('new-goal-cost').value.replace(/,/g, '')) || 15000;
     const start = parseFloat(document.getElementById('new-goal-start').value.replace(/,/g, '')) || 0;
     const type = document.getElementById('new-goal-type').value;
+    const typeSettings = goalTypeSettings[type];
+    if(!typeSettings) {
+      console.error(`Unsupported savings goal type: ${type}`);
+      return;
+    }
 
     state.goals.push({
       id: Date.now(),
@@ -1503,9 +1530,9 @@
       type,
       totalCost: cost,
       startingSaved: start,
-      downPercent: type === 'car' ? 20 : 10,
-      loanTermMonths: type === 'house' ? 360 : 60,
-      interestRate: 6.5,
+      downPercent: typeSettings.downPercent,
+      loanTermMonths: typeSettings.loanTermMonths,
+      interestRate: typeSettings.interestRate,
       allocPercent: Math.min(10, Math.max(0, 100 - getTotalAllocationPercent()))
     });
 
@@ -1588,13 +1615,13 @@
     } else {
       allocContainer.innerHTML = state.goals.map(g => {
         const totalCost = parseFloat(g.totalCost) || 0;
-        const downPercent = parseFloat(g.downPercent) || 0;
-        const targetDown = totalCost * (downPercent / 100);
+        const targetDown = totalCost * (getGoalDownPercent(g) / 100);
         const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
         const monthlyAlloc = getCurrentPeriodInvestmentRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
         const recurringAlloc = getMonthlySavingsRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
         const r = (state.hysaRate / 100) / 12;
         const monthsToGoal = estimateMonthsToGoal(remaining, recurringAlloc, r);
+        const typeSettings = goalTypeSettings[g.type] || goalTypeSettings.general;
 
         const loanPrincipal = Math.max(0, totalCost - targetDown);
         const estLoan = calculateMonthlyLoanPayment(loanPrincipal, parseFloat(g.interestRate) || 0, parseFloat(g.loanTermMonths) || 0);
@@ -1604,7 +1631,7 @@
             <summary class="cursor-pointer list-none space-y-3">
               <div class="pr-16">
                 <h4 class="font-bold text-base text-[#FDFBF7] break-words">${escapeHtml(g.name)}</h4>
-                <p class="text-xs text-[#A38A7E] mt-1">Saving toward your ${g.type === 'house' ? 'home' : g.type === 'car' ? 'car' : 'goal'}</p>
+                <p class="text-xs text-[#A38A7E] mt-1">${typeSettings.label} · Saving toward ${typeSettings.target}</p>
               </div>
               <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center gap-3">
                 <div>
@@ -1708,12 +1735,13 @@
       </div>
     ` : state.goals.map(g => {
       const totalCost = parseFloat(g.totalCost) || 0;
-      const targetDown = totalCost * ((parseFloat(g.downPercent) || 0) / 100);
+      const targetDown = totalCost * (getGoalDownPercent(g) / 100);
       const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
       const monthlyAlloc = getCurrentPeriodInvestmentRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
       const recurringAlloc = getMonthlySavingsRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
       const r = (state.hysaRate / 100) / 12;
       const months = estimateMonthsToGoal(remaining, recurringAlloc, r);
+      const typeSettings = goalTypeSettings[g.type] || goalTypeSettings.general;
 
       return `
         <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2">
@@ -1721,6 +1749,7 @@
             <h4 class="font-bold text-xs text-[#FDFBF7] truncate max-w-[140px]">${escapeHtml(g.name)}</h4>
             <span class="text-[10px] bg-brass/20 text-[#E2B887] px-2 py-0.5 rounded">$${Math.round(monthlyAlloc).toLocaleString()} this month</span>
           </div>
+          <p class="text-[10px] text-[#A38A7E]">${typeSettings.label}</p>
           <div class="text-xs text-[#A38A7E]">Savings target: <span class="text-[#FDFBF7] font-bold">$${Math.round(targetDown).toLocaleString()}</span></div>
           <div class="text-xs text-[#A38A7E]">Going toward it this month: <span id="home-monthly-contribution-${g.id}" class="text-[#FDFBF7] font-bold">$${Math.round(monthlyAlloc).toLocaleString()}</span></div>
           <div class="text-xs text-[#A38A7E]">Estimated time: <span id="home-time-${g.id}" class="text-emerald-400 font-bold">${formatGoalTimeline(months)}</span></div>
@@ -1760,7 +1789,7 @@
     const hysaRate = (parseFloat(state.hysaRate) || 0) / 1200;
     let initialSurplus = 0;
     const goalFunds = state.goals.map(goal => {
-      const targetDown = (parseFloat(goal.totalCost) || 0) * ((parseFloat(goal.downPercent) || 0) / 100);
+      const targetDown = (parseFloat(goal.totalCost) || 0) * (getGoalDownPercent(goal) / 100);
       const fund = {
         goal,
         balance: Math.max(0, parseFloat(goal.startingSaved) || 0),
@@ -1978,7 +2007,7 @@
 
     const goal = state.goals.find(item => String(item.id) === String(state.squadGoalId)) || state.goals[0];
     state.squadGoalId = goal.id;
-    const target = (Number(goal.totalCost) || 0) * ((Number(goal.downPercent) || 0) / 100);
+    const target = (Number(goal.totalCost) || 0) * (getGoalDownPercent(goal) / 100);
     const monthlyContribution = getCurrentPeriodInvestmentRoom() * ((Number(goal.allocPercent) || 0) / 100);
     const monthlyProgress = target > 0 ? monthlyContribution / target * 100 : 0;
     const friends = [
