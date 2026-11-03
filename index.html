@@ -136,7 +136,8 @@
     </div>
     <div class="ml-auto flex items-center gap-1.5">
       <button onclick="switchTab('pro')" id="header-pro-btn" class="px-2 sm:px-3 py-1.5 rounded-full bg-brass/10 border border-brass/30 text-[10px] sm:text-xs font-semibold text-[#E2B887] flex items-center gap-1 active:scale-95 transition-transform whitespace-nowrap">
-        ⚡ <span class="sm:hidden">Pro</span><span class="hidden sm:inline">Unlock Pro ($9.99)</span>
+        <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 9h7l-6 11 2-9H6l7-11Z"/></svg>
+        <span class="sm:hidden">Pro</span><span class="hidden sm:inline">Unlock Pro ($9.99)</span>
       </button>
       <button type="button" id="pro-test-toggle" onclick="toggleProTestMode()" aria-label="Switch to Pro test mode" aria-pressed="false" class="rounded-full border border-[#806344] px-2.5 py-1.5 text-[10px] font-bold text-[#E2B887] whitespace-nowrap">
         Free
@@ -147,7 +148,7 @@
   <!-- ================= TAB 1: HOME PAGE ================= -->
   <main id="tab-home" class="p-5 space-y-6">
     <div>
-      <p class="text-xs font-medium text-[#A38A7E]">Good evening 👋</p>
+      <p class="text-xs font-medium text-[#A38A7E]">Good evening</p>
       <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Your money</h1>
     </div>
 
@@ -264,9 +265,9 @@
       <div class="pt-3 border-t border-[#3D2A20] space-y-3">
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_140px]">
           <label class="sr-only" for="new-exp-name">Bill name</label>
-          <input type="text" id="new-exp-name" placeholder="🏷️ Bill name (e.g. Internet)" oninput="updateFormActions()" class="min-w-0 bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+          <input type="text" id="new-exp-name" placeholder="Bill name (e.g. Internet)" oninput="updateFormActions()" class="min-w-0 bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
           <label class="sr-only" for="new-exp-val">Monthly amount</label>
-          <input type="number" id="new-exp-val" min="0.01" step="0.01" placeholder="💵 Per month" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+          <input type="number" id="new-exp-val" min="0.01" step="0.01" placeholder="Per month ($)" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
         </div>
         <button id="add-expense-btn" disabled onclick="addCustomExpense()" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
           + Add monthly bill
@@ -335,7 +336,7 @@
     </div>
 
     <div class="card-dark p-4 rounded-2xl space-y-3">
-      <label for="transaction-month" class="text-xs font-semibold text-[#A38A7E] block">🗓️ Choose a month</label>
+      <label for="transaction-month" class="text-xs font-semibold text-[#A38A7E] block">Choose a month</label>
       <select id="transaction-month" onchange="changeTransactionMonth(this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3"></select>
       <p id="transaction-history-note" class="text-[11px] text-[#A38A7E]"></p>
       <button id="transaction-pro-upgrade" onclick="switchTab('pro')" class="hidden text-xs font-bold text-[#E2B887]">Unlock full history with Pro →</button>
@@ -382,16 +383,16 @@
           </select>
         </div>
         <div>
-          <label for="transaction-amount" class="text-xs font-semibold text-[#A38A7E] block mb-1">💵 Amount</label>
+          <label for="transaction-amount" class="text-xs font-semibold text-[#A38A7E] block mb-1">Amount</label>
           <input type="number" id="transaction-amount" min="0.01" step="0.01" placeholder="$0.00" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
         </div>
       </div>
       <div class="space-y-1">
-        <label for="transaction-description" class="text-xs font-semibold text-[#A38A7E] block">🏷️ What was it for? <span class="font-normal">(optional)</span></label>
+        <label for="transaction-description" class="text-xs font-semibold text-[#A38A7E] block">What was it for? <span class="font-normal">(optional)</span></label>
         <input type="text" id="transaction-description" placeholder="e.g. Car repair or birthday money" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
       </div>
       <div class="space-y-1">
-        <label for="transaction-date" class="text-xs font-semibold text-[#A38A7E] block">🗓️ Date</label>
+        <label for="transaction-date" class="text-xs font-semibold text-[#A38A7E] block">Date</label>
         <input type="date" id="transaction-date" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
       </div>
       <button id="save-transaction-btn" disabled onclick="addOneOffTransaction()" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">Save extra</button>
@@ -449,15 +450,15 @@
       </summary>
       <div class="px-4 pb-4 space-y-3">
       <div class="grid grid-cols-2 gap-2">
-        <input type="text" id="new-goal-name" placeholder="🏷️ Goal name" oninput="updateFormActions()" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
-        <input type="text" inputmode="decimal" id="new-goal-cost" placeholder="💵 Goal amount" oninput="updateFormActions()" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+        <input type="text" id="new-goal-name" placeholder="Goal name" oninput="updateFormActions()" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+        <input type="text" inputmode="decimal" id="new-goal-cost" placeholder="Goal amount ($)" oninput="updateFormActions()" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
       </div>
       <div class="grid grid-cols-2 gap-2">
         <input type="text" inputmode="decimal" id="new-goal-start" placeholder="Already saved ($)" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
         <select id="new-goal-type" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
-          <option value="general" selected>💎 General Asset</option>
-          <option value="car">🚗 Auto Purchase</option>
-          <option value="house">🏠 House / Real Estate</option>
+          <option value="general" selected>General Asset</option>
+          <option value="car">Auto Purchase</option>
+          <option value="house">House / Real Estate</option>
         </select>
       </div>
       <button id="add-goal-btn" disabled onclick="addCustomGoal()" class="w-full py-2.5 bg-brass text-[#170F0B] font-bold text-xs rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
@@ -475,7 +476,7 @@
     <details class="card-dark rounded-2xl border-emerald-500/40 mt-4" id="roth-ira-module">
       <summary class="cursor-pointer list-none p-4">
       <div class="flex justify-between items-center">
-        <div><h4 class="font-bold text-sm text-emerald-400">🌱 Retirement savings</h4><p class="text-xs text-[#A38A7E] mt-1">Customize your long-term plan</p></div>
+        <div class="flex items-center gap-2"><svg aria-hidden="true" class="h-5 w-5 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-8 0-14 3-14 10a6 6 0 0 0 6 6c7 0 10-6 8-16Z"/><path d="M4 21c3-5 7-8 13-11"/></svg><div><h4 class="font-bold text-sm text-emerald-400">Retirement savings</h4><p class="text-xs text-[#A38A7E] mt-1">Customize your long-term plan</p></div></div>
         <span id="ret-alloc-badge" class="text-xs font-extrabold text-emerald-400">$0/mo</span>
       </div>
       </summary>
@@ -530,25 +531,25 @@
   <!-- ================= TAB 5: PRO PAYWALL ================= -->
   <main id="tab-pro" class="p-5 space-y-6 hidden">
     <div class="card-dark p-6 rounded-3xl text-center border-brass space-y-4 relative overflow-hidden">
-      <span class="text-4xl">👑</span>
+      <svg aria-hidden="true" class="mx-auto h-10 w-10 text-[#E2B887]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 4 3 5-6 5 6 4-3-2 11H5L3 8Z"/><path d="M5 22h14"/></svg>
       <h2 class="text-2xl font-extrabold text-[#FDFBF7]">AssetGoal Lifetime Pro</h2>
       <p class="text-xs text-[#A38A7E]">Pay $9.99 once. Own forever. Zero monthly subscriptions.</p>
       
       <div class="text-left space-y-3 py-2 text-xs border-y border-[#3D2A20]">
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span>
+          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
           <span><strong>Unlimited Goal Pipelines</strong> (Free capped at 2)</span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span>
+          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
           <span><strong>Paystub OCR Camera Scanner</strong></span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span>
+          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
           <span><strong>Advanced Retirement Tax Optimization</strong></span>
         </div>
         <div class="flex items-center gap-2">
-          <span class="text-emerald-400 font-bold">✓</span>
+          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
           <span><strong>Browse older activity history</strong></span>
         </div>
       </div>
@@ -575,23 +576,23 @@
 
   <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#170F0B]/95 backdrop-blur-md border-t border-[#2A1C14] px-1 py-3 flex justify-around z-40">
     <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-brass">
-      <span class="text-base">🏠</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Home</span>
     </button>
     <button onclick="switchTab('goals')" id="nav-goals" class="flex flex-col items-center text-[#A38A7E]">
-      <span class="text-base">🎯</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m13 11 7-7m-4 0h4v4"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Plan</span>
     </button>
     <button onclick="switchTab('squad')" id="nav-squad" class="flex flex-col items-center text-[#A38A7E]">
-      <span class="text-base">⚡</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 9h7l-6 11 2-9H6l7-11Z"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Squad</span>
     </button>
     <button onclick="switchTab('oneoffs')" id="nav-oneoffs" class="flex flex-col items-center text-[#A38A7E]">
-      <span class="text-base">🧾</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Activity</span>
     </button>
     <button onclick="switchTab('cashflow')" id="nav-cashflow" class="flex flex-col items-center text-[#A38A7E]">
-      <span class="text-base">🔁</span>
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="m7 22-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Recurring</span>
     </button>
   </nav>
@@ -919,8 +920,8 @@
     toggle.setAttribute('aria-label', `Switch to ${state.isPro ? 'Free' : 'Pro'} test mode`);
     toggle.title = `Testing as ${state.isPro ? 'Pro' : 'Free'}; tap to switch`;
     headerButton.innerHTML = state.isPro
-      ? '✓ <span class="sm:hidden">Pro</span><span class="hidden sm:inline">Pro Active</span>'
-      : '⚡ <span class="sm:hidden">Pro</span><span class="hidden sm:inline">Unlock Pro ($9.99)</span>';
+      ? '<svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg><span class="sm:hidden">Pro</span><span class="hidden sm:inline">Pro Active</span>'
+      : '<svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 9h7l-6 11 2-9H6l7-11Z"/></svg><span class="sm:hidden">Pro</span><span class="hidden sm:inline">Unlock Pro ($9.99)</span>';
     headerButton.setAttribute('aria-label', state.isPro ? 'Pro is active' : 'Unlock Pro');
     purchaseButton.textContent = state.isPro ? 'Pro is active' : 'Unlock Lifetime Access — $9.99';
     purchaseButton.disabled = state.isPro;
@@ -1614,7 +1615,7 @@
               <div class="pt-3 space-y-3">
                 <div class="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <label class="text-[10px] text-[#A38A7E]">💵 Goal cost</label>
+                    <label class="text-[10px] text-[#A38A7E]">Goal cost ($)</label>
                     <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.totalCost)}" oninput="handleGoalInput(${g.id}, 'totalCost', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
                   </div>
                   <div>
@@ -1717,7 +1718,7 @@
     carouselHtml += `
       <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2 border-emerald-500/30">
         <div class="flex justify-between items-start">
-          <h4 class="font-bold text-xs text-emerald-400">🌱 Retirement savings</h4>
+          <h4 class="flex items-center gap-1.5 font-bold text-xs text-emerald-400"><svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-8 0-14 3-14 10a6 6 0 0 0 6 6c7 0 10-6 8-16Z"/><path d="M4 21c3-5 7-8 13-11"/></svg>Retirement savings</h4>
           <span class="text-[10px] bg-emerald-950/60 text-emerald-400 px-2 py-0.5 rounded">$${Math.round(retMonthly).toLocaleString()} this month</span>
         </div>
         <div class="text-xs text-[#A38A7E]">Going toward retirement this month: <span id="home-retirement-contribution" class="text-[#FDFBF7] font-bold">$${Math.round(retMonthly)}</span></div>
