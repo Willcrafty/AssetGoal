@@ -2,12 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>AssetGoal Mobile</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    @media (max-width: 640px) {
+      html,
+      body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      html::-webkit-scrollbar,
+      body::-webkit-scrollbar {
+        display: none;
+        width: 0;
+      }
+    }
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #0F0A08;
@@ -18,10 +30,14 @@
       max-width: 430px;
       margin: 0 auto;
       min-height: 100vh;
+      min-height: 100dvh;
       background-color: #170F0B;
       position: relative;
-      padding-bottom: 90px;
+      padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
       box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+    .mobile-container nav.mobile-bottom-nav {
+      padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
     }
     .card-dark {
       background-color: #241711;
@@ -496,7 +512,7 @@
   </main>
 
   <!-- ================= BOTTOM NAVIGATION BAR ================= -->
-  <nav class="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#170F0B]/95 backdrop-blur-md border-t border-[#2A1C14] px-1 py-3 flex justify-around z-40">
+  <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#170F0B]/95 backdrop-blur-md border-t border-[#2A1C14] px-1 py-3 flex justify-around z-40">
     <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-brass">
       <span class="text-base">🏠</span>
       <span class="text-[9px] font-semibold mt-0.5">Home</span>
@@ -1860,6 +1876,48 @@
     saveData();
     renderSquad();
   }
+
+  const swipeTabs = ['home', 'goals', 'squad', 'oneoffs', 'cashflow'];
+  document.querySelectorAll('main[id^="tab-"]').forEach(page => {
+    let touchStart = null;
+
+    page.addEventListener('touchstart', event => {
+      touchStart = null;
+      if(event.touches.length !== 1 || event.target.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
+
+      let element = event.target;
+      while(element && element !== page) {
+        const overflowX = window.getComputedStyle(element).overflowX;
+        if((overflowX === 'auto' || overflowX === 'scroll') && element.scrollWidth > element.clientWidth) return;
+        element = element.parentElement;
+      }
+
+      touchStart = {
+        x: event.touches[0].clientX,
+        y: event.touches[0].clientY
+      };
+    }, { passive: true });
+
+    page.addEventListener('touchend', event => {
+      if(!touchStart || event.changedTouches.length !== 1) return;
+
+      const deltaX = event.changedTouches[0].clientX - touchStart.x;
+      const deltaY = event.changedTouches[0].clientY - touchStart.y;
+      touchStart = null;
+      if(Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+
+      const currentTab = page.id.replace('tab-', '');
+      const currentIndex = swipeTabs.indexOf(currentTab);
+      const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
+      if(currentIndex >= 0 && nextIndex >= 0 && nextIndex < swipeTabs.length) {
+        switchTab(swipeTabs[nextIndex]);
+      }
+    }, { passive: true });
+
+    page.addEventListener('touchcancel', () => {
+      touchStart = null;
+    }, { passive: true });
+  });
 
   window.onload = () => {
     loadSavedData();
