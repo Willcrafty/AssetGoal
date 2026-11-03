@@ -39,6 +39,26 @@
     .mobile-container nav.mobile-bottom-nav {
       padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
     }
+    @keyframes tab-swipe-in-from-right {
+      from { opacity: 0.7; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes tab-swipe-in-from-left {
+      from { opacity: 0.7; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .tab-swipe-in-from-right {
+      animation: tab-swipe-in-from-right 220ms ease-out;
+    }
+    .tab-swipe-in-from-left {
+      animation: tab-swipe-in-from-left 220ms ease-out;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tab-swipe-in-from-right,
+      .tab-swipe-in-from-left {
+        animation-duration: 1ms;
+      }
+    }
     .card-dark {
       background-color: #241711;
       border: 1px solid #3D2A20;
@@ -848,7 +868,7 @@
     }));
   }
 
-  function switchTab(tabId) {
+  function switchTab(tabId, swipeDirection = null) {
     ['home', 'cashflow', 'oneoffs', 'goals', 'squad', 'pro'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
       const navBtn = document.getElementById(`nav-${t}`);
@@ -857,7 +877,15 @@
         navBtn.classList.add('text-[#A38A7E]');
       }
     });
-    document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+    const activeTab = document.getElementById(`tab-${tabId}`);
+    activeTab.classList.remove('hidden');
+    if(swipeDirection) {
+      const animationClass = swipeDirection === 'left' ? 'tab-swipe-in-from-right' : 'tab-swipe-in-from-left';
+      activeTab.classList.remove('tab-swipe-in-from-right', 'tab-swipe-in-from-left');
+      void activeTab.offsetWidth;
+      activeTab.classList.add(animationClass);
+      setTimeout(() => activeTab.classList.remove(animationClass), 250);
+    }
     if(tabId === 'squad') renderSquad();
     const activeNav = document.getElementById(`nav-${tabId}`);
     if(activeNav) {
@@ -1192,14 +1220,14 @@
     document.getElementById('expense-count-badge').innerText =
       `${state.expenses.length} ${state.expenses.length === 1 ? 'bill' : 'bills'}`;
     container.innerHTML = state.expenses.length ? state.expenses.map(e => `
-      <div class="flex items-center gap-3 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3">
-        <span aria-hidden="true" class="w-9 h-9 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
-        <label for="expense-amount-${e.id}" class="flex-1 min-w-0 text-sm font-semibold text-[#FDFBF7] truncate">${escapeHtml(e.name)}</label>
-        <div class="flex items-center gap-1">
+      <div class="flex items-center gap-2 sm:gap-3 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3">
+        <span aria-hidden="true" class="w-9 h-9 flex-shrink-0 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
+        <label for="expense-amount-${e.id}" class="flex-1 min-w-0 text-xs sm:text-sm font-semibold leading-tight text-[#FDFBF7] whitespace-normal break-words">${escapeHtml(e.name)}</label>
+        <div class="flex flex-shrink-0 items-center gap-1">
           <span aria-hidden="true" class="text-sm text-[#A38A7E]">$</span>
-          <input id="expense-amount-${e.id}" type="number" min="0" step="0.01" value="${e.amount}" aria-label="${escapeHtml(e.name)} monthly amount" oninput="handleExpenseInput('${e.id}', this.value)" class="w-24 bg-transparent text-right text-sm font-bold text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-brass rounded p-1">
+          <input id="expense-amount-${e.id}" type="number" min="0" step="0.01" value="${e.amount}" aria-label="${escapeHtml(e.name)} monthly amount" oninput="handleExpenseInput('${e.id}', this.value)" class="w-20 sm:w-24 bg-transparent text-right text-sm font-bold text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-brass rounded p-1">
         </div>
-        <button onclick="deleteExpense('${e.id}')" aria-label="Remove ${escapeHtml(e.name)}" title="Remove bill" class="w-8 h-8 rounded-full text-[#A38A7E] hover:text-red-400 hover:bg-red-950/40 text-lg">×</button>
+        <button onclick="deleteExpense('${e.id}')" aria-label="Remove ${escapeHtml(e.name)}" title="Remove bill" class="w-8 h-8 flex-shrink-0 rounded-full text-[#A38A7E] hover:text-red-400 hover:bg-red-950/40 text-lg">×</button>
       </div>
     `).join('') : '<p class="text-sm text-[#A38A7E] bg-[#170F0B] rounded-xl p-4">No monthly bills yet. Add one below to get started.</p>';
   }
@@ -1878,46 +1906,58 @@
   }
 
   const swipeTabs = ['home', 'goals', 'squad', 'oneoffs', 'cashflow'];
-  document.querySelectorAll('main[id^="tab-"]').forEach(page => {
-    let touchStart = null;
+  let touchStart = null;
+  document.addEventListener('touchstart', event => {
+    touchStart = null;
+    if(event.touches.length !== 1 || !(event.target instanceof Element)) return;
 
-    page.addEventListener('touchstart', event => {
-      touchStart = null;
-      if(event.touches.length !== 1 || event.target.closest('button, a, input, select, textarea, [contenteditable="true"]')) return;
+    const app = event.target.closest('.mobile-container');
+    const page = document.querySelector('main[id^="tab-"]:not(.hidden)');
+    if(!app || !page || event.target.closest('input[type="range"], [contenteditable="true"]')) return;
 
-      let element = event.target;
-      while(element && element !== page) {
-        const overflowX = window.getComputedStyle(element).overflowX;
-        if((overflowX === 'auto' || overflowX === 'scroll') && element.scrollWidth > element.clientWidth) return;
-        element = element.parentElement;
-      }
+    let element = event.target;
+    while(element && element !== app) {
+      const overflowX = window.getComputedStyle(element).overflowX;
+      if((overflowX === 'auto' || overflowX === 'scroll') && element.scrollWidth > element.clientWidth) return;
+      element = element.parentElement;
+    }
 
-      touchStart = {
-        x: event.touches[0].clientX,
-        y: event.touches[0].clientY
-      };
-    }, { passive: true });
+    touchStart = {
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY,
+      tab: page.id.replace('tab-', '')
+    };
+  }, { passive: true, capture: true });
 
-    page.addEventListener('touchend', event => {
-      if(!touchStart || event.changedTouches.length !== 1) return;
+  document.addEventListener('touchmove', event => {
+    if(!touchStart || event.touches.length !== 1) return;
 
-      const deltaX = event.changedTouches[0].clientX - touchStart.x;
-      const deltaY = event.changedTouches[0].clientY - touchStart.y;
-      touchStart = null;
-      if(Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+    const deltaX = event.touches[0].clientX - touchStart.x;
+    const deltaY = event.touches[0].clientY - touchStart.y;
+    if(Math.abs(deltaX) > 10 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      event.preventDefault();
+    }
+  }, { passive: false, capture: true });
 
-      const currentTab = page.id.replace('tab-', '');
-      const currentIndex = swipeTabs.indexOf(currentTab);
-      const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
-      if(currentIndex >= 0 && nextIndex >= 0 && nextIndex < swipeTabs.length) {
-        switchTab(swipeTabs[nextIndex]);
-      }
-    }, { passive: true });
+  document.addEventListener('touchend', event => {
+    if(!touchStart || event.changedTouches.length !== 1) return;
 
-    page.addEventListener('touchcancel', () => {
-      touchStart = null;
-    }, { passive: true });
-  });
+    const deltaX = event.changedTouches[0].clientX - touchStart.x;
+    const deltaY = event.changedTouches[0].clientY - touchStart.y;
+    const currentTab = touchStart.tab;
+    touchStart = null;
+    if(Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
+
+    const currentIndex = swipeTabs.indexOf(currentTab);
+    const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
+    if(currentIndex >= 0 && nextIndex >= 0 && nextIndex < swipeTabs.length) {
+      switchTab(swipeTabs[nextIndex], deltaX < 0 ? 'left' : 'right');
+    }
+  }, { passive: true, capture: true });
+
+  document.addEventListener('touchcancel', () => {
+    touchStart = null;
+  }, { passive: true, capture: true });
 
   window.onload = () => {
     loadSavedData();
