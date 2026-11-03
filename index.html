@@ -245,9 +245,15 @@
       <p class="text-xs font-semibold text-[#A38A7E]">MONEY LEFT AFTER BILLS</p>
       <p id="calc-net-remainder" class="text-3xl font-extrabold text-emerald-400 mt-1">$406</p>
       <p class="text-xs text-[#A38A7E] mt-1">about this much each month</p>
-      <div class="mt-4 pt-3 border-t border-[#3D2A20] flex justify-between text-xs">
-        <span class="text-[#A38A7E]">Monthly bills</span>
-        <span id="calc-total-expenses" class="font-bold text-[#FDFBF7]">$650</span>
+      <div class="mt-4 pt-3 border-t border-[#3D2A20]">
+        <div class="flex justify-between text-xs pb-3 border-b border-[#3D2A20]">
+          <span class="text-[#A38A7E]">Monthly income</span>
+          <span id="calc-summary-monthly-income" class="font-bold text-[#FDFBF7]">$0</span>
+        </div>
+        <div class="flex justify-between text-xs pt-3">
+          <span class="text-[#A38A7E]">Monthly bills</span>
+          <span id="calc-total-expenses" class="font-bold text-[#FDFBF7]">$650</span>
+        </div>
       </div>
     </div>
 
@@ -472,6 +478,56 @@
       <!-- Rendered dynamically -->
     </div>
 
+    <details class="card-dark rounded-2xl border-emerald-500/30" id="emergency-fund-module" open>
+      <summary class="cursor-pointer list-none p-4">
+        <div class="flex justify-between items-center gap-3">
+          <div>
+            <h4 class="font-bold text-sm text-emerald-400">Emergency fund</h4>
+            <p id="emergency-fund-target-summary" class="text-xs text-[#A38A7E] mt-1">Build a buffer for unexpected expenses</p>
+          </div>
+          <span id="emergency-fund-monthly-badge" class="text-xs font-extrabold text-emerald-400">$0/mo</span>
+        </div>
+      </summary>
+      <div class="px-4 pb-4 space-y-4">
+        <p class="text-xs text-[#A38A7E]">Set a target of 3–6 months of your current monthly expenses, or choose a custom number. Until it’s met, all available monthly savings go here. Only count savings not already assigned to another plan.</p>
+        <div class="grid grid-cols-2 gap-3 text-xs">
+          <div>
+            <label for="emergency-fund-target-months" class="text-[10px] text-[#A38A7E] block mb-1">Months of expenses</label>
+            <select id="emergency-fund-target-months" onchange="handleEmergencyFundInput('targetMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+              <option value="3">3 months</option>
+              <option value="4">4 months</option>
+              <option value="5">5 months</option>
+              <option value="6">6 months</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div>
+            <label for="emergency-fund-saved" class="text-[10px] text-[#A38A7E] block mb-1">Already saved ($)</label>
+            <input id="emergency-fund-saved" type="number" min="0" step="0.01" oninput="handleEmergencyFundInput('startingSaved', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+          </div>
+          <div id="emergency-fund-custom-months-field" class="hidden col-span-2">
+            <label for="emergency-fund-custom-months" class="text-[10px] text-[#A38A7E] block mb-1">Custom months of expenses</label>
+            <input id="emergency-fund-custom-months" type="number" min="0" step="1" inputmode="numeric" oninput="handleEmergencyFundInput('customTargetMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]" aria-label="Custom months of expenses">
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1">
+            <span class="text-[#A38A7E]">Emergency fund target</span>
+            <span id="emergency-fund-target" class="font-bold text-[#FDFBF7]">$0</span>
+          </div>
+          <div id="emergency-fund-progressbar" class="h-2 rounded-full bg-[#170F0B] overflow-hidden" role="progressbar" aria-label="Emergency fund progress" aria-valuemin="0" aria-valuemax="100">
+            <div id="emergency-fund-progress" class="h-full bg-emerald-500 rounded-full transition-all" style="width:0%"></div>
+          </div>
+          <p id="emergency-fund-progress-label" class="text-[11px] text-[#A38A7E] mt-1">$0 saved</p>
+          <p id="emergency-fund-time" class="text-xs text-emerald-400 font-semibold mt-2">Set aside money to see your estimated timeline.</p>
+        </div>
+        <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center text-xs">
+          <span class="text-[#A38A7E]">Monthly savings priority</span>
+          <span id="emergency-fund-alloc-value" class="font-bold text-emerald-400">100% until target is met</span>
+        </div>
+      </div>
+    </details>
+
     <!-- Roth IRA Retirement Module -->
     <details class="card-dark rounded-2xl border-emerald-500/40 mt-4" id="roth-ira-module">
       <summary class="cursor-pointer list-none p-4">
@@ -539,14 +595,6 @@
         <div class="flex items-center gap-2">
           <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
           <span><strong>Unlimited Goal Pipelines</strong> (Free capped at 2)</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
-          <span><strong>Paystub OCR Camera Scanner</strong></span>
-        </div>
-        <div class="flex items-center gap-2">
-          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
-          <span><strong>Advanced Retirement Tax Optimization</strong></span>
         </div>
         <div class="flex items-center gap-2">
           <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
@@ -625,6 +673,13 @@
     get currentMonthCashflow() {
       return this.netCashflow + getCurrentMonthOneOffNet();
     },
+    emergencyFund: {
+      targetMonths: 3,
+      customTargetMonths: 3,
+      useCustomTargetMonths: false,
+      startingSaved: 0,
+      allocPercent: 0
+    },
     retirement: {
       currAge: 20,
       targetAge: 60,
@@ -650,6 +705,42 @@
 
   function getGoalDownPercent(goal) {
     return goal.type === 'general' ? 100 : Number(goal.downPercent) || 0;
+  }
+
+  function getEmergencyFundTarget() {
+    return state.totalExpenses * getEmergencyFundMonths();
+  }
+
+  function getEmergencyFundMonths() {
+    return state.emergencyFund.useCustomTargetMonths
+      ? Math.max(0, Math.floor(Number(state.emergencyFund.customTargetMonths) || 0))
+      : Math.min(6, Math.max(3, Number(state.emergencyFund.targetMonths) || 3));
+  }
+
+  function getEmergencyFundAllocationPercent() {
+    const target = getEmergencyFundTarget();
+    const saved = Math.max(0, Number(state.emergencyFund.startingSaved) || 0);
+    return target > 0 && saved < target ? 100 : 0;
+  }
+
+  function getGoalAllocationPercent(goal) {
+    return getEmergencyFundAllocationPercent() > 0
+      ? 0
+      : Math.max(0, Number(goal.allocPercent) || 0);
+  }
+
+  function getStoredGoalAllocationPercent(goal) {
+    return Math.max(0, Number(goal.allocPercent) || 0);
+  }
+
+  function getRetirementAllocationPercent() {
+    return getEmergencyFundAllocationPercent() > 0
+      ? 0
+      : Math.max(0, Number(state.retirement.allocPercent) || 0);
+  }
+
+  function getStoredRetirementAllocationPercent() {
+    return Math.max(0, Number(state.retirement.allocPercent) || 0);
   }
 
   function getMonthKey(date) {
@@ -765,10 +856,12 @@
     return `About ${duration} — ${months} months total`;
   }
 
-  function getTotalAllocationPercent(excludedGoalId = null, excludeRetirement = false) {
+  function getTotalAllocationPercent(excludedGoalId = null, excludeRetirement = false, excludeEmergencyFund = false) {
+    if(!excludeEmergencyFund && getEmergencyFundAllocationPercent() > 0) return 100;
     const goalPercent = state.goals.reduce((total, goal) =>
       total + (goal.id === excludedGoalId ? 0 : Math.max(0, Number(goal.allocPercent) || 0)), 0);
-    return goalPercent + (excludeRetirement ? 0 : Math.max(0, Number(state.retirement.allocPercent) || 0));
+    const retirementPercent = excludeRetirement ? 0 : Math.max(0, Number(state.retirement.allocPercent) || 0);
+    return goalPercent + retirementPercent;
   }
 
   function normalizeAllocationPercents() {
@@ -776,6 +869,11 @@
       goal.allocPercent = Math.max(0, Number(goal.allocPercent) || 0);
     });
     state.retirement.allocPercent = Math.max(0, Number(state.retirement.allocPercent) || 0);
+    state.emergencyFund.targetMonths = Math.min(6, Math.max(3, Number(state.emergencyFund.targetMonths) || 3));
+    state.emergencyFund.customTargetMonths = Math.max(0, Math.floor(Number(state.emergencyFund.customTargetMonths) || 0));
+    state.emergencyFund.useCustomTargetMonths = Boolean(state.emergencyFund.useCustomTargetMonths);
+    state.emergencyFund.startingSaved = Math.max(0, Number(state.emergencyFund.startingSaved) || 0);
+    state.emergencyFund.allocPercent = Math.max(0, Number(state.emergencyFund.allocPercent) || 0);
     const total = getTotalAllocationPercent();
     if(total <= 100) return;
 
@@ -785,9 +883,14 @@
     });
     state.retirement.allocPercent =
       Math.floor(Math.max(0, Number(state.retirement.allocPercent) || 0) * scale);
+    if(getEmergencyFundAllocationPercent() > 0) {
+      state.emergencyFund.allocPercent =
+        Math.floor(Math.max(0, Number(state.emergencyFund.allocPercent) || 0) * scale);
+    }
   }
 
   function updateAllocationControls() {
+    const emergencyFundPriorityActive = getEmergencyFundAllocationPercent() > 0;
     const total = getTotalAllocationPercent();
     const remaining = Math.max(0, 100 - total);
     const totalLabel = document.getElementById('allocation-total-label');
@@ -798,26 +901,34 @@
     if(roomLabel) roomLabel.innerText = remaining > 0
       ? `${Number(remaining.toFixed(2))}% available to plan`
       : 'Your monthly leftover is fully planned';
-
     state.goals.forEach(goal => {
-      const percent = Math.max(0, Number(goal.allocPercent) || 0);
+      const percent = getGoalAllocationPercent(goal);
       const availableForGoal = Math.min(100, 100 - getTotalAllocationPercent(goal.id));
       const slider = document.getElementById(`goal-allocation-${goal.id}`);
       const summary = document.getElementById(`goal-allocation-summary-${goal.id}`);
-      if(slider) slider.max = String(Math.max(percent, availableForGoal));
-      if(summary) summary.innerText =
-        `$${Math.round(getCurrentPeriodInvestmentRoom() * percent / 100).toLocaleString()} available this month. ` +
-        `${Number(Math.max(0, availableForGoal - percent).toFixed(2))}% left for other plans.`;
+      if(slider) {
+        slider.max = String(Math.max(Number(goal.allocPercent) || 0, availableForGoal));
+        slider.disabled = emergencyFundPriorityActive;
+      }
+      if(summary) summary.innerText = emergencyFundPriorityActive
+        ? 'Paused until the emergency fund target is met.'
+        : `$${Math.round(getCurrentPeriodInvestmentRoom() * percent / 100).toLocaleString()} available this month. ` +
+          `${Number(Math.max(0, availableForGoal - percent).toFixed(2))}% left for other plans.`;
     });
 
-    const retirementPercent = Math.max(0, Number(state.retirement.allocPercent) || 0);
+    const retirementPercent = getRetirementAllocationPercent();
     const availableForRetirement = Math.min(100, 100 - getTotalAllocationPercent(null, true));
     const retirementSlider = document.getElementById('ret-alloc-slider');
     const retirementSummary = document.getElementById('ret-allocation-summary');
-    if(retirementSlider) retirementSlider.max = String(Math.max(retirementPercent, availableForRetirement));
-    if(retirementSummary) retirementSummary.innerText =
-      `$${Math.round(getCurrentPeriodInvestmentRoom() * retirementPercent / 100).toLocaleString()} available this month. ` +
-      `${Number(Math.max(0, availableForRetirement - retirementPercent).toFixed(2))}% left for other plans.`;
+    if(retirementSlider) {
+      retirementSlider.max = String(Math.max(Number(state.retirement.allocPercent) || 0, availableForRetirement));
+      retirementSlider.disabled = emergencyFundPriorityActive;
+    }
+    if(retirementSummary) retirementSummary.innerText = emergencyFundPriorityActive
+      ? 'Paused until the emergency fund target is met.'
+      : `$${Math.round(getCurrentPeriodInvestmentRoom() * retirementPercent / 100).toLocaleString()} available this month. ` +
+        `${Number(Math.max(0, availableForRetirement - retirementPercent).toFixed(2))}% left for other plans.`;
+    updateEmergencyFundDisplay();
   }
 
   function loadSavedData() {
@@ -894,6 +1005,9 @@
             }]));
         }
         if(parsed.expenses && Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
+        if(parsed.emergencyFund && typeof parsed.emergencyFund === 'object') {
+          state.emergencyFund = { ...state.emergencyFund, ...parsed.emergencyFund };
+        }
         if(parsed.retirement) state.retirement = parsed.retirement;
         if(Array.isArray(parsed.goals)) {
           state.goals = parsed.goals.map(goal => {
@@ -931,6 +1045,7 @@
       monthlyBudgets: state.monthlyBudgets,
       squadGoalId: state.squadGoalId,
       expenses: state.expenses,
+      emergencyFund: state.emergencyFund,
       retirement: state.retirement,
       goals: state.goals
     }));
@@ -1404,7 +1519,7 @@
 
     const totalCost = parseFloat(goal.totalCost) || 0;
     const startingSaved = parseFloat(goal.startingSaved) || 0;
-    const allocPercent = parseFloat(goal.allocPercent) || 0;
+    const allocPercent = getGoalAllocationPercent(goal);
     const interestRate = parseFloat(goal.interestRate) || 0;
     const loanTermMonths = parseFloat(goal.loanTermMonths) || 0;
 
@@ -1444,6 +1559,93 @@
     updateSummaryDisplays();
   }
 
+  function handleEmergencyFundInput(field, rawVal) {
+    const parsedValue = Number(rawVal);
+    const value = Number.isFinite(parsedValue) ? parsedValue : 0;
+    if(field === 'targetMonths') {
+      if(rawVal === 'custom') {
+        state.emergencyFund.useCustomTargetMonths = true;
+      } else {
+        state.emergencyFund.targetMonths = Math.min(6, Math.max(3, value || 3));
+        state.emergencyFund.useCustomTargetMonths = false;
+      }
+    } else if(field === 'customTargetMonths') {
+      if(String(rawVal).trim() !== '' && value >= 0) {
+        state.emergencyFund.customTargetMonths = Math.floor(value);
+      }
+    } else if(field === 'startingSaved') {
+      state.emergencyFund.startingSaved = Math.max(0, value);
+    } else if(field === 'allocPercent') {
+      const available = Math.max(0, 100 - getTotalAllocationPercent(null, false, true));
+      state.emergencyFund.allocPercent = Math.min(available, Math.max(0, value));
+    }
+    saveData();
+    updateSummaryDisplays();
+  }
+
+  function updateEmergencyFundDisplay() {
+    const targetMonthsInput = document.getElementById('emergency-fund-target-months');
+    const customMonthsField = document.getElementById('emergency-fund-custom-months-field');
+    const customMonthsInput = document.getElementById('emergency-fund-custom-months');
+    const savedInput = document.getElementById('emergency-fund-saved');
+    if(!targetMonthsInput || !customMonthsField || !customMonthsInput || !savedInput) return;
+
+    const targetMonths = getEmergencyFundMonths();
+    const target = getEmergencyFundTarget();
+    const saved = Math.max(0, Number(state.emergencyFund.startingSaved) || 0);
+    const remaining = Math.max(0, target - saved);
+    const allocationPercent = getEmergencyFundAllocationPercent();
+    const monthlyAllocation = getCurrentPeriodInvestmentRoom() * (allocationPercent / 100);
+    const recurringAllocation = getMonthlySavingsRoom() * (allocationPercent / 100);
+    const monthsToTarget = estimateMonthsToGoal(remaining, recurringAllocation, (state.hysaRate / 100) / 12);
+    const progress = target > 0 ? Math.min(100, saved / target * 100) : 0;
+    const complete = target > 0 && saved >= target;
+
+    if(document.activeElement !== targetMonthsInput) {
+      targetMonthsInput.value = state.emergencyFund.useCustomTargetMonths
+        ? 'custom'
+        : String(targetMonths);
+    }
+    customMonthsField.classList.toggle('hidden', !state.emergencyFund.useCustomTargetMonths);
+    if(document.activeElement !== customMonthsInput) {
+      customMonthsInput.value = String(state.emergencyFund.customTargetMonths);
+    }
+    if(document.activeElement !== savedInput) savedInput.value = String(state.emergencyFund.startingSaved ?? 0);
+    document.getElementById('emergency-fund-target-summary').innerText =
+      `${targetMonths} months of expenses · $${Math.round(target).toLocaleString()} target`;
+    document.getElementById('emergency-fund-target').innerText =
+      `$${target.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    document.getElementById('emergency-fund-progress-label').innerText =
+      `$${saved.toLocaleString(undefined, { maximumFractionDigits: 2 })} saved of $${target.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+    document.getElementById('emergency-fund-progress').style.width = `${progress}%`;
+    document.getElementById('emergency-fund-progressbar').setAttribute('aria-valuenow', progress.toFixed(1));
+    document.getElementById('emergency-fund-time').innerText = target <= 0
+      ? 'Add monthly expenses to calculate your target.'
+      : complete
+        ? 'Emergency fund target reached.'
+        : `Estimated time: ${formatGoalTimeline(monthsToTarget)}`;
+    document.getElementById('emergency-fund-monthly-badge').innerText =
+      `$${Math.round(monthlyAllocation).toLocaleString()}/mo`;
+    document.getElementById('emergency-fund-alloc-value').innerText = complete
+      ? 'Target met — other plans resume'
+      : target > 0
+        ? '100% until target is met'
+        : 'Set up monthly expenses first';
+
+    const homeTarget = document.getElementById('home-emergency-fund-target');
+    const homeContribution = document.getElementById('home-emergency-fund-contribution');
+    const homeTime = document.getElementById('home-time-emergency-fund');
+    const homeProgress = document.getElementById('home-emergency-fund-progress');
+    if(homeTarget) homeTarget.innerText = `$${Math.round(target).toLocaleString()} target`;
+    if(homeContribution) homeContribution.innerText = `$${Math.round(monthlyAllocation).toLocaleString()}`;
+    if(homeTime) homeTime.innerText = target <= 0
+      ? 'Add monthly expenses to set a target'
+      : complete
+        ? 'Target reached'
+        : formatGoalTimeline(monthsToTarget);
+    if(homeProgress) homeProgress.innerText = `${progress.toFixed(0)}% funded`;
+  }
+
   function recalculateRetirementModule() {
     const ret = state.retirement;
     const badge = document.getElementById('ret-alloc-badge');
@@ -1451,12 +1653,12 @@
     const allocVal = document.getElementById('ret-alloc-val');
     const nestEggEl = document.getElementById('ret-nest-egg-val');
 
-    const retMonthlyPmt = getCurrentPeriodInvestmentRoom() * ((parseFloat(ret.allocPercent) || 0) / 100);
+    const retMonthlyPmt = getCurrentPeriodInvestmentRoom() * (getRetirementAllocationPercent() / 100);
     if(badge) badge.innerText = `$${Math.round(retMonthlyPmt).toLocaleString()} this month`;
     const homeRetMonthly = document.getElementById('home-retirement-contribution');
     if(homeRetMonthly) homeRetMonthly.innerText = `$${Math.round(retMonthlyPmt).toLocaleString()}`;
     if(rateVal) rateVal.innerText = `${ret.returnRate || 0}% APY`;
-    if(allocVal) allocVal.innerText = `${ret.allocPercent || 0}%`;
+    if(allocVal) allocVal.innerText = `${getRetirementAllocationPercent()}%`;
 
     const currAge = parseFloat(ret.currAge) || 20;
     const targetAge = parseFloat(ret.targetAge) || 60;
@@ -1533,7 +1735,7 @@
       downPercent: typeSettings.downPercent,
       loanTermMonths: typeSettings.loanTermMonths,
       interestRate: typeSettings.interestRate,
-      allocPercent: Math.min(10, Math.max(0, 100 - getTotalAllocationPercent()))
+      allocPercent: Math.min(10, Math.max(0, 100 - getTotalAllocationPercent(null, false, true)))
     });
 
     document.getElementById('new-goal-name').value = '';
@@ -1561,6 +1763,7 @@
   function updateSummaryDisplays() {
     document.getElementById('home-monthly-income').innerText = `$${state.monthlyIncome.toLocaleString()}`;
     document.getElementById('calc-monthly-income').innerText = `$${state.monthlyIncome.toLocaleString()}`;
+    document.getElementById('calc-summary-monthly-income').innerText = `$${state.monthlyIncome.toLocaleString()}`;
     document.getElementById('home-monthly-expenses').innerText = `$${state.totalExpenses.toLocaleString()}`;
     document.getElementById('calc-total-expenses').innerText = `$${state.totalExpenses.toLocaleString()}`;
     const currentCashflow = state.currentMonthCashflow;
@@ -1577,7 +1780,7 @@
     
     const months = state.chartHorizonYears * 12;
     const r = (state.hysaRate / 100) / 12;
-    const totalAllocPct = state.goals.reduce((s, g) => s + (parseFloat(g.allocPercent) || 0), 0) + (parseFloat(state.retirement.allocPercent) || 0);
+    const totalAllocPct = getTotalAllocationPercent();
     const allocationRate = Math.min(100, totalAllocPct) / 100;
     const recurringSavings = getMonthlySavingsRoom() * allocationRate;
     const currentMonthSavings = getCurrentPeriodInvestmentRoom() * allocationRate;
@@ -1617,8 +1820,9 @@
         const totalCost = parseFloat(g.totalCost) || 0;
         const targetDown = totalCost * (getGoalDownPercent(g) / 100);
         const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
-        const monthlyAlloc = getCurrentPeriodInvestmentRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
-        const recurringAlloc = getMonthlySavingsRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
+        const allocationPercent = getGoalAllocationPercent(g);
+        const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocationPercent / 100);
+        const recurringAlloc = getMonthlySavingsRoom() * (allocationPercent / 100);
         const r = (state.hysaRate / 100) / 12;
         const monthsToGoal = estimateMonthsToGoal(remaining, recurringAlloc, r);
         const typeSettings = goalTypeSettings[g.type] || goalTypeSettings.general;
@@ -1737,8 +1941,9 @@
       const totalCost = parseFloat(g.totalCost) || 0;
       const targetDown = totalCost * (getGoalDownPercent(g) / 100);
       const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
-      const monthlyAlloc = getCurrentPeriodInvestmentRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
-      const recurringAlloc = getMonthlySavingsRoom() * ((parseFloat(g.allocPercent) || 0) / 100);
+      const allocationPercent = getGoalAllocationPercent(g);
+      const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocationPercent / 100);
+      const recurringAlloc = getMonthlySavingsRoom() * (allocationPercent / 100);
       const r = (state.hysaRate / 100) / 12;
       const months = estimateMonthsToGoal(remaining, recurringAlloc, r);
       const typeSettings = goalTypeSettings[g.type] || goalTypeSettings.general;
@@ -1757,7 +1962,26 @@
       `;
     }).join('');
 
-    const retAlloc = parseFloat(state.retirement.allocPercent) || 0;
+    const emergencyTarget = getEmergencyFundTarget();
+    const emergencySaved = Math.max(0, Number(state.emergencyFund.startingSaved) || 0);
+    const emergencyProgress = emergencyTarget > 0
+      ? Math.min(100, emergencySaved / emergencyTarget * 100)
+      : 0;
+    const emergencyMonthly = getCurrentPeriodInvestmentRoom() *
+      (getEmergencyFundAllocationPercent() / 100);
+    carouselHtml += `
+      <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2 border-emerald-500/30">
+        <div class="flex justify-between items-start">
+          <h4 class="font-bold text-xs text-emerald-400">Emergency fund</h4>
+          <span class="text-[10px] bg-emerald-950/60 text-emerald-400 px-2 py-0.5 rounded">$${Math.round(emergencyMonthly).toLocaleString()} this month</span>
+        </div>
+        <div class="text-xs text-[#A38A7E]"><span id="home-emergency-fund-target">$${Math.round(emergencyTarget).toLocaleString()} target</span> · <span id="home-emergency-fund-progress">${emergencyProgress.toFixed(0)}% funded</span></div>
+        <div class="text-xs text-[#A38A7E]">Going toward it this month: <span id="home-emergency-fund-contribution" class="text-[#FDFBF7] font-bold">$${Math.round(emergencyMonthly).toLocaleString()}</span></div>
+        <div class="text-xs text-[#A38A7E]">Estimated time: <span id="home-time-emergency-fund" class="text-emerald-400 font-bold"></span></div>
+      </div>
+    `;
+
+    const retAlloc = getRetirementAllocationPercent();
     const retMonthly = getCurrentPeriodInvestmentRoom() * (retAlloc / 100);
     carouselHtml += `
       <div class="card-dark p-4 rounded-2xl min-w-[240px] flex-shrink-0 space-y-2 border-emerald-500/30">
@@ -1779,7 +2003,7 @@
   }
 
   function renderChart() {
-    const totalAllocPct = state.goals.reduce((sum, goal) => sum + (parseFloat(goal.allocPercent) || 0), 0) + (parseFloat(state.retirement.allocPercent) || 0);
+    const totalAllocPct = getTotalAllocationPercent();
     const allocationScale = totalAllocPct > 100 ? 100 / totalAllocPct : 1;
     const horizonMonths = state.chartHorizonYears * 12;
     const currentAge = parseFloat(state.retirement.currAge) || 20;
@@ -1788,17 +2012,41 @@
     const projectionMonths = Math.max(horizonMonths, retirementMonths, 1200);
     const hysaRate = (parseFloat(state.hysaRate) || 0) / 1200;
     let initialSurplus = 0;
-    const goalFunds = state.goals.map(goal => {
-      const targetDown = (parseFloat(goal.totalCost) || 0) * (getGoalDownPercent(goal) / 100);
+    const emergencyTarget = getEmergencyFundTarget();
+    const emergencyFundAllocationPercent = getEmergencyFundAllocationPercent();
+    const emergencyGoal = {
+      id: 'emergency-fund',
+      name: 'Emergency fund',
+      type: 'emergency',
+      totalCost: emergencyTarget || 1,
+      startingSaved: state.emergencyFund.startingSaved,
+      downPercent: 100,
+      allocPercent: emergencyFundAllocationPercent
+    };
+    const projectedGoals = emergencyFundAllocationPercent > 0 || Number(state.emergencyFund.startingSaved) > 0
+      ? [...state.goals, emergencyGoal]
+      : state.goals;
+    const goalFunds = projectedGoals.map(goal => {
+      const isEmergencyFund = goal.type === 'emergency';
+      const targetDown = isEmergencyFund
+        ? emergencyTarget
+        : (parseFloat(goal.totalCost) || 0) * (getGoalDownPercent(goal) / 100);
       const fund = {
         goal,
         balance: Math.max(0, parseFloat(goal.startingSaved) || 0),
         targetDown,
-        monthlyContribution: getMonthlySavingsRoom() * ((parseFloat(goal.allocPercent) || 0) / 100) * allocationScale,
+        monthlyContribution: getMonthlySavingsRoom() *
+          ((isEmergencyFund ? emergencyFundAllocationPercent : Number(goal.allocPercent) || 0) / 100) * allocationScale,
+        isEmergencyFund,
         reachedMonth: null,
         active: true
       };
       if((parseFloat(goal.totalCost) || 0) > 0 && fund.balance >= targetDown) {
+        if(isEmergencyFund) {
+          fund.reachedMonth = 0;
+          fund.active = false;
+          return fund;
+        }
         initialSurplus += fund.balance - targetDown;
         fund.balance = 0;
         fund.reachedMonth = 0;
@@ -1810,10 +2058,10 @@
     let retirementBalance = 0;
     const retirementRate = (parseFloat(state.retirement.returnRate) || 0) / 1200;
     const retirementContribution = getMonthlySavingsRoom() *
-      ((parseFloat(state.retirement.allocPercent) || 0) / 100) * allocationScale;
+      (getStoredRetirementAllocationPercent() / 100) * allocationScale;
     const currentAllocationBase = getCurrentPeriodInvestmentRoom();
     const currentRetirementContribution = currentAllocationBase *
-      ((parseFloat(state.retirement.allocPercent) || 0) / 100) * allocationScale;
+      (getRetirementAllocationPercent() / 100) * allocationScale;
     const redirectSurplus = (amount, month) => {
       let remaining = amount;
       while(remaining > 0) {
@@ -1848,30 +2096,43 @@
     for(let month = 1; month <= projectionMonths; month++) {
       const activeFunds = goalFunds.filter(fund => fund.active);
       let completionSurplus = 0;
-      const monthRetirementContribution = month === 1 ? currentRetirementContribution : retirementContribution;
+      const currentMonthRetirementContribution = month === 1
+        ? currentRetirementContribution
+        : retirementContribution;
       if(activeFunds.length > 0) {
+        const emergencyFundActive = activeFunds.some(fund => fund.isEmergencyFund);
+        const monthRetirementContribution = emergencyFundActive
+          ? 0
+          : currentMonthRetirementContribution;
         activeFunds.forEach(fund => {
-          const contribution = month === 1
-            ? currentAllocationBase * ((parseFloat(fund.goal.allocPercent) || 0) / 100) * allocationScale
-            : fund.monthlyContribution;
+          const allocationPercent = fund.isEmergencyFund
+            ? emergencyFundAllocationPercent
+            : emergencyFundActive
+              ? 0
+              : getStoredGoalAllocationPercent(fund.goal);
+          const contributionBase = month === 1 ? currentAllocationBase : getMonthlySavingsRoom();
+          const contribution = contributionBase * (allocationPercent / 100) * allocationScale;
           fund.balance = fund.balance * (1 + hysaRate) + contribution;
           if((parseFloat(fund.goal.totalCost) || 0) > 0 && fund.balance >= fund.targetDown) {
-            completionSurplus += Math.max(0, fund.balance - fund.targetDown);
-            fund.balance = 0;
+            if(fund.isEmergencyFund) {
+              completionSurplus += Math.max(0, fund.balance - fund.targetDown);
+              fund.balance = Math.min(fund.balance, fund.targetDown);
+            } else {
+              completionSurplus += Math.max(0, fund.balance - fund.targetDown);
+              fund.balance = 0;
+            }
             fund.reachedMonth = month;
             fund.active = false;
           }
         });
       } else {
-        const redirectedContribution = goalFunds.length === 0
-          ? monthRetirementContribution
-          : month === 1
-            ? currentAllocationBase * allocationScale
-            : getMonthlySavingsRoom() * allocationScale;
+        const redirectedContribution = currentMonthRetirementContribution;
         retirementBalance = retirementBalance * (1 + retirementRate) + redirectedContribution;
       }
 
       if(activeFunds.length > 0) {
+        const emergencyFundActive = activeFunds.some(fund => fund.isEmergencyFund);
+        const monthRetirementContribution = emergencyFundActive ? 0 : currentMonthRetirementContribution;
         retirementBalance = retirementBalance * (1 + retirementRate) + monthRetirementContribution;
         redirectSurplus(completionSurplus, month);
       }
@@ -1882,6 +2143,7 @@
     }
 
     goalFunds.forEach(fund => {
+      if(fund.isEmergencyFund) return;
       const time = fund.reachedMonth === null
         ? 'Not set yet'
         : formatGoalTimeline(fund.reachedMonth);
@@ -1902,7 +2164,9 @@
     const goalMilestones = goalFunds
       .filter(fund => fund.reachedMonth !== null && fund.reachedMonth <= horizonMonths)
       .map((fund, index) => ({
-        label: `${fund.goal.name} purchased · $${fund.targetDown.toLocaleString()} down`,
+        label: fund.isEmergencyFund
+          ? `Emergency fund reached · $${fund.targetDown.toLocaleString()} target`
+          : `${fund.goal.name} purchased · $${fund.targetDown.toLocaleString()} down`,
         color: goalColors[index % goalColors.length],
         data: portfolioValues.map((value, month) => month === fund.reachedMonth ? value : null)
       }));
@@ -2008,7 +2272,7 @@
     const goal = state.goals.find(item => String(item.id) === String(state.squadGoalId)) || state.goals[0];
     state.squadGoalId = goal.id;
     const target = (Number(goal.totalCost) || 0) * (getGoalDownPercent(goal) / 100);
-    const monthlyContribution = getCurrentPeriodInvestmentRoom() * ((Number(goal.allocPercent) || 0) / 100);
+    const monthlyContribution = getCurrentPeriodInvestmentRoom() * (getGoalAllocationPercent(goal) / 100);
     const monthlyProgress = target > 0 ? monthlyContribution / target * 100 : 0;
     const friends = [
       { initials: 'AM', name: 'Alex M.', goal: 'Porsche 911 GT3', monthlyProgress: 2.4 },
