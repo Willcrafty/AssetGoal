@@ -40,23 +40,29 @@
       padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
     }
     @keyframes tab-swipe-in-from-right {
-      from { opacity: 0.7; transform: translateX(20px); }
-      to { opacity: 1; transform: translateX(0); }
+      from { opacity: 0.55; transform: translate3d(var(--tab-swipe-offset), 0, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
     @keyframes tab-swipe-in-from-left {
-      from { opacity: 0.7; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
+      from { opacity: 0.55; transform: translate3d(var(--tab-swipe-offset), 0, 0); }
+      to { opacity: 1; transform: translate3d(0, 0, 0); }
     }
     .tab-swipe-in-from-right {
-      animation: tab-swipe-in-from-right 220ms ease-out;
+      --tab-swipe-offset: 36px;
+      animation: tab-swipe-in-from-right 320ms ease-out both;
     }
     .tab-swipe-in-from-left {
-      animation: tab-swipe-in-from-left 220ms ease-out;
+      --tab-swipe-offset: -36px;
+      animation: tab-swipe-in-from-left 320ms ease-out both;
     }
     @media (prefers-reduced-motion: reduce) {
       .tab-swipe-in-from-right,
       .tab-swipe-in-from-left {
-        animation-duration: 1ms;
+        --tab-swipe-offset: 12px;
+        animation-duration: 180ms;
+      }
+      .tab-swipe-in-from-left {
+        --tab-swipe-offset: -12px;
       }
     }
     .card-dark {
@@ -227,18 +233,18 @@
     </div>
 
     <div class="card-dark p-5 rounded-2xl space-y-4">
-      <div class="flex justify-between items-center">
-        <div>
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
           <h2 class="font-bold text-base text-[#FDFBF7]">Regular monthly bills</h2>
           <p class="text-[11px] text-[#A38A7E] mt-1">Add bills you pay every month.</p>
         </div>
-        <span id="expense-count-badge" class="text-[10px] text-[#A38A7E]"></span>
+        <span id="expense-count-badge" class="flex-shrink-0 text-[10px] text-[#A38A7E]"></span>
       </div>
 
       <div class="space-y-2" id="expenses-sliders-container"></div>
 
       <div class="pt-3 border-t border-[#3D2A20] space-y-3">
-        <div class="grid grid-cols-[1fr_110px] gap-2">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_140px]">
           <label class="sr-only" for="new-exp-name">Bill name</label>
           <input type="text" id="new-exp-name" placeholder="🏷️ Bill name (e.g. Internet)" oninput="updateFormActions()" class="min-w-0 bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
           <label class="sr-only" for="new-exp-val">Monthly amount</label>
@@ -260,7 +266,7 @@
         <span aria-hidden="true" class="text-[#E2B887]">＋</span>
       </summary>
       <div class="px-5 pb-5 space-y-4">
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div id="single-paycheck-field">
             <label for="check-amount" class="text-xs font-semibold text-[#A38A7E] block mb-1">Take-home pay</label>
             <input type="number" id="check-amount" min="0" step="0.01" value="1056" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
@@ -280,7 +286,7 @@
             <p class="text-xs font-semibold text-[#A38A7E]">Enter your last 4 take-home paychecks</p>
             <p id="paycheck-average-hint" class="text-[11px] text-[#A38A7E] mt-1">We’ll average the checks you enter.</p>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <label class="sr-only" for="recent-check-1">Paycheck 1 amount</label>
             <input type="number" id="recent-check-1" min="0" step="0.01" placeholder="Check 1 ($)" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
             <label class="sr-only" for="recent-check-2">Paycheck 2 amount</label>
@@ -291,9 +297,9 @@
             <input type="number" id="recent-check-4" min="0" step="0.01" placeholder="Check 4 ($)" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
           </div>
         </div>
-        <div class="flex justify-between items-center text-xs pt-3 border-t border-[#3D2A20]">
-          <span class="text-[#A38A7E]">Estimated take-home per month</span>
-          <span id="calc-monthly-income" class="font-extrabold text-[#E2B887]">$1,056</span>
+        <div class="flex flex-wrap justify-between items-center gap-2 text-xs pt-3 border-t border-[#3D2A20]">
+          <span class="min-w-0 text-[#A38A7E]">Estimated take-home per month</span>
+          <span id="calc-monthly-income" class="flex-shrink-0 font-extrabold text-[#E2B887]">$1,056</span>
         </div>
       </div>
     </details>
@@ -884,7 +890,7 @@
       activeTab.classList.remove('tab-swipe-in-from-right', 'tab-swipe-in-from-left');
       void activeTab.offsetWidth;
       activeTab.classList.add(animationClass);
-      setTimeout(() => activeTab.classList.remove(animationClass), 250);
+      setTimeout(() => activeTab.classList.remove(animationClass), 360);
     }
     if(tabId === 'squad') renderSquad();
     const activeNav = document.getElementById(`nav-${tabId}`);
@@ -1220,14 +1226,14 @@
     document.getElementById('expense-count-badge').innerText =
       `${state.expenses.length} ${state.expenses.length === 1 ? 'bill' : 'bills'}`;
     container.innerHTML = state.expenses.length ? state.expenses.map(e => `
-      <div class="flex items-center gap-2 sm:gap-3 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3">
-        <span aria-hidden="true" class="w-9 h-9 flex-shrink-0 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
-        <label for="expense-amount-${e.id}" class="flex-1 min-w-0 text-xs sm:text-sm font-semibold leading-tight text-[#FDFBF7] whitespace-normal break-words">${escapeHtml(e.name)}</label>
-        <div class="flex flex-shrink-0 items-center gap-1">
+      <div class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 gap-y-2 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 sm:flex sm:items-center sm:gap-3">
+        <span aria-hidden="true" class="row-span-2 w-9 h-9 flex-shrink-0 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold sm:row-span-1">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
+        <label for="expense-amount-${e.id}" class="min-w-0 text-sm font-semibold leading-tight text-[#FDFBF7] whitespace-normal break-words">${escapeHtml(e.name)}</label>
+        <div class="col-start-2 flex flex-shrink-0 items-center gap-1 justify-self-end sm:col-start-auto sm:ml-auto">
           <span aria-hidden="true" class="text-sm text-[#A38A7E]">$</span>
           <input id="expense-amount-${e.id}" type="number" min="0" step="0.01" value="${e.amount}" aria-label="${escapeHtml(e.name)} monthly amount" oninput="handleExpenseInput('${e.id}', this.value)" class="w-20 sm:w-24 bg-transparent text-right text-sm font-bold text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-brass rounded p-1">
+          <button onclick="deleteExpense('${e.id}')" aria-label="Remove ${escapeHtml(e.name)}" title="Remove bill" class="w-8 h-8 flex-shrink-0 rounded-full text-[#A38A7E] hover:text-red-400 hover:bg-red-950/40 text-lg">×</button>
         </div>
-        <button onclick="deleteExpense('${e.id}')" aria-label="Remove ${escapeHtml(e.name)}" title="Remove bill" class="w-8 h-8 flex-shrink-0 rounded-full text-[#A38A7E] hover:text-red-400 hover:bg-red-950/40 text-lg">×</button>
       </div>
     `).join('') : '<p class="text-sm text-[#A38A7E] bg-[#170F0B] rounded-xl p-4">No monthly bills yet. Add one below to get started.</p>';
   }
@@ -1911,12 +1917,11 @@
     touchStart = null;
     if(event.touches.length !== 1 || !(event.target instanceof Element)) return;
 
-    const app = event.target.closest('.mobile-container');
     const page = document.querySelector('main[id^="tab-"]:not(.hidden)');
-    if(!app || !page || event.target.closest('input[type="range"], [contenteditable="true"]')) return;
+    if(!page || event.target.closest('input[type="range"], [contenteditable="true"]')) return;
 
     let element = event.target;
-    while(element && element !== app) {
+    while(element && element !== document.body) {
       const overflowX = window.getComputedStyle(element).overflowX;
       if((overflowX === 'auto' || overflowX === 'scroll') && element.scrollWidth > element.clientWidth) return;
       element = element.parentElement;
