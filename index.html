@@ -2,42 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#170F0B">
   <title>AssetGoal Mobile</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    @media (max-width: 640px) {
-      html,
-      body {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-      html::-webkit-scrollbar,
-      body::-webkit-scrollbar {
-        display: none;
-        width: 0;
-      }
+    html {
+      min-height: 100%;
+      background: #0F0A08;
+      overflow-x: clip;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      overflow-x: clip;
       font-family: 'Plus Jakarta Sans', sans-serif;
       background-color: #0F0A08;
       color: #FDFBF7;
       -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
     }
     .mobile-container {
-      max-width: 430px;
+      width: 100%;
+      max-width: 640px;
       margin: 0 auto;
       min-height: 100vh;
       min-height: 100dvh;
       background-color: #170F0B;
       position: relative;
-      padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+      padding-bottom: calc(82px + env(safe-area-inset-bottom, 0px));
       box-shadow: 0 0 50px rgba(0,0,0,0.8);
     }
     .mobile-container nav.mobile-bottom-nav {
+      padding-left: max(0.25rem, env(safe-area-inset-left, 0px));
+      padding-right: max(0.25rem, env(safe-area-inset-right, 0px));
       padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+      touch-action: manipulation;
+    }
+    .mobile-container > header {
+      padding-top: max(1rem, env(safe-area-inset-top, 0px));
+    }
+    button,
+    summary {
+      touch-action: manipulation;
+    }
+    .mobile-container button,
+    .mobile-container summary {
+      min-height: 44px;
+    }
+    input:not([type="range"]),
+    select,
+    textarea {
+      font-size: 16px;
+    }
+    main {
+      padding-left: max(1.25rem, env(safe-area-inset-left, 0px));
+      padding-right: max(1.25rem, env(safe-area-inset-right, 0px));
     }
     .goal-delete-dialog {
       width: min( calc(100% - 2rem), 24rem );
@@ -51,6 +92,56 @@
     .goal-delete-dialog::backdrop {
       background: rgba(0, 0, 0, 0.75);
       backdrop-filter: blur(4px);
+    }
+    .onboarding-dialog {
+      width: min(calc(100% - 2rem), 28rem);
+      max-height: min(90dvh, 52rem);
+      margin: auto;
+      padding: 0;
+      overflow: auto;
+      color: #FDFBF7;
+      background: #170F0B;
+      border: 1px solid #806344;
+      border-radius: 1.5rem;
+    }
+    .onboarding-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(5px);
+    }
+    .setup-guide {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 0px) + 4.5rem);
+      left: 50%;
+      width: min(calc(100% - 2rem), 24rem);
+      max-height: calc(100dvh - 10rem - env(safe-area-inset-top, 0px));
+      overflow-y: auto;
+      transform: translateX(-50%);
+      z-index: 50;
+      overscroll-behavior: contain;
+    }
+    .mobile-container.setup-guide-active > header,
+    .mobile-container.setup-guide-active > nav {
+      filter: blur(2px);
+      opacity: 0.45;
+    }
+    .setup-focus-target {
+      scroll-margin-top: calc(env(safe-area-inset-top, 0px) + 22rem);
+    }
+    main.setup-focus {
+      padding-top: 12rem !important;
+      padding-bottom: calc(100dvh + 8rem) !important;
+    }
+    main.setup-focus > :not(.setup-focus-target) {
+      filter: blur(2px);
+      opacity: 0.45;
+      pointer-events: none;
+      user-select: none;
+    }
+    main.setup-focus .setup-focus-target {
+      position: relative;
+      z-index: 31;
+      filter: none;
+      opacity: 1;
     }
     @keyframes tab-swipe-in-from-right {
       from { opacity: 0.55; transform: translate3d(var(--tab-swipe-offset), 0, 0); }
@@ -98,6 +189,20 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+    @media (min-width: 641px) {
+      body {
+        padding: 1.5rem 0;
+      }
+      .mobile-container {
+        min-height: calc(100dvh - 3rem);
+        border: 1px solid #3D2A20;
+        border-radius: 2rem;
+        overflow: clip;
+      }
+      .mobile-container nav.mobile-bottom-nav {
+        border-radius: 0 0 2rem 2rem;
+      }
+    }
     input[type=range] {
       -webkit-appearance: none;
       appearance: none;
@@ -125,9 +230,49 @@
 <body class="bg-black">
 
 <div class="mobile-container">
+
+  <dialog id="onboarding-dialog" class="onboarding-dialog" aria-labelledby="onboarding-title">
+    <form id="onboarding-form" onsubmit="completeOnboarding(event)" class="p-6 space-y-4">
+      <div class="space-y-2">
+        <p class="text-xs font-bold uppercase tracking-wider text-[#E2B887]">Welcome to AssetGoal</p>
+        <h1 id="onboarding-title" class="text-2xl font-extrabold">What should we call you?</h1>
+        <p class="text-sm text-[#D7C6B8]">We’ll walk you through the rest using the tools already in the app.</p>
+      </div>
+      <label class="block text-xs text-[#A38A7E]">Your name
+        <input id="onboarding-name" name="name" type="text" autocomplete="name" required maxlength="80" class="mt-1 w-full bg-[#0F0A08] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+      </label>
+      <p id="onboarding-error" class="hidden text-sm text-red-400" role="alert"></p>
+      <p class="text-[11px] leading-relaxed text-[#A38A7E]">Your profile is saved on this device. Sign-in and syncing between devices aren’t available yet.</p>
+      <button type="submit" class="w-full py-3.5 bg-brass text-[#170F0B] font-extrabold text-sm rounded-xl active:scale-95 transition">Start setup</button>
+    </form>
+  </dialog>
+
+  <aside id="setup-guide" class="setup-guide hidden card-dark rounded-2xl p-4 shadow-xl" aria-live="polite" aria-labelledby="setup-guide-title">
+    <div class="flex justify-between items-center gap-3">
+      <p id="setup-guide-progress" class="text-[10px] font-bold uppercase tracking-wider text-[#E2B887]"></p>
+      <button id="setup-guide-skip" type="button" onclick="skipSetupGuide()" class="px-2 text-xs text-[#A38A7E] underline">Skip guide</button>
+    </div>
+    <h2 id="setup-guide-title" class="mt-2 text-lg font-extrabold text-[#FDFBF7]"></h2>
+    <p id="setup-guide-copy" class="mt-1 text-xs leading-relaxed text-[#D7C6B8]"></p>
+    <p id="setup-guide-requirement" class="mt-2 text-xs font-semibold text-[#E2B887]" role="status"></p>
+    <button id="setup-guide-next" type="button" onclick="advanceSetupGuide()" class="mt-3 w-full rounded-xl bg-brass px-4 py-3 text-sm font-bold text-[#170F0B]">Next</button>
+  </aside>
+
+  <dialog id="setup-skip-dialog" class="goal-delete-dialog" aria-labelledby="setup-skip-title" aria-describedby="setup-skip-copy">
+    <div class="space-y-4">
+      <div>
+        <h2 id="setup-skip-title" class="text-lg font-bold">Skip setup guide?</h2>
+        <p id="setup-skip-copy" class="mt-2 text-sm text-[#D7C6B8]">You can add your income, bills, and savings goals later from the app. Are you sure you want to skip the guide?</p>
+      </div>
+      <div class="flex gap-3">
+        <button type="button" onclick="cancelSetupGuideSkip()" class="flex-1 rounded-xl border border-[#806344] px-4 py-3 text-sm font-semibold text-[#FDFBF7]">Continue setup</button>
+        <button type="button" onclick="confirmSetupGuideSkip()" class="flex-1 rounded-xl bg-brass px-4 py-3 text-sm font-bold text-[#170F0B]">Skip guide</button>
+      </div>
+    </div>
+  </dialog>
   
   <!-- Header Bar -->
-  <header class="p-5 pb-3 flex flex-wrap items-center justify-between gap-2 sticky top-0 bg-[#170F0B]/90 backdrop-blur-md z-30 border-b border-[#2A1C14]">
+  <header class="p-4 sm:p-5 pb-3 flex flex-wrap items-center justify-between gap-2 sticky top-0 bg-[#170F0B]/90 backdrop-blur-md z-30 border-b border-[#2A1C14]">
     <div class="flex items-center space-x-2">
       <div class="w-8 h-8 rounded-full bg-brass/20 flex items-center justify-center border border-brass/40">
         <span class="text-xs font-bold text-[#E2B887]">AG</span>
@@ -139,28 +284,25 @@
         <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 9h7l-6 11 2-9H6l7-11Z"/></svg>
         <span class="sm:hidden">Pro</span><span class="hidden sm:inline">Unlock Pro ($9.99)</span>
       </button>
-      <button type="button" id="pro-test-toggle" onclick="toggleProTestMode()" aria-label="Switch to Pro test mode" aria-pressed="false" class="rounded-full border border-[#806344] px-2.5 py-1.5 text-[10px] font-bold text-[#E2B887] whitespace-nowrap">
-        Free
-      </button>
     </div>
   </header>
 
   <!-- ================= TAB 1: HOME PAGE ================= -->
   <main id="tab-home" class="p-5 space-y-6">
     <div>
-      <p class="text-xs font-medium text-[#A38A7E]">Good evening</p>
-      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Your money</h1>
+      <p id="home-greeting" class="text-xs font-medium text-[#A38A7E]">Good evening</p>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Monthly overview</h1>
     </div>
 
     <section class="rounded-3xl p-6 space-y-4 bg-gradient-to-br from-[#4A3425] to-[#241711] border border-[#806344]/70 shadow-xl">
       <div>
-        <p class="text-sm font-semibold text-[#E2B887]">Ready for your next step?</p>
-        <p class="text-xs text-[#D7C6B8] mt-1">Money left after this month’s bills and extras</p>
+        <p class="text-sm font-semibold text-[#E2B887]">After bills and extra activity</p>
+        <p class="text-xs text-[#D7C6B8] mt-1">Includes monthly income, regular bills, and extra income or spending.</p>
         <h2 id="home-net-cashflow" class="text-5xl font-extrabold tracking-tight text-[#FDFBF7] mt-3">$0</h2>
-        <p class="text-xs text-[#D7C6B8] mt-2">Available this month</p>
+        <p class="text-xs text-[#D7C6B8] mt-2">Money left this month</p>
       </div>
       <button onclick="switchTab('goals')" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl active:scale-95 transition">
-        Make a plan for it →
+        Plan your savings →
       </button>
       <details class="border-t border-white/10 pt-3">
         <summary class="cursor-pointer list-none flex justify-between items-center text-sm font-semibold text-[#E8D8C8]">
@@ -241,52 +383,7 @@
       <p class="text-xs text-[#A38A7E] mt-1">Add your take-home pay and the bills you pay each month.</p>
     </div>
 
-    <div class="card-dark p-5 rounded-2xl border-emerald-500/30">
-      <p class="text-xs font-semibold text-[#A38A7E]">MONEY LEFT AFTER BILLS</p>
-      <p id="calc-net-remainder" class="text-3xl font-extrabold text-emerald-400 mt-1">$406</p>
-      <p class="text-xs text-[#A38A7E] mt-1">about this much each month</p>
-      <div class="mt-4 pt-3 border-t border-[#3D2A20]">
-        <div class="flex justify-between text-xs pb-3 border-b border-[#3D2A20]">
-          <span class="text-[#A38A7E]">Monthly income</span>
-          <span id="calc-summary-monthly-income" class="font-bold text-[#FDFBF7]">$0</span>
-        </div>
-        <div class="flex justify-between text-xs pt-3">
-          <span class="text-[#A38A7E]">Monthly bills</span>
-          <span id="calc-total-expenses" class="font-bold text-[#FDFBF7]">$650</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card-dark p-5 rounded-2xl space-y-4">
-      <div class="flex items-start justify-between gap-3">
-        <div class="min-w-0">
-          <h2 class="font-bold text-base text-[#FDFBF7]">Regular monthly bills</h2>
-          <p class="text-[11px] text-[#A38A7E] mt-1">Add bills you pay every month.</p>
-        </div>
-        <span id="expense-count-badge" class="flex-shrink-0 text-[10px] text-[#A38A7E]"></span>
-      </div>
-
-      <div class="space-y-2" id="expenses-sliders-container"></div>
-
-      <div class="pt-3 border-t border-[#3D2A20] space-y-3">
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_140px]">
-          <label class="sr-only" for="new-exp-name">Bill name</label>
-          <input type="text" id="new-exp-name" placeholder="Bill name (e.g. Internet)" oninput="updateFormActions()" class="min-w-0 bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
-          <label class="sr-only" for="new-exp-val">Monthly amount</label>
-          <input type="number" id="new-exp-val" min="0.01" step="0.01" placeholder="Per month ($)" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
-        </div>
-        <button id="add-expense-btn" disabled onclick="addCustomExpense()" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
-          + Add monthly bill
-        </button>
-        <p id="expense-limit-note" class="hidden text-xs text-[#A38A7E]" role="status">
-          Free accounts can track up to 3 recurring bills.
-          <button type="button" onclick="switchTab('pro')" class="font-semibold text-[#E2B887] underline">Upgrade to Pro</button> for more.
-        </p>
-        <p id="expense-form-error" class="hidden text-xs text-red-400" role="alert"></p>
-      </div>
-    </div>
-
-    <details class="card-dark rounded-2xl">
+    <details class="card-dark rounded-2xl" id="income-setup-details">
       <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
         <div>
           <h2 class="font-bold text-base text-[#FDFBF7]">Set up your income</h2>
@@ -298,7 +395,7 @@
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div id="single-paycheck-field">
             <label for="check-amount" class="text-xs font-semibold text-[#A38A7E] block mb-1">Take-home pay</label>
-            <input type="number" id="check-amount" min="0" step="0.01" value="1056" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+            <input type="number" id="check-amount" min="0" step="0.01" value="0" oninput="calculateIncome()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
           </div>
           <div>
             <label for="pay-frequency" class="text-xs font-semibold text-[#A38A7E] block mb-1">Paid</label>
@@ -328,24 +425,70 @@
         </div>
         <div class="flex flex-wrap justify-between items-center gap-2 text-xs pt-3 border-t border-[#3D2A20]">
           <span class="min-w-0 text-[#A38A7E]">Estimated take-home per month</span>
-          <span id="calc-monthly-income" class="flex-shrink-0 font-extrabold text-[#E2B887]">$1,056</span>
+          <span id="calc-monthly-income" class="flex-shrink-0 font-extrabold text-[#E2B887]">$0</span>
         </div>
       </div>
     </details>
+
+    <div class="card-dark p-5 rounded-2xl border-emerald-500/30">
+      <p class="text-xs font-semibold text-[#A38A7E]">MONEY LEFT AFTER BILLS</p>
+      <p id="calc-net-remainder" class="text-3xl font-extrabold text-emerald-400 mt-1">$0</p>
+      <p class="text-xs text-[#A38A7E] mt-1">about this much each month</p>
+      <div class="mt-4 pt-3 border-t border-[#3D2A20]">
+        <div class="flex justify-between text-xs pb-3 border-b border-[#3D2A20]">
+          <span class="text-[#A38A7E]">Monthly income</span>
+          <span id="calc-summary-monthly-income" class="font-bold text-[#FDFBF7]">$0</span>
+        </div>
+        <div class="flex justify-between text-xs pt-3">
+          <span class="text-[#A38A7E]">Monthly bills</span>
+          <span id="calc-total-expenses" class="font-bold text-[#FDFBF7]">$0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-dark p-5 rounded-2xl space-y-4">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <h2 class="font-bold text-base text-[#FDFBF7]">Regular monthly bills</h2>
+          <p class="text-[11px] text-[#A38A7E] mt-1">Add bills you pay every month.</p>
+        </div>
+        <span id="expense-count-badge" class="flex-shrink-0 text-[10px] text-[#A38A7E]"></span>
+      </div>
+
+      <div class="space-y-2" id="expenses-sliders-container"></div>
+
+      <div class="pt-3 border-t border-[#3D2A20] space-y-3">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_140px]">
+          <label class="sr-only" for="new-exp-name">Bill name</label>
+          <input type="text" id="new-exp-name" placeholder="Bill name (e.g. Internet)" oninput="updateFormActions()" class="min-w-0 bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+          <label class="sr-only" for="new-exp-val">Monthly amount</label>
+          <input type="number" id="new-exp-val" min="0.01" step="0.01" placeholder="Per month ($)" oninput="updateFormActions()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+        </div>
+        <button id="add-expense-btn" disabled onclick="addCustomExpense()" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
+          + Add monthly bill
+        </button>
+        <p id="expense-limit-note" class="hidden text-xs text-[#A38A7E]" role="status">
+          Free includes up to 3 recurring bills.
+          <button type="button" onclick="switchTab('pro')" class="font-semibold text-[#E2B887] underline">Upgrade to Pro</button> for unlimited bills.
+        </p>
+        <p id="expense-form-error" class="hidden text-xs text-red-400" role="alert"></p>
+      </div>
+    </div>
+
   </main>
 
   <!-- ================= ONE-OFF INCOME & EXPENSES ================= -->
   <main id="tab-oneoffs" class="p-5 space-y-5 hidden">
     <div>
-      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Recent Activity</h1>
-      <p class="text-xs text-[#A38A7E] mt-1">Keep up with the extra money coming in and going out.</p>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Activity history</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">Review your monthly income, bills, and one-time transactions.</p>
     </div>
 
     <div class="card-dark p-4 rounded-2xl space-y-3">
       <label for="transaction-month" class="text-xs font-semibold text-[#A38A7E] block">Choose a month</label>
       <select id="transaction-month" onchange="changeTransactionMonth(this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3"></select>
       <p id="transaction-history-note" class="text-[11px] text-[#A38A7E]"></p>
-      <button id="transaction-pro-upgrade" onclick="switchTab('pro')" class="hidden text-xs font-bold text-[#E2B887]">Unlock full history with Pro →</button>
+      <button id="transaction-pro-upgrade" onclick="switchTab('pro')" class="hidden text-xs font-bold text-[#E2B887]">Upgrade to Pro for full history →</button>
     </div>
 
     <section class="card-dark p-5 rounded-2xl space-y-4">
@@ -426,13 +569,13 @@
 
     <div class="card-dark p-4 rounded-2xl space-y-2">
       <div class="flex justify-between text-sm font-semibold">
-        <span class="text-[#FDFBF7]">Monthly leftover planned</span>
+        <span class="text-[#FDFBF7]">Monthly savings planned</span>
         <span id="allocation-total-label" class="text-[#E2B887]">0% of 100%</span>
       </div>
       <div class="h-2 rounded-full bg-[#170F0B] overflow-hidden">
         <div id="allocation-total-bar" class="h-full bg-brass rounded-full transition-all" style="width:0%"></div>
       </div>
-      <p id="allocation-room-label" class="text-[11px] text-[#A38A7E]">100% available to plan</p>
+      <p id="allocation-room-label" class="text-[11px] text-[#A38A7E]">100% left to plan</p>
     </div>
 
     <details class="card-dark rounded-2xl">
@@ -449,7 +592,7 @@
       </div>
     </details>
 
-    <details class="card-dark rounded-2xl border-dashed border-brass/40">
+    <details class="card-dark rounded-2xl border-dashed border-brass/40" id="goal-add-details">
       <summary onclick="handleAddGoalClick(event)" class="cursor-pointer list-none p-4 flex justify-between items-center">
         <div><h3 id="goal-add-title" class="text-sm font-bold text-[#E2B887]">+ Add a savings goal</h3><p id="goal-add-description" class="text-[11px] text-[#A38A7E] mt-1">What are you saving up for?</p></div>
         <span id="goal-count-badge" class="text-[10px] text-[#A38A7E]">0/2 Free Slots</span>
@@ -557,7 +700,7 @@
       </div>
       <div>
         <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
-          <span>Share of monthly leftover</span>
+          <span>Share of money left each month</span>
           <span id="ret-alloc-val" class="font-bold text-emerald-400">20%</span>
         </label>
         <input type="range" id="ret-alloc-slider" min="0" max="100" step="1" value="20" oninput="handleRetirementInput('allocPercent', this.value)">
@@ -587,6 +730,11 @@
 
   <!-- ================= TAB 5: PRO PAYWALL ================= -->
   <main id="tab-pro" class="p-5 space-y-6 hidden">
+    <div class="flex justify-end">
+      <button type="button" onclick="returnFromPro()" aria-label="Close Pro and return to previous page" class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-[#806344] p-0 text-[#E2B887]">
+        <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 6-12 12M6 6l12 12"/></svg>
+      </button>
+    </div>
     <div class="card-dark p-6 rounded-3xl text-center border-brass space-y-4 relative overflow-hidden">
       <svg aria-hidden="true" class="mx-auto h-10 w-10 text-[#E2B887]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 4 3 5-6 5 6 4-3-2 11H5L3 8Z"/><path d="M5 22h14"/></svg>
       <h2 class="text-2xl font-extrabold text-[#FDFBF7]">AssetGoal Lifetime Pro</h2>
@@ -595,11 +743,15 @@
       <div class="text-left space-y-3 py-2 text-xs border-y border-[#3D2A20]">
         <div class="flex items-center gap-2">
           <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
-          <span><strong>Unlimited Goal Pipelines</strong> (Free capped at 2)</span>
+          <span><strong>Unlimited savings goals</strong> (Free includes 2)</span>
         </div>
         <div class="flex items-center gap-2">
           <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
-          <span><strong>Browse older activity history</strong></span>
+          <span><strong>Unlimited recurring bills</strong> (Free includes 3)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg aria-hidden="true" class="h-4 w-4 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>
+          <span><strong>Access your full activity history</strong></span>
         </div>
       </div>
 
@@ -607,6 +759,94 @@
         Unlock Lifetime Access — $9.99
       </button>
     </div>
+  </main>
+
+  <main id="tab-profile" class="p-5 space-y-5 hidden">
+    <div>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Your profile</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">View and manage your account details and app data.</p>
+    </div>
+
+    <section class="card-dark p-5 rounded-2xl space-y-4">
+      <div>
+        <h2 class="text-sm font-bold text-[#FDFBF7]">Personal details</h2>
+        <p class="text-xs text-[#A38A7E] mt-1">Edit the name shown in AssetGoal.</p>
+      </div>
+      <form onsubmit="saveProfileName(event)" class="space-y-3">
+        <label for="profile-name" class="block text-xs font-semibold text-[#A38A7E]">Name</label>
+        <input id="profile-name" name="name" type="text" autocomplete="name" maxlength="80" required class="w-full bg-[#0F0A08] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
+        <p id="profile-save-error" class="hidden text-xs text-red-400" role="alert"></p>
+        <button type="submit" class="w-full py-3 bg-brass text-[#170F0B] font-bold text-sm rounded-xl">Save name</button>
+      </form>
+      <p id="profile-created-date" class="text-xs text-[#A38A7E]"></p>
+    </section>
+
+    <section class="card-dark p-5 rounded-2xl space-y-3">
+      <h2 class="text-sm font-bold text-[#FDFBF7]">Account</h2>
+      <div class="flex justify-between gap-3 text-xs">
+        <span class="text-[#A38A7E]">Plan</span>
+        <span id="profile-plan-status" class="font-semibold text-[#FDFBF7]"></span>
+      </div>
+      <div class="flex justify-between gap-3 text-xs">
+        <span class="text-[#A38A7E]">Data storage</span>
+        <span class="font-semibold text-[#FDFBF7]">This device</span>
+      </div>
+      <div class="flex justify-between gap-3 text-xs">
+        <span class="text-[#A38A7E]">Setup guide</span>
+        <span id="profile-setup-status" class="font-semibold text-[#FDFBF7]"></span>
+      </div>
+      <p class="text-[11px] leading-relaxed text-[#A38A7E]">Sign-in and syncing between devices aren’t available yet. Your data stays on this device.</p>
+    </section>
+
+    <section class="card-dark p-5 rounded-2xl space-y-4">
+      <div>
+        <h2 class="text-sm font-bold text-[#FDFBF7]">App preferences</h2>
+        <p class="text-xs text-[#A38A7E] mt-1">Choose which sections appear in the app.</p>
+      </div>
+      <label for="profile-show-squad" class="flex items-center justify-between gap-4 cursor-pointer">
+        <span>
+          <span class="block text-sm font-semibold text-[#FDFBF7]">Show Squad tab</span>
+          <span class="block text-[11px] text-[#A38A7E] mt-1">Show sample friend goal comparisons in navigation.</span>
+        </span>
+        <input id="profile-show-squad" type="checkbox" onchange="setSquadVisibility(this.checked)" class="h-5 w-5 flex-shrink-0 accent-[#E2B887]">
+      </label>
+      <p id="profile-preference-error" class="hidden text-xs text-red-400" role="alert"></p>
+    </section>
+
+    <section class="card-dark p-5 rounded-2xl space-y-3">
+      <h2 class="text-sm font-bold text-[#FDFBF7]">Your data</h2>
+      <div class="flex justify-between gap-3 text-xs">
+        <span class="text-[#A38A7E]">Savings goals</span>
+        <span id="profile-goal-count" class="font-semibold text-[#FDFBF7]"></span>
+      </div>
+      <div class="flex justify-between gap-3 text-xs">
+        <span class="text-[#A38A7E]">Recurring bills</span>
+        <span id="profile-bill-count" class="font-semibold text-[#FDFBF7]"></span>
+      </div>
+      <div class="flex justify-between gap-3 text-xs">
+        <span class="text-[#A38A7E]">Activity entries</span>
+        <span id="profile-activity-count" class="font-semibold text-[#FDFBF7]"></span>
+      </div>
+    </section>
+
+    <section class="card-dark p-5 rounded-2xl space-y-3">
+      <div>
+        <h2 class="text-sm font-bold text-[#FDFBF7]">Pro test mode</h2>
+        <p class="text-xs text-[#A38A7E] mt-1">Preview Free and Pro features. This switch is for testing.</p>
+      </div>
+      <button type="button" id="pro-test-toggle" onclick="toggleProTestMode()" aria-label="Switch to Pro test mode" aria-pressed="false" class="w-full rounded-xl border border-[#806344] px-4 py-3 text-sm font-bold text-[#E2B887]">
+        Switch to Pro test mode
+      </button>
+    </section>
+
+    <section class="rounded-2xl border border-red-900/70 bg-red-950/20 p-5 space-y-3">
+      <div>
+        <h2 class="text-sm font-bold text-red-300">Delete all data</h2>
+        <p class="text-xs leading-relaxed text-[#D7C6B8] mt-1">Permanently remove your profile, income, bills, goals, and activity saved on this device. This can’t be undone.</p>
+      </div>
+      <button type="button" onclick="openDeleteAllDataDialog()" class="w-full rounded-xl border border-red-700 px-4 py-3 text-sm font-bold text-red-300">Delete all my data</button>
+      <p id="delete-all-data-error" class="hidden text-xs text-red-300" role="alert"></p>
+    </section>
   </main>
 
   <!-- ================= BOTTOM NAVIGATION BAR ================= -->
@@ -623,26 +863,43 @@
     </div>
   </dialog>
 
-  <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto bg-[#170F0B]/95 backdrop-blur-md border-t border-[#2A1C14] px-1 py-3 flex justify-around z-40">
-    <button onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center text-brass">
+  <dialog id="delete-all-data-dialog" class="goal-delete-dialog" aria-labelledby="delete-all-data-title" aria-describedby="delete-all-data-copy">
+    <div class="space-y-4">
+      <div>
+        <h2 id="delete-all-data-title" class="text-lg font-bold text-red-300">Delete all your data?</h2>
+        <p id="delete-all-data-copy" class="mt-2 text-sm text-[#D7C6B8]">This permanently deletes your profile and all AssetGoal data saved on this device. You’ll return to the welcome screen. This can’t be undone.</p>
+      </div>
+      <div class="flex gap-3">
+        <button type="button" onclick="closeDeleteAllDataDialog()" class="flex-1 rounded-xl border border-[#806344] px-4 py-3 text-sm font-semibold text-[#FDFBF7]">Keep my data</button>
+        <button type="button" onclick="confirmDeleteAllData()" class="flex-1 rounded-xl bg-red-700 px-4 py-3 text-sm font-bold text-white">Delete everything</button>
+      </div>
+    </div>
+  </dialog>
+
+  <nav class="mobile-bottom-nav fixed bottom-0 left-0 right-0 w-full max-w-[640px] mx-auto bg-[#170F0B]/95 backdrop-blur-md border-t border-[#2A1C14] px-1 py-3 flex justify-around z-40">
+    <button onclick="switchTab('home')" id="nav-home" class="flex flex-1 flex-col items-center text-brass">
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v12h14V9M9 21v-7h6v7"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Home</span>
     </button>
-    <button onclick="switchTab('goals')" id="nav-goals" class="flex flex-col items-center text-[#A38A7E]">
+    <button onclick="switchTab('goals')" id="nav-goals" class="flex flex-1 flex-col items-center text-[#A38A7E]">
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="m13 11 7-7m-4 0h4v4"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Plan</span>
     </button>
-    <button onclick="switchTab('squad')" id="nav-squad" class="flex flex-col items-center text-[#A38A7E]">
+    <button onclick="switchTab('squad')" id="nav-squad" class="hidden flex flex-1 flex-col items-center text-[#A38A7E]" aria-hidden="true" tabindex="-1">
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 9h7l-6 11 2-9H6l7-11Z"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Squad</span>
     </button>
-    <button onclick="switchTab('oneoffs')" id="nav-oneoffs" class="flex flex-col items-center text-[#A38A7E]">
+    <button onclick="switchTab('oneoffs')" id="nav-oneoffs" class="flex flex-1 flex-col items-center text-[#A38A7E]">
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Activity</span>
     </button>
-    <button onclick="switchTab('cashflow')" id="nav-cashflow" class="flex flex-col items-center text-[#A38A7E]">
+    <button onclick="switchTab('cashflow')" id="nav-cashflow" class="flex flex-1 flex-col items-center text-[#A38A7E]">
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="m7 22-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg>
       <span class="text-[9px] font-semibold mt-0.5">Recurring</span>
+    </button>
+    <button onclick="switchTab('profile')" id="nav-profile" class="flex flex-1 flex-col items-center text-[#A38A7E]">
+      <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg>
+      <span class="text-[9px] font-semibold mt-0.5">Profile</span>
     </button>
   </nav>
 
@@ -651,20 +908,17 @@
 <script>
   let state = {
     isPro: false,
+    profile: null,
     hysaRate: 4.5,
     chartHorizonYears: 3,
-    monthlyIncome: 1056,
-    paycheckAmount: 1056,
+    monthlyIncome: 0,
+    paycheckAmount: 0,
     payPeriodsPerYear: 12,
     paycheckAmounts: ['', '', '', ''],
     transactions: [],
     monthlyBudgets: {},
     squadGoalId: null,
-    expenses: [
-      { id: 'rent', name: 'Housing / Rent', amount: 300, max: 2500, step: 25 },
-      { id: 'bills', name: 'Subscriptions & Phone', amount: 100, max: 1000, step: 10 },
-      { id: 'food', name: 'Food & Living', amount: 250, max: 1500, step: 25 }
-    ],
+    expenses: [],
     get totalExpenses() { 
       return this.expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0); 
     },
@@ -675,7 +929,7 @@
       return this.netCashflow + getCurrentMonthOneOffNet();
     },
     emergencyFund: {
-      enabled: true,
+      enabled: false,
       targetMonths: 3,
       customTargetMonths: 3,
       useCustomTargetMonths: false,
@@ -686,27 +940,48 @@
       currAge: 20,
       targetAge: 60,
       returnRate: 8.0,
-      allocPercent: 20
+      allocPercent: 0
     },
-    goals: [
-      { id: 1, name: 'Nissan 350Z', type: 'car', totalCost: 12000, startingSaved: 1500, downPercent: 20, loanTermMonths: 48, interestRate: 6.5, allocPercent: 40 },
-      { id: 2, name: 'First House', type: 'house', totalCost: 250000, startingSaved: 5000, downPercent: 10, loanTermMonths: 360, interestRate: 6.5, allocPercent: 40 }
-    ]
+    goals: []
   };
 
   let homeChart = null;
   let retirementChart = null;
   let selectedOneOffMonth = null;
   let editingTransactionId = null;
+  const storageKey = 'assetgoal_state_v13';
   const freeExpenseLimit = 3;
   const goalTypeSettings = {
     general: { label: 'General Asset', target: 'your asset', downPercent: 100, loanTermMonths: 0, interestRate: 0 },
     car: { label: 'Auto Purchase', target: 'your car', downPercent: 20, loanTermMonths: 60, interestRate: 6.5 },
     house: { label: 'House / Real Estate', target: 'your home', downPercent: 10, loanTermMonths: 360, interestRate: 6.5 }
   };
+  const setupGuideSteps = [
+    {
+      id: 'income',
+      tab: 'cashflow',
+      title: 'Add your take-home pay',
+      copy: 'Open “Set up your income” below and enter your pay and how often you’re paid. Your monthly estimate updates as you type.',
+      targetId: 'income-setup-details'
+    },
+    {
+      id: 'bills',
+      tab: 'cashflow',
+      title: 'Add your monthly bills',
+      copy: 'Enter your housing, bills, food, and other recurring expenses in the bill list. You can edit or add them whenever things change.',
+      targetId: 'expenses-sliders-container'
+    },
+    {
+      id: 'goal',
+      tab: 'goals',
+      title: 'Create your first savings goal',
+      copy: 'Open “Add a savings goal” below and enter what you’re saving for. Your plan and progress will appear here.',
+      targetId: 'goal-add-details'
+    }
+  ];
 
   function getGoalDownPercent(goal) {
-    return goal.type === 'general' ? 100 : Number(goal.downPercent) || 0;
+    return goal.type === 'general' ? 100 : Math.min(100, Math.max(0, Number(goal.downPercent) || 0));
   }
 
   function getEmergencyFundTarget() {
@@ -900,11 +1175,11 @@
     const totalLabel = document.getElementById('allocation-total-label');
     const totalBar = document.getElementById('allocation-total-bar');
     const roomLabel = document.getElementById('allocation-room-label');
-    if(totalLabel) totalLabel.innerText = `${Number(total.toFixed(2))}% of 100%`;
+    if(totalLabel) totalLabel.innerText = `${Number(total.toFixed(2))}% allocated`;
     if(totalBar) totalBar.style.width = `${Math.min(100, total)}%`;
     if(roomLabel) roomLabel.innerText = remaining > 0
-      ? `${Number(remaining.toFixed(2))}% available to plan`
-      : 'Your monthly leftover is fully planned';
+      ? `${Number(remaining.toFixed(2))}% left to plan`
+      : 'All available money is assigned.';
     state.goals.forEach(goal => {
       const percent = getGoalAllocationPercent(goal);
       const storedPercent = getStoredGoalAllocationPercent(goal);
@@ -944,14 +1219,27 @@
   }
 
   function loadSavedData() {
-    const saved = localStorage.getItem('assetgoal_state_v13');
+    const saved = localStorage.getItem(storageKey);
     if(saved) {
       try {
         const parsed = JSON.parse(saved);
         state.isPro = parsed.isPro || false;
+        if(parsed.profile && typeof parsed.profile.name === 'string' &&
+          typeof parsed.profile.createdAt === 'string') {
+          const hasSetupProgress = typeof parsed.profile.setupStep === 'string';
+          state.profile = {
+            ...parsed.profile,
+            email: typeof parsed.profile.email === 'string' ? parsed.profile.email : '',
+            showSquad: parsed.profile.showSquad === true,
+            setupComplete: parsed.profile.setupComplete === true ||
+              (!hasSetupProgress && parsed.profile.setupComplete !== false)
+          };
+        }
         state.hysaRate = parsed.hysaRate !== undefined ? parsed.hysaRate : 4.5;
         state.chartHorizonYears = parsed.chartHorizonYears || 3;
-        state.monthlyIncome = parsed.monthlyIncome || 1056;
+        state.monthlyIncome = Number.isFinite(Number(parsed.monthlyIncome))
+          ? Number(parsed.monthlyIncome)
+          : 0;
         state.payPeriodsPerYear = [12, 24, 26, 52].includes(Number(parsed.payPeriodsPerYear))
           ? Number(parsed.payPeriodsPerYear)
           : 12;
@@ -1019,10 +1307,13 @@
         if(parsed.expenses && Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
         if(parsed.emergencyFund && typeof parsed.emergencyFund === 'object') {
           state.emergencyFund = { ...state.emergencyFund, ...parsed.emergencyFund };
+        } else {
+          state.emergencyFund.enabled = true;
         }
         if(parsed.retirement) state.retirement = parsed.retirement;
         if(Array.isArray(parsed.goals)) {
           state.goals = parsed.goals.map(goal => {
+            if(!goal) return goal;
             const isLegacyGeneralDefault = goal &&
               goal.type === 'general' &&
               ((Number(goal.downPercent) === 10 && Number(goal.loanTermMonths) === 60 &&
@@ -1031,9 +1322,13 @@
                   Number(goal.interestRate) === 6.5) ||
                 (Number(goal.downPercent) === 100 && Number(goal.loanTermMonths) === 60 &&
                   Number(goal.interestRate) === 0));
-            return isLegacyGeneralDefault
+            const normalizedGoal = isLegacyGeneralDefault
               ? { ...goal, downPercent: 100, loanTermMonths: 0, interestRate: 0 }
               : goal;
+            return {
+              ...normalizedGoal,
+              downPercent: Math.min(100, Math.max(0, Number(normalizedGoal.downPercent) || 0))
+            };
           });
         }
         if(parsed.squadGoalId !== undefined && parsed.squadGoalId !== null) {
@@ -1045,8 +1340,9 @@
   }
 
   function saveData() {
-    localStorage.setItem('assetgoal_state_v13', JSON.stringify({
+    localStorage.setItem(storageKey, JSON.stringify({
       isPro: state.isPro,
+      profile: state.profile,
       hysaRate: state.hysaRate,
       chartHorizonYears: state.chartHorizonYears,
       monthlyIncome: state.monthlyIncome,
@@ -1063,11 +1359,126 @@
     }));
   }
 
+  function renderProfile() {
+    const nameInput = document.getElementById('profile-name');
+    const createdDate = document.getElementById('profile-created-date');
+    const showSquad = Boolean(state.profile?.showSquad);
+    const squadNav = document.getElementById('nav-squad');
+    const squadVisible = showSquad && Boolean(state.profile);
+    squadNav.classList.toggle('hidden', !squadVisible);
+    squadNav.setAttribute('aria-hidden', String(!squadVisible));
+    squadNav.tabIndex = squadVisible ? 0 : -1;
+    document.getElementById('profile-show-squad').checked = showSquad;
+    document.getElementById('profile-plan-status').textContent = state.isPro ? 'Pro' : 'Free';
+    document.getElementById('profile-setup-status').textContent = !state.profile
+      ? 'Not started'
+      : state.profile.setupComplete ? 'Complete' : 'In progress';
+    document.getElementById('profile-goal-count').textContent =
+      `${state.goals.length} ${state.goals.length === 1 ? 'goal' : 'goals'}`;
+    document.getElementById('profile-bill-count').textContent =
+      `${state.expenses.length} ${state.expenses.length === 1 ? 'bill' : 'bills'}`;
+    document.getElementById('profile-activity-count').textContent =
+      `${state.transactions.length} ${state.transactions.length === 1 ? 'entry' : 'entries'}`;
+    if(!state.profile) {
+      nameInput.value = '';
+      createdDate.textContent = '';
+      return;
+    }
+
+    if(document.activeElement !== nameInput) nameInput.value = state.profile.name;
+    const createdAt = new Date(state.profile.createdAt);
+    createdDate.textContent = Number.isNaN(createdAt.getTime())
+      ? 'Profile creation date unavailable.'
+      : `Profile created ${createdAt.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}`;
+  }
+
+  function saveProfileName(event) {
+    event.preventDefault();
+    const nameInput = document.getElementById('profile-name');
+    const error = document.getElementById('profile-save-error');
+    const name = nameInput.value.trim();
+    if(!name) {
+      nameInput.setCustomValidity('Enter your name.');
+      nameInput.reportValidity();
+      nameInput.setCustomValidity('');
+      return;
+    }
+    if(!state.profile) {
+      error.textContent = 'Your profile is not available. Reload the app and try again.';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    const previousName = state.profile.name;
+    state.profile.name = name;
+    try {
+      saveData();
+    } catch(storageError) {
+      state.profile.name = previousName;
+      nameInput.value = previousName;
+      console.error('Unable to save the profile name in browser storage.', storageError);
+      error.textContent = 'We couldn’t save your name in this browser. Check your browser storage settings and try again.';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    error.classList.add('hidden');
+    document.getElementById('home-greeting').textContent = `Welcome, ${name}`;
+    renderProfile();
+  }
+
+  function setSquadVisibility(visible) {
+    if(!state.profile) return;
+    const previousVisibility = state.profile.showSquad === true;
+    state.profile.showSquad = visible;
+    try {
+      saveData();
+    } catch(storageError) {
+      state.profile.showSquad = previousVisibility;
+      document.getElementById('profile-show-squad').checked = previousVisibility;
+      console.error('Unable to save the Squad visibility preference.', storageError);
+      const error = document.getElementById('profile-preference-error');
+      error.textContent = 'We couldn’t save this preference in your browser. Check your browser storage settings and try again.';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    document.getElementById('profile-preference-error').classList.add('hidden');
+    renderProfile();
+  }
+
+  function openDeleteAllDataDialog() {
+    document.getElementById('delete-all-data-error').classList.add('hidden');
+    document.getElementById('delete-all-data-dialog').showModal();
+  }
+
+  function closeDeleteAllDataDialog() {
+    document.getElementById('delete-all-data-dialog').close();
+  }
+
+  function confirmDeleteAllData() {
+    const error = document.getElementById('delete-all-data-error');
+    try {
+      for(let index = localStorage.length - 1; index >= 0; index--) {
+        const key = localStorage.key(index);
+        if(key && key.startsWith('assetgoal_')) localStorage.removeItem(key);
+      }
+    } catch(storageError) {
+      console.error('Unable to delete all AssetGoal data from browser storage.', storageError);
+      error.textContent = 'We couldn’t delete your data from this browser. Check your browser storage settings and try again.';
+      error.classList.remove('hidden');
+      return;
+    }
+    window.location.reload();
+  }
+
   function updateProTestToggle() {
     const toggle = document.getElementById('pro-test-toggle');
     const headerButton = document.getElementById('header-pro-btn');
     const purchaseButton = document.getElementById('pro-buy-btn');
-    toggle.textContent = state.isPro ? 'Pro' : 'Free';
+    toggle.textContent = state.isPro
+      ? 'Switch to Free test mode'
+      : 'Switch to Pro test mode';
     toggle.setAttribute('aria-pressed', String(state.isPro));
     toggle.setAttribute('aria-label', `Switch to ${state.isPro ? 'Free' : 'Pro'} test mode`);
     toggle.title = `Testing as ${state.isPro ? 'Pro' : 'Free'}; tap to switch`;
@@ -1082,14 +1493,99 @@
   }
 
   function toggleProTestMode() {
+    if(isSetupGuideActive()) return;
     state.isPro = !state.isPro;
     saveData();
     renderApp();
     updateProTestToggle();
   }
 
-  function switchTab(tabId, swipeDirection = null) {
-    ['home', 'cashflow', 'oneoffs', 'goals', 'squad', 'pro'].forEach(t => {
+  function isSetupGuideActive() {
+    return !document.getElementById('setup-guide').classList.contains('hidden');
+  }
+
+  function isSetupInProgress() {
+    return Boolean(state.profile && !state.profile.setupComplete && state.profile.setupStep);
+  }
+
+  function isSetupStepComplete(stepId = state.profile?.setupStep) {
+    if(stepId === 'income') return Number(state.monthlyIncome) > 0;
+    if(stepId === 'bills') {
+      return state.expenses.some(expense => Number(expense.amount) > 0);
+    }
+    if(stepId === 'goal') return state.goals.length > 0;
+    return false;
+  }
+
+  function updateSetupGuideActions() {
+    if(!isSetupGuideActive() || !state.profile) return;
+    const complete = isSetupStepComplete();
+    const nextButton = document.getElementById('setup-guide-next');
+    const skipButton = document.getElementById('setup-guide-skip');
+    nextButton.disabled = !complete;
+    nextButton.classList.toggle('opacity-50', !complete);
+    nextButton.classList.toggle('cursor-not-allowed', !complete);
+    skipButton.disabled = false;
+    skipButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    document.getElementById('setup-guide-requirement').textContent = complete
+      ? 'This step is complete. Continue when you’re ready.'
+      : state.profile.setupStep === 'income'
+        ? 'Enter your take-home pay in the income section to continue.'
+        : state.profile.setupStep === 'bills'
+          ? 'Add at least one monthly bill to continue.'
+          : 'Create your first savings goal to continue.';
+  }
+
+  function clearSetupGuideFocus() {
+    document.querySelectorAll('main.setup-focus').forEach(main => {
+      main.classList.remove('setup-focus');
+      Array.from(main.children).forEach(child => child.removeAttribute('inert'));
+      main.querySelectorAll('.setup-focus-target').forEach(target => {
+        target.classList.remove('setup-focus-target');
+        target.removeAttribute('inert');
+      });
+    });
+    document.querySelector('.mobile-container').classList.remove('setup-guide-active');
+  }
+
+  function setSetupGuideNavigationLock(locked, activeTabId = null) {
+    ['home', 'goals', 'squad', 'oneoffs', 'cashflow', 'profile'].forEach(tabId => {
+      const button = document.getElementById(`nav-${tabId}`);
+      if(!button) return;
+      const disabled = locked && tabId !== activeTabId;
+      button.disabled = disabled;
+      button.setAttribute('aria-disabled', String(disabled));
+      button.classList.toggle('opacity-40', disabled);
+      button.classList.toggle('cursor-not-allowed', disabled);
+    });
+
+    ['header-pro-btn', 'pro-test-toggle'].forEach(id => {
+      const button = document.getElementById(id);
+      const disabled = locked;
+      button.disabled = disabled;
+      button.setAttribute('aria-disabled', String(disabled));
+      button.classList.toggle('opacity-40', disabled);
+      button.classList.toggle('cursor-not-allowed', disabled);
+    });
+  }
+
+  function switchTab(tabId, swipeDirection = null, allowDuringSetup = false) {
+    if(tabId === 'squad' && !state.profile?.showSquad) return;
+    const setupGuideVisible = isSetupGuideActive();
+    const currentTab = document.querySelector('main[id^="tab-"]:not(.hidden)');
+    const setupInProgress = isSetupInProgress();
+    const setupTabId = setupInProgress
+      ? setupGuideSteps.find(step => step.id === state.profile?.setupStep)?.tab
+      : null;
+    if(setupInProgress && !allowDuringSetup &&
+      currentTab?.id !== `tab-${tabId}` &&
+      tabId !== 'pro' && tabId !== setupTabId) return;
+
+    if(tabId === 'pro' && currentTab && currentTab.id !== 'tab-pro') {
+      document.getElementById('tab-pro').dataset.returnTabId = currentTab.id.replace('tab-', '');
+    }
+
+    ['home', 'cashflow', 'oneoffs', 'goals', 'squad', 'profile', 'pro'].forEach(t => {
       document.getElementById(`tab-${t}`).classList.add('hidden');
       const navBtn = document.getElementById(`nav-${t}`);
       if(navBtn) {
@@ -1099,6 +1595,16 @@
     });
     const activeTab = document.getElementById(`tab-${tabId}`);
     activeTab.classList.remove('hidden');
+    const setupGuide = document.getElementById('setup-guide');
+    const proTab = document.getElementById('tab-pro');
+    if(tabId === 'pro' && setupGuideVisible && setupInProgress) {
+      setupGuide.classList.add('hidden');
+      proTab.dataset.setupGuideSuspended = 'true';
+    } else if(tabId === setupTabId && setupInProgress &&
+      proTab.dataset.setupGuideSuspended === 'true') {
+      setupGuide.classList.remove('hidden');
+      delete proTab.dataset.setupGuideSuspended;
+    }
     if(swipeDirection) {
       const animationClass = swipeDirection === 'left' ? 'tab-swipe-in-from-right' : 'tab-swipe-in-from-left';
       activeTab.classList.remove('tab-swipe-in-from-right', 'tab-swipe-in-from-left');
@@ -1114,6 +1620,132 @@
     }
     renderApp();
     window.scrollTo(0, 0);
+  }
+
+  function returnFromPro() {
+    const proTab = document.getElementById('tab-pro');
+    const setupTab = isSetupInProgress()
+      ? setupGuideSteps.find(step => step.id === state.profile.setupStep)?.tab
+      : null;
+    const returnTab = setupTab || proTab.dataset.returnTabId || 'home';
+    switchTab(returnTab, null, true);
+    delete proTab.dataset.returnTabId;
+  }
+
+  function prepareOnboarding() {
+    if(state.profile) document.getElementById('onboarding-name').value = state.profile.name;
+  }
+
+  function completeOnboarding(event) {
+    event.preventDefault();
+    const form = document.getElementById('onboarding-form');
+    const error = document.getElementById('onboarding-error');
+    if(!form.reportValidity()) return;
+
+    const nameInput = document.getElementById('onboarding-name');
+    if(!nameInput.value.trim()) {
+      nameInput.setCustomValidity('Enter your name.');
+      nameInput.reportValidity();
+      nameInput.setCustomValidity('');
+      return;
+    }
+    error.classList.add('hidden');
+
+    state.profile = {
+      ...state.profile,
+      name: nameInput.value.trim(),
+      email: state.profile?.email || '',
+      createdAt: state.profile?.createdAt || new Date().toISOString(),
+      showSquad: state.profile?.showSquad === true,
+      setupStep: 'income',
+      setupComplete: false
+    };
+
+    try {
+      saveData();
+    } catch(storageError) {
+      console.error('Unable to save the profile in browser storage.', storageError);
+      error.textContent = 'We couldn’t save your profile in this browser. Check your browser storage settings and try again.';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    document.getElementById('onboarding-dialog').close();
+    document.getElementById('home-greeting').textContent = `Welcome, ${state.profile.name}`;
+    startSetupGuide('income');
+  }
+
+  function startSetupGuide(stepId = state.profile?.setupStep) {
+    if(!state.profile || state.profile.setupComplete) return;
+    const step = setupGuideSteps.find(item => item.id === stepId) || setupGuideSteps[0];
+    clearSetupGuideFocus();
+    state.profile.setupStep = step.id;
+    const stepIndex = setupGuideSteps.indexOf(step);
+    document.getElementById('setup-guide-progress').textContent =
+      `Step ${stepIndex + 1} of ${setupGuideSteps.length}`;
+    document.getElementById('setup-guide-title').textContent = step.title;
+    document.getElementById('setup-guide-copy').textContent = step.copy;
+    const nextButton = document.getElementById('setup-guide-next');
+    nextButton.textContent = step.id === 'goal' ? 'Finish setup' : 'Next';
+    document.getElementById('setup-guide').classList.remove('hidden');
+
+    if(document.querySelector(`main#tab-${step.tab}.hidden`)) switchTab(step.tab, null, true);
+    const target = document.getElementById(step.targetId);
+    const focusTarget = step.id === 'bills' ? target.closest('.card-dark') : target;
+    const activeMain = focusTarget.closest('main');
+    if(step.id === 'bills') {
+      focusTarget.classList.add('setup-focus-target');
+    } else {
+      focusTarget.classList.add('setup-focus-target');
+    }
+    activeMain.classList.add('setup-focus');
+    Array.from(activeMain.children).forEach(child => {
+      if(child !== focusTarget) child.setAttribute('inert', '');
+    });
+    document.querySelector('.mobile-container').classList.add('setup-guide-active');
+    if(step.id === 'income' || step.id === 'goal') target.open = true;
+    setSetupGuideNavigationLock(true, step.tab);
+    updateSetupGuideActions();
+    window.setTimeout(() => focusTarget.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+
+  function advanceSetupGuide() {
+    if(!state.profile || state.profile.setupComplete || !isSetupStepComplete()) return;
+    const stepIndex = setupGuideSteps.findIndex(step => step.id === state.profile.setupStep);
+    if(stepIndex === setupGuideSteps.length - 1) {
+      state.profile.setupStep = null;
+      state.profile.setupComplete = true;
+      saveData();
+      document.getElementById('setup-guide').classList.add('hidden');
+      clearSetupGuideFocus();
+      setSetupGuideNavigationLock(false);
+      switchTab('home', null, true);
+      return;
+    }
+
+    state.profile.setupStep = setupGuideSteps[stepIndex + 1].id;
+    saveData();
+    startSetupGuide(state.profile.setupStep);
+  }
+
+  function skipSetupGuide() {
+    if(!state.profile || state.profile.setupComplete || !isSetupGuideActive()) return;
+    document.getElementById('setup-skip-dialog').showModal();
+  }
+
+  function cancelSetupGuideSkip() {
+    document.getElementById('setup-skip-dialog').close();
+  }
+
+  function confirmSetupGuideSkip() {
+    if(!state.profile || state.profile.setupComplete || !isSetupGuideActive()) return;
+    document.getElementById('setup-skip-dialog').close();
+    state.profile.setupStep = null;
+    state.profile.setupComplete = true;
+    saveData();
+    document.getElementById('setup-guide').classList.add('hidden');
+    clearSetupGuideFocus();
+    setSetupGuideNavigationLock(false);
   }
 
   function setHorizon(years) {
@@ -1145,6 +1777,7 @@
     saveData();
     updateSummaryDisplays();
     renderOneOffs();
+    updateSetupGuideActions();
   }
 
   function handlePayFrequencyChange() {
@@ -1168,10 +1801,29 @@
 
   function availableOneOffMonths() {
     const currentMonth = getMonthKey(new Date());
+    const createdAt = String(state.profile?.createdAt || '');
+    const createdAtMonth = createdAt.match(/^\d{4}-(0[1-9]|1[0-2])/)?.[0];
+    const parsedCreatedAt = createdAtMonth || (
+      Number.isNaN(new Date(createdAt).getTime())
+        ? null
+        : getMonthKey(new Date(createdAt))
+    );
+    const savedMonths = [
+      ...state.transactions.map(transaction => transaction.date.slice(0, 7)),
+      ...Object.keys(state.monthlyBudgets)
+    ];
+    const accountStartMonth = parsedCreatedAt && parsedCreatedAt < currentMonth
+      ? parsedCreatedAt
+      : currentMonth;
+    const freeHistoryStartMonth = shiftMonth(currentMonth, -2);
     const minimumMonth = state.isPro
-      ? [...state.transactions.map(transaction => transaction.date.slice(0, 7)), ...Object.keys(state.monthlyBudgets)]
-        .reduce((oldest, savedMonth) => savedMonth < oldest ? savedMonth : oldest, shiftMonth(currentMonth, -119))
-      : shiftMonth(currentMonth, -2);
+      ? parsedCreatedAt
+        ? accountStartMonth
+        : savedMonths.reduce((oldest, savedMonth) =>
+          savedMonth < oldest ? savedMonth : oldest, currentMonth)
+      : accountStartMonth > freeHistoryStartMonth
+        ? accountStartMonth
+        : freeHistoryStartMonth;
     const months = [];
     for(let month = currentMonth; month >= minimumMonth; month = shiftMonth(month, -1)) {
       months.push(month);
@@ -1211,10 +1863,10 @@
     ).join('');
     monthSelect.value = selectedOneOffMonth;
 
+    const historyNote = document.getElementById('transaction-history-note');
     const upgradeButton = document.getElementById('transaction-pro-upgrade');
-    document.getElementById('transaction-history-note').innerText = state.isPro
-      ? 'Your activity is saved by month. Pro lets you browse older history.'
-      : 'Your history is saved. Free accounts can browse this month and the 2 previous months.';
+    historyNote.innerText = 'Free includes up to 3 months of activity. Upgrade to Pro for your full account history.';
+    historyNote.classList.toggle('hidden', state.isPro);
     upgradeButton.classList.toggle('hidden', state.isPro);
 
     const monthTransactions = state.transactions.filter(transaction =>
@@ -1225,6 +1877,7 @@
     const expenses = monthTransactions.reduce((total, transaction) =>
       total + (transaction.type === 'expense' ? Number(transaction.amount) : 0), 0);
     const net = income - expenses;
+    const hasSavedBudget = Object.prototype.hasOwnProperty.call(state.monthlyBudgets, selectedOneOffMonth);
     const budget = ensureMonthlyBudget(selectedOneOffMonth);
     const recurringRemainder = budget.income - budget.fixedExpenses;
     const available = recurringRemainder + net;
@@ -1252,8 +1905,10 @@
     availableEl.innerText = availableText;
     availableEl.className = `text-2xl font-extrabold ${available < 0 ? 'text-red-400' : 'text-emerald-400'}`;
     document.getElementById('oneoff-budget-note').innerText = selectedOneOffMonth === getMonthKey(new Date())
-      ? 'Current recurring income and bills follow your Recurring settings.'
-      : 'Saved by month. Months without a saved statement start with your current regular income and bills.';
+      ? 'Regular income and bills use your Recurring settings.'
+      : hasSavedBudget
+        ? 'Income and bills show what was saved for this month.'
+        : 'No saved totals for this month yet; current income and bills are shown.';
     document.getElementById('transaction-count').innerText =
       `${monthTransactions.length} ${monthTransactions.length === 1 ? 'item' : 'items'}`;
 
@@ -1401,6 +2056,7 @@
       saveData();
       updateSummaryDisplays();
       renderOneOffs();
+      updateSetupGuideActions();
     }
   }
 
@@ -1410,6 +2066,7 @@
     renderExpensesList();
     renderOneOffs();
     updateSummaryDisplays();
+    updateSetupGuideActions();
   }
 
   function addCustomExpense() {
@@ -1441,13 +2098,15 @@
     saveData();
     renderApp();
     updateFormActions();
+    updateSetupGuideActions();
   }
 
   function renderExpensesList() {
     const container = document.getElementById('expenses-sliders-container');
-    document.getElementById('expense-count-badge').innerText =
-      state.isPro
-        ? `${state.expenses.length} ${state.expenses.length === 1 ? 'bill' : 'bills'} (Pro)`
+    document.getElementById('expense-count-badge').innerText = state.isPro
+      ? `${state.expenses.length} ${state.expenses.length === 1 ? 'bill' : 'bills'}`
+      : state.expenses.length > freeExpenseLimit
+        ? `${state.expenses.length} bills`
         : `${state.expenses.length}/${freeExpenseLimit} bills`;
     container.innerHTML = state.expenses.length ? state.expenses.map(e => `
       <div class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 gap-y-2 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 sm:flex sm:items-center sm:gap-3">
@@ -1485,7 +2144,7 @@
     updateSummaryDisplays();
   }
 
-  function handleGoalInput(goalId, field, rawVal) {
+  function handleGoalInput(goalId, field, rawVal, input = null) {
     const goal = state.goals.find(g => g.id === goalId);
     if(!goal) return;
 
@@ -1494,6 +2153,11 @@
     } else {
       const num = parseFloat(rawVal.replace(/,/g, ''));
       goal[field] = isNaN(num) ? '' : num;
+    }
+
+    if(field === 'downPercent' && goal[field] !== '') {
+      goal[field] = Math.min(100, Math.max(0, goal[field]));
+      if(input) input.value = String(goal[field]);
     }
 
     if(field === 'allocPercent') {
@@ -1712,6 +2376,7 @@
     state.goals = state.goals.filter(g => g.id !== goalId);
     saveData();
     renderApp();
+    updateSetupGuideActions();
   }
 
   function requestGoalDeletion(goalId) {
@@ -1781,6 +2446,8 @@
     saveData();
     renderApp();
     updateFormActions();
+    updateSetupGuideActions();
+    if(state.profile?.setupStep === 'goal') startSetupGuide('goal');
   }
 
   function calculateMonthlyLoanPayment(principal, annualRate, termMonths) {
@@ -1834,8 +2501,8 @@
       `Estimated interest growth (${state.chartHorizonYears} ${state.chartHorizonYears === 1 ? 'year' : 'years'}):`;
     document.getElementById('home-interest-earned').innerText = `+$${interestEarned.toLocaleString()}`;
     document.getElementById('chart-investment-note').innerText = currentCashflow < 0
-      ? 'This month is below zero after Activity, so no new money is added to savings.'
-      : `$${getCurrentPeriodInvestmentRoom().toLocaleString(undefined, { maximumFractionDigits: 2 })} available to plan this month after Activity.`;
+      ? 'You’re spending more than your income this month, so there’s no money left to put toward savings.'
+      : `$${getCurrentPeriodInvestmentRoom().toLocaleString(undefined, { maximumFractionDigits: 2 })} is available for savings after this month’s bills and extra income or spending.`;
     state.goals.forEach(goal => recalculateGoalCard(goal.id));
     recalculateRetirementModule();
     updateAllocationControls();
@@ -1885,8 +2552,8 @@
             <button onclick="requestGoalDeletion(${g.id})" aria-label="Remove ${escapeHtml(g.name)}" class="absolute right-4 top-4 text-xs text-[#A38A7E] hover:text-red-400 px-2.5 py-1 rounded-lg">Remove</button>
 
             <div class="pt-3 space-y-3">
-              <details class="border-t border-[#3D2A20] pt-3">
-                <summary class="cursor-pointer list-none text-xs font-semibold text-[#E2B887]">Edit goal details and estimates <span aria-hidden="true">⌄</span></summary>
+              <div class="border-t border-[#3D2A20] pt-3">
+                <h5 class="text-xs font-semibold text-[#E2B887]">Edit goal details and estimates</h5>
                 <div class="pt-3 space-y-3">
                   <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
@@ -1902,7 +2569,7 @@
                   <div class="grid grid-cols-3 gap-2 text-xs pt-1">
                     <div>
                       <label class="text-[10px] text-[#A38A7E]">Amount to put down (%)</label>
-                      <input type="number" value="${g.downPercent}" oninput="handleGoalInput(${g.id}, 'downPercent', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
+                      <input type="number" min="0" max="100" value="${g.downPercent}" oninput="handleGoalInput(${g.id}, 'downPercent', this.value, this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
                     </div>
                     <div>
                       <label class="text-[10px] text-[#A38A7E]">Loan interest (%)</label>
@@ -1916,7 +2583,7 @@
 
                   <div>
                     <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
-                      <span>Share of monthly leftover</span>
+                      <span>Share of money left each month</span>
                       <span id="val-${g.id}-allocPercent" class="text-xs text-[#E2B887] font-bold">${g.allocPercent || 0}%</span>
                     </label>
                     <input id="goal-allocation-${g.id}" type="range" min="0" max="100" step="1" value="${g.allocPercent || 0}" oninput="handleGoalInput(${g.id}, 'allocPercent', this.value)">
@@ -1934,7 +2601,7 @@
                     </div>
                   </div>
                 </div>
-              </details>
+              </div>
             </div>
           </details>
         `;
@@ -1948,6 +2615,7 @@
   function renderApp() {
     updateSummaryDisplays();
     renderOneOffs();
+    renderProfile();
     const goalLimitReached = !state.isPro && state.goals.length >= 2;
     document.getElementById('goal-add-title').textContent =
       goalLimitReached ? 'Unlock more savings goals' : '+ Add a savings goal';
@@ -1955,7 +2623,9 @@
       goalLimitReached ? 'Upgrade to Pro to add another goal.' : 'What are you saving up for?';
     document.getElementById('add-goal-btn').textContent =
       goalLimitReached ? 'Upgrade to Pro' : 'Save goal';
-    document.getElementById('goal-count-badge').innerText = state.isPro ? `${state.goals.length} Goals (Pro)` : `${state.goals.length}/2 Free`;
+    document.getElementById('goal-count-badge').innerText = state.isPro
+      ? `${state.goals.length} ${state.goals.length === 1 ? 'goal' : 'goals'}`
+      : `${state.goals.length}/2 goals`;
     document.getElementById('chart-apy-badge').innerText = 'Estimate';
 
     [1, 5, 10, 20, 50].forEach(y => {
@@ -2360,7 +3030,6 @@
     renderSquad();
   }
 
-  const swipeTabs = ['home', 'goals', 'squad', 'oneoffs', 'cashflow'];
   let touchStart = null;
   document.addEventListener('touchstart', event => {
     touchStart = null;
@@ -2402,6 +3071,7 @@
     touchStart = null;
     if(Math.abs(deltaX) < 50 || Math.abs(deltaX) < Math.abs(deltaY) * 1.25) return;
 
+    const swipeTabs = ['home', 'goals', ...(state.profile?.showSquad ? ['squad'] : []), 'oneoffs', 'cashflow', 'profile'];
     const currentIndex = swipeTabs.indexOf(currentTab);
     const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
     if(currentIndex >= 0 && nextIndex >= 0 && nextIndex < swipeTabs.length) {
@@ -2415,6 +3085,8 @@
 
   window.onload = () => {
     loadSavedData();
+    prepareOnboarding();
+    document.getElementById('onboarding-dialog').addEventListener('cancel', event => event.preventDefault());
     updateProTestToggle();
     selectedOneOffMonth = getMonthKey(new Date());
     setTransactionDateForMonth(selectedOneOffMonth);
@@ -2439,6 +3111,12 @@
     renderOneOffs();
     updateFormActions();
     renderApp();
+    if(!state.profile) {
+      document.getElementById('onboarding-dialog').showModal();
+    } else {
+      document.getElementById('home-greeting').textContent = `Welcome, ${state.profile.name}`;
+      if(!state.profile.setupComplete) startSetupGuide();
+    }
   };
 </script>
 </body>
