@@ -173,6 +173,11 @@
       background-color: var(--theme-card-bg, #241711);
       border: 1px solid var(--theme-border, #3D2A20);
     }
+    .expense-row.has-wrapped-name .expense-controls {
+      flex-basis: calc(100% - 3.75rem);
+      justify-content: flex-end;
+      margin-left: 3rem;
+    }
     .accent-brass {
       color: var(--theme-accent, #E2B887);
     }
@@ -472,9 +477,9 @@
             <label for="pay-frequency" class="text-xs font-semibold text-[#A38A7E] block mb-1">Paid</label>
             <select id="pay-frequency" onchange="handlePayFrequencyChange()" class="w-full bg-[#170F0B] border border-[#3D2A20] text-sm text-[#FDFBF7] rounded-xl p-3">
               <option value="52">Every week</option>
-              <option value="26">Every 2 weeks</option>
+              <option value="26" selected>Every 2 weeks</option>
               <option value="24">Twice a month</option>
-              <option value="12" selected>Once a month</option>
+              <option value="12">Once a month</option>
             </select>
           </div>
         </div>
@@ -1003,7 +1008,7 @@
     chartHorizonYears: 3,
     monthlyIncome: 0,
     paycheckAmount: 0,
-    payPeriodsPerYear: 12,
+    payPeriodsPerYear: 26,
     paycheckAmounts: ['', '', '', ''],
     transactions: [],
     monthlyBudgets: {},
@@ -1441,7 +1446,7 @@
           : 0;
         state.payPeriodsPerYear = [12, 24, 26, 52].includes(Number(parsed.payPeriodsPerYear))
           ? Number(parsed.payPeriodsPerYear)
-          : 12;
+          : 26;
         state.paycheckAmount = parsed.paycheckAmount !== undefined
           ? parsed.paycheckAmount
           : state.monthlyIncome;
@@ -1759,7 +1764,7 @@
   function isSetupStepComplete(stepId = state.profile?.setupStep) {
     if(stepId === 'income') return Number(state.monthlyIncome) > 0;
     if(stepId === 'bills') {
-      return state.expenses.some(expense => Number(expense.amount) > 0);
+      return true;
     }
     if(stepId === 'goal') return state.goals.length > 0;
     return false;
@@ -1775,13 +1780,15 @@
     nextButton.classList.toggle('cursor-not-allowed', !complete);
     skipButton.disabled = false;
     skipButton.classList.remove('opacity-50', 'cursor-not-allowed');
-    document.getElementById('setup-guide-requirement').textContent = complete
-      ? 'This step is complete. Continue when you’re ready.'
-      : state.profile.setupStep === 'income'
-        ? 'Enter your take-home pay in the income section to continue.'
-        : state.profile.setupStep === 'bills'
-          ? 'Add at least one monthly bill to continue.'
-          : 'Create your first savings goal to continue.';
+    const hasMonthlyBills = state.expenses.some(expense => Number(expense.amount) > 0);
+    document.getElementById('setup-guide-requirement').textContent =
+      state.profile.setupStep === 'bills' && !hasMonthlyBills
+        ? 'Adding bills is optional. Continue whenever you’re ready.'
+        : complete
+          ? 'This step is complete. Continue when you’re ready.'
+          : state.profile.setupStep === 'income'
+            ? 'Enter your take-home pay in the income section to continue.'
+            : 'Create your first savings goal to continue.';
   }
 
   function clearSetupGuideFocus() {
@@ -2358,17 +2365,29 @@
         ? `${state.expenses.length} bills`
         : `${state.expenses.length}/${freeExpenseLimit} bills`;
     container.innerHTML = state.expenses.length ? state.expenses.map(e => `
-      <div class="grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 gap-y-2 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 sm:flex sm:items-center sm:gap-3">
-        <span aria-hidden="true" class="row-span-2 w-9 h-9 flex-shrink-0 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold sm:row-span-1">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
-        <label for="expense-amount-${e.id}" class="min-w-0 text-sm font-semibold leading-tight text-[#FDFBF7] whitespace-normal break-words">${escapeHtml(e.name)}</label>
-        <div class="col-start-2 flex flex-shrink-0 items-center gap-1 justify-self-end sm:col-start-auto sm:ml-auto">
+      <div class="expense-row flex flex-wrap items-center gap-3 bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3">
+        <span aria-hidden="true" class="w-9 h-9 flex-shrink-0 rounded-full bg-brass/10 text-[#E2B887] flex items-center justify-center font-bold">${escapeHtml(e.name.trim().charAt(0).toUpperCase() || '$')}</span>
+        <label for="expense-amount-${e.id}" class="expense-name min-w-0 flex-1 text-sm font-semibold leading-tight text-[#FDFBF7] whitespace-normal break-words">${escapeHtml(e.name)}</label>
+        <div class="expense-controls ml-auto flex flex-shrink-0 items-center gap-1">
           <span aria-hidden="true" class="text-sm text-[#A38A7E]">$</span>
           <input id="expense-amount-${e.id}" type="number" min="0" step="0.01" value="${e.amount}" aria-label="${escapeHtml(e.name)} monthly amount" oninput="handleExpenseInput('${e.id}', this.value)" class="w-20 sm:w-24 bg-transparent text-right text-sm font-bold text-[#FDFBF7] focus:outline-none focus:ring-1 focus:ring-brass rounded p-1">
           <button onclick="deleteExpense('${e.id}')" aria-label="Remove ${escapeHtml(e.name)}" title="Remove bill" class="w-8 h-8 flex-shrink-0 rounded-full text-[#A38A7E] hover:text-red-400 hover:bg-red-950/40 text-lg">×</button>
         </div>
       </div>
     `).join('') : '<p class="text-sm text-[#A38A7E] bg-[#170F0B] rounded-xl p-4">No monthly bills yet. Add one below to get started.</p>';
+    updateExpenseRowLayouts();
   }
+
+  function updateExpenseRowLayouts() {
+    document.querySelectorAll('.expense-row').forEach(row => {
+      row.classList.remove('has-wrapped-name');
+      const name = row.querySelector('.expense-name');
+      const lineHeight = parseFloat(getComputedStyle(name).lineHeight);
+      row.classList.toggle('has-wrapped-name', name.getBoundingClientRect().height > lineHeight + 1);
+    });
+  }
+
+  window.addEventListener('resize', updateExpenseRowLayouts);
 
   function escapeHtml(value) {
     return String(value).replace(/[&<>"']/g, character => ({
