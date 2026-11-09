@@ -1,6 +1,6 @@
 {
   "name": "assetgoal",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "private": true,
   "description": "Mobile-first AssetGoal app with Capacitor iOS and Android shells",
   "scripts": {
@@ -14,7 +14,9 @@
   "dependencies": {
     "@capacitor/android": "8.6.0",
     "@capacitor/core": "8.6.0",
-    "@capacitor/ios": "8.6.0"
+    "@capacitor/haptics": "8.0.2",
+    "@capacitor/ios": "8.6.0",
+    "@capacitor/preferences": "^8.0.1"
   },
   "devDependencies": {
     "@capacitor/cli": "8.6.0"

@@ -1,0 +1,17 @@
+{
+  "name": "AssetGoal",
+  "short_name": "AssetGoal",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#170F0B",
+  "theme_color": "#170F0B",
+  "description": "A simple mobile savings and budgeting planner.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
