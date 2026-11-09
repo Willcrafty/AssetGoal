@@ -28,4 +28,12 @@ an ID owned by the publisher, configure signing and store listings in the native
 IDE, and provide production app icons and launch screens. The current CSS and
 layout support safe areas and touch input. Tailwind, Chart.js, and the font are
 still loaded from public CDNs, so the app currently needs a network connection
-to load those resources.
+to load those resources. For offline-capable production builds, bundle those
+assets locally before release and add an offline smoke test for the native
+shell.
+
+The recurring planning flow includes fixed bills, variable spending, debt
+minimums and balances, cash and retirement balances, employer match, and
+goal-specific target dates and ownership costs. These are planning estimates,
+not financial advice; projections assume the entered income, expenses, rates,
+and contributions remain steady.

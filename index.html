@@ -16,6 +16,7 @@
       scrollbar-width: none;
       -ms-overflow-style: none;
     }
+
     html::-webkit-scrollbar,
     body::-webkit-scrollbar,
     *::-webkit-scrollbar {
@@ -331,7 +332,10 @@
     <h2 id="setup-guide-title" class="mt-2 text-lg font-extrabold text-[#FDFBF7]"></h2>
     <p id="setup-guide-copy" class="mt-1 text-xs leading-relaxed text-[#D7C6B8]"></p>
     <p id="setup-guide-requirement" class="mt-2 text-xs font-semibold text-[#E2B887]" role="status"></p>
-    <button id="setup-guide-next" type="button" onclick="advanceSetupGuide()" class="mt-3 w-full rounded-xl bg-brass px-4 py-3 text-sm font-bold text-[#170F0B]">Next</button>
+    <div class="mt-3 flex gap-3">
+      <button id="setup-guide-back" type="button" onclick="goBackSetupGuide()" class="flex-1 rounded-xl border border-[#806344] px-4 py-3 text-sm font-semibold text-[#FDFBF7]">Back</button>
+      <button id="setup-guide-next" type="button" onclick="advanceSetupGuide()" class="flex-1 rounded-xl bg-brass px-4 py-3 text-sm font-bold text-[#170F0B]">Next</button>
+    </div>
   </aside>
 
   <dialog id="setup-skip-dialog" class="goal-delete-dialog" aria-labelledby="setup-skip-title" aria-describedby="setup-skip-copy">
@@ -349,12 +353,12 @@
   
   <!-- Header Bar -->
   <header class="p-4 sm:p-5 pb-3 flex flex-wrap items-center justify-between gap-2 sticky top-0 bg-[#170F0B]/90 backdrop-blur-md z-30 border-b border-[#2A1C14]">
-    <div class="flex items-center space-x-2">
+    <button type="button" onclick="switchTab('profile')" aria-label="Open profile" class="flex items-center space-x-2 rounded-xl text-left active:scale-95 transition-transform">
       <div class="w-8 h-8 rounded-full bg-brass/20 flex items-center justify-center border border-brass/40">
         <span class="text-xs font-bold text-[#E2B887]">AG</span>
       </div>
       <span class="font-bold text-lg tracking-tight text-[#FDFBF7]">AssetGoal</span>
-    </div>
+    </button>
     <div class="ml-auto flex items-center gap-1.5">
       <button onclick="switchTab('pro')" id="header-pro-btn" class="px-2 sm:px-3 py-1.5 rounded-full bg-brass/10 border border-brass/30 text-[10px] sm:text-xs font-semibold text-[#E2B887] flex items-center gap-1 active:scale-95 transition-transform whitespace-nowrap">
         <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 9h7l-6 11 2-9H6l7-11Z"/></svg>
@@ -390,7 +394,7 @@
             <p id="home-monthly-income" class="text-sm font-bold text-[#FDFBF7]">$0</p>
           </div>
           <div>
-            <p class="text-xs text-[#D7C6B8]">Regular bills</p>
+            <p class="text-xs text-[#D7C6B8]">Monthly expenses</p>
             <p id="home-monthly-expenses" class="text-sm font-bold text-[#FDFBF7]">$0</p>
           </div>
           <button onclick="switchTab('oneoffs')" class="col-span-2 flex justify-between items-center text-xs text-left bg-black/10 rounded-xl px-3 py-2">
@@ -425,6 +429,7 @@
         <span id="home-interest-earned" class="font-bold text-emerald-400">$0</span>
       </div>
       <p id="chart-investment-note" class="text-[11px] text-[#A38A7E]"></p>
+      <p id="planning-warning" class="hidden rounded-xl border border-red-900/60 bg-red-950/30 p-3 text-[11px] leading-relaxed text-red-300" role="status"></p>
 
       <!-- Timeframe Selector Tabs -->
       <div class="grid grid-cols-5 gap-1 bg-[#170F0B] p-1 rounded-xl border border-[#3D2A20] text-center">
@@ -516,7 +521,7 @@
           <span id="calc-summary-monthly-income" class="font-bold text-[#FDFBF7]">$0</span>
         </div>
         <div class="flex justify-between text-xs pt-3">
-          <span class="text-[#A38A7E]">Monthly bills</span>
+          <span class="text-[#A38A7E]">Monthly expenses</span>
           <span id="calc-total-expenses" class="font-bold text-[#FDFBF7]">$0</span>
         </div>
       </div>
@@ -551,6 +556,53 @@
       </div>
     </div>
 
+    <details class="card-dark rounded-2xl">
+      <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-base text-[#FDFBF7]">Variable monthly spending</h2>
+          <p class="text-[11px] text-[#A38A7E] mt-1">Add typical costs that change month to month.</p>
+        </div>
+        <span aria-hidden="true" class="text-[#E2B887]">＋</span>
+      </summary>
+      <div class="px-5 pb-5 grid grid-cols-2 gap-3 text-xs">
+        <label class="text-[#A38A7E]">Fuel<input type="number" min="0" step="0.01" value="0" oninput="handleVariableExpenseInput('fuel', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="text-[#A38A7E]">Dining<input type="number" min="0" step="0.01" value="0" oninput="handleVariableExpenseInput('dining', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="text-[#A38A7E]">Subscriptions<input type="number" min="0" step="0.01" value="0" oninput="handleVariableExpenseInput('subscriptions', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="text-[#A38A7E]">Medical<input type="number" min="0" step="0.01" value="0" oninput="handleVariableExpenseInput('medical', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="col-span-2 text-[#A38A7E]">Other variable spending<input type="number" min="0" step="0.01" value="0" oninput="handleVariableExpenseInput('other', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+      </div>
+    </details>
+
+    <details class="card-dark rounded-2xl">
+      <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-base text-[#FDFBF7]">Debt snapshot</h2>
+          <p class="text-[11px] text-[#A38A7E] mt-1">Track minimum payments and balances separately from goals.</p>
+        </div>
+        <span aria-hidden="true" class="text-[#E2B887]">＋</span>
+      </summary>
+      <div class="px-5 pb-5 grid grid-cols-2 gap-3 text-xs">
+        <label class="text-[#A38A7E]">Monthly minimums<input id="debt-monthly-payments" type="number" min="0" step="0.01" oninput="handleDebtInput('monthlyPayments', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="text-[#A38A7E]">Total balance<input id="debt-total-balance" type="number" min="0" step="0.01" oninput="handleDebtInput('totalBalance', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="col-span-2 text-[#A38A7E]">Average interest rate (%)<input id="debt-average-rate" type="number" min="0" step="0.01" oninput="handleDebtInput('averageRate', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <p id="debt-payoff-estimate" class="col-span-2 text-[11px] text-[#A38A7E]"></p>
+      </div>
+    </details>
+
+    <details class="card-dark rounded-2xl">
+      <summary class="cursor-pointer list-none p-5 flex justify-between items-center">
+        <div>
+          <h2 class="font-bold text-base text-[#FDFBF7]">Current balances</h2>
+          <p class="text-[11px] text-[#A38A7E] mt-1">These balances improve your starting point, but are not counted as monthly income.</p>
+        </div>
+        <span aria-hidden="true" class="text-[#E2B887]">＋</span>
+      </summary>
+      <div class="px-5 pb-5 grid grid-cols-2 gap-3 text-xs">
+        <label class="text-[#A38A7E]">Cash savings<input id="balance-cash-savings" type="number" min="0" step="0.01" oninput="handleBalanceInput('cashSavings', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+        <label class="text-[#A38A7E]">Retirement savings<input id="balance-retirement-savings" type="number" min="0" step="0.01" oninput="handleBalanceInput('retirementSavings', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+      </div>
+    </details>
+
   </main>
 
   <!-- ================= ONE-OFF INCOME & EXPENSES ================= -->
@@ -579,7 +631,7 @@
       </div>
       <div class="space-y-2 pt-3 border-t border-[#3D2A20]">
         <p class="text-[10px] font-bold text-[#A38A7E] uppercase tracking-wider">Money out</p>
-        <div class="flex justify-between text-sm"><span class="text-[#D7C6B8]">Regular bills</span><span id="oneoff-fixed-expenses" class="font-semibold text-[#FDFBF7]">$0</span></div>
+        <div class="flex justify-between text-sm"><span class="text-[#D7C6B8]">Monthly expenses</span><span id="oneoff-fixed-expenses" class="font-semibold text-[#FDFBF7]">$0</span></div>
         <details class="pl-3">
           <summary class="cursor-pointer text-xs text-[#A38A7E]">See regular bills</summary>
           <div id="statement-fixed-list" class="pt-2 space-y-2"></div>
@@ -639,29 +691,30 @@
   <!-- ================= TAB 3: GOALS & RETIREMENT ALLOCATION ENGINE ================= -->
   <main id="tab-goals" class="p-5 space-y-6 hidden">
     <div>
-      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">Savings Plan</h1>
-      <p class="text-xs text-[#A38A7E] mt-1">Choose what you’re saving for and how much to set aside.</p>
+      <h1 class="text-2xl font-extrabold text-[#FDFBF7] tracking-tight">What are you saving for?</h1>
+      <p class="text-xs text-[#A38A7E] mt-1">Add one thing at a time. We’ll show you a simple monthly plan.</p>
     </div>
 
     <div class="card-dark p-4 rounded-2xl space-y-2">
       <div class="flex justify-between text-sm font-semibold">
-        <span class="text-[#FDFBF7]">Monthly savings planned</span>
-        <span id="allocation-total-label" class="text-[#E2B887]">0% of 100%</span>
+        <span class="text-[#FDFBF7]">Money available each month</span>
+        <span id="plan-monthly-available" class="text-[#E2B887]">$0</span>
       </div>
-      <div class="h-2 rounded-full bg-[#170F0B] overflow-hidden">
+      <div class="h-2 rounded-full bg-[#170F0B] overflow-hidden" aria-hidden="true">
         <div id="allocation-total-bar" class="h-full bg-brass rounded-full transition-all" style="width:0%"></div>
       </div>
-      <p id="allocation-room-label" class="text-[11px] text-[#A38A7E]">100% left to plan</p>
+      <p id="allocation-room-label" class="text-[11px] text-[#A38A7E]">This is what’s left after your regular expenses.</p>
     </div>
 
     <details class="card-dark rounded-2xl">
       <summary class="cursor-pointer list-none p-4 flex justify-between items-center">
-        <div><h3 class="text-sm font-bold text-[#FDFBF7]">Customize estimates</h3><p class="text-[11px] text-[#A38A7E] mt-1">Optional interest and loan assumptions</p></div>
+        <div><h3 class="text-sm font-bold text-[#FDFBF7]">How we estimate growth</h3><p class="text-[11px] text-[#A38A7E] mt-1">Optional. Most people can leave this alone.</p></div>
         <span aria-hidden="true" class="text-[#E2B887]">＋</span>
       </summary>
       <div class="px-4 pb-4 space-y-3">
+        <p class="text-xs leading-relaxed text-[#A38A7E]">This is an estimate of what your savings could earn. It is not guaranteed.</p>
         <div class="flex justify-between items-center">
-          <label for="num-hysa" class="text-xs text-[#A38A7E]">Savings interest rate</label>
+          <label for="num-hysa" class="text-xs text-[#A38A7E]">Estimated yearly growth</label>
           <input type="number" id="num-hysa" value="4.5" step="0.25" oninput="handleHysaChange(this.value, this)" class="w-20 bg-[#170F0B] border border-[#3D2A20] text-right text-xs text-emerald-400 font-bold rounded px-2 py-1">
         </div>
         <input type="range" id="slider-hysa" min="0" max="10" step="0.25" value="4.5" oninput="handleHysaChange(this.value, this)">
@@ -670,24 +723,29 @@
 
     <details class="card-dark rounded-2xl border-dashed border-brass/40" id="goal-add-details">
       <summary onclick="handleAddGoalClick(event)" class="cursor-pointer list-none p-4 flex justify-between items-center">
-        <div><h3 id="goal-add-title" class="text-sm font-bold text-[#E2B887]">+ Add a savings goal</h3><p id="goal-add-description" class="text-[11px] text-[#A38A7E] mt-1">What are you saving up for?</p></div>
+        <div><h3 id="goal-add-title" class="text-sm font-bold text-[#E2B887]">+ Add something to save for</h3><p id="goal-add-description" class="text-[11px] text-[#A38A7E] mt-1">For example: a car, trip, computer, or home.</p></div>
         <span id="goal-count-badge" class="text-[10px] text-[#A38A7E]">0/2 Free Slots</span>
       </summary>
       <div class="px-4 pb-4 space-y-3">
       <div class="grid grid-cols-2 gap-2">
-        <input type="text" id="new-goal-name" placeholder="Goal name" oninput="updateFormActions()" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
-        <input type="text" inputmode="decimal" id="new-goal-cost" placeholder="Goal amount ($)" oninput="updateFormActions()" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
+        <label class="text-[10px] text-[#A38A7E]">What are you saving for?<input type="text" id="new-goal-name" placeholder="Example: Used car" oninput="updateFormActions()" class="mt-1 bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5 w-full"></label>
+        <label class="text-[10px] text-[#A38A7E]">How much will it cost?<input type="text" inputmode="decimal" id="new-goal-cost" placeholder="$0" oninput="updateFormActions()" onblur="formatGoalAmount(this)" class="mt-1 bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5 w-full"></label>
       </div>
       <div class="grid grid-cols-2 gap-2">
-        <input type="text" inputmode="decimal" id="new-goal-start" placeholder="Already saved ($)" onblur="formatGoalAmount(this)" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
-        <select id="new-goal-type" class="bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5">
-          <option value="general" selected>General Asset</option>
-          <option value="car">Auto Purchase</option>
-          <option value="house">House / Real Estate</option>
-        </select>
+        <label class="text-[10px] text-[#A38A7E]">Already saved (optional)<input type="text" inputmode="decimal" id="new-goal-start" placeholder="$0" onblur="formatGoalAmount(this)" class="mt-1 bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5 w-full"></label>
+        <label class="text-[10px] text-[#A38A7E]">What kind of goal?<select id="new-goal-type" class="mt-1 bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5 w-full">
+          <option value="general" selected>Something else</option>
+          <option value="car">Car</option>
+          <option value="house">Home</option>
+        </select></label>
       </div>
+      <div class="grid grid-cols-2 gap-2">
+        <label class="text-[10px] text-[#A38A7E]">Want it by? (optional)<input type="date" id="new-goal-date" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5"></label>
+        <label class="text-[10px] text-[#A38A7E]">Extra fees (optional)<input type="number" min="0" step="0.01" id="new-goal-extra-cost" placeholder="$0" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] text-xs text-[#FDFBF7] rounded-xl p-2.5"></label>
+      </div>
+      <p class="text-[11px] leading-relaxed text-[#A38A7E]">Not sure what to enter? Start with the price you expect to pay. You can change it later.</p>
       <button id="add-goal-btn" disabled onclick="addCustomGoal()" class="w-full py-2.5 bg-brass text-[#170F0B] font-bold text-xs rounded-xl disabled:opacity-40 disabled:cursor-not-allowed">
-        Save goal
+        Add to my plan
       </button>
       </div>
     </details>
@@ -697,21 +755,21 @@
       <!-- Rendered dynamically -->
     </div>
 
-    <details class="card-dark rounded-2xl border-emerald-500/30" id="emergency-fund-module" open>
+    <details class="card-dark rounded-2xl border-emerald-500/30" id="emergency-fund-module">
       <summary class="cursor-pointer list-none p-4">
         <div class="flex justify-between items-center gap-3">
           <div>
-            <h4 class="font-bold text-sm text-emerald-400">Emergency fund</h4>
-            <p id="emergency-fund-target-summary" class="text-xs text-[#A38A7E] mt-1">Build a buffer for unexpected expenses</p>
+            <h4 class="font-bold text-sm text-emerald-400">Safety cushion</h4>
+            <p id="emergency-fund-target-summary" class="text-xs text-[#A38A7E] mt-1">Money set aside for surprises</p>
           </div>
           <span id="emergency-fund-monthly-badge" class="text-xs font-extrabold text-emerald-400">$0/mo</span>
         </div>
       </summary>
       <div class="px-4 pb-4 space-y-4">
-        <p class="text-xs text-[#A38A7E]">Choose a target for your emergency fund, or turn it off. Until an active target is met, all available monthly savings go here. Only count savings not already assigned to another plan.</p>
+        <p class="text-xs text-[#A38A7E]">A safety cushion can help with surprises like car repairs or a job change. Choose how many months of expenses you want to keep aside, or choose Off.</p>
         <div class="grid grid-cols-2 gap-3 text-xs">
           <div>
-            <label for="emergency-fund-target-months" class="text-[10px] text-[#A38A7E] block mb-1">Months of expenses</label>
+            <label for="emergency-fund-target-months" class="text-[10px] text-[#A38A7E] block mb-1">How much cushion?</label>
             <select id="emergency-fund-target-months" onchange="handleEmergencyFundInput('targetMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
               <option value="none">Off</option>
               <option value="3">3 months</option>
@@ -742,7 +800,7 @@
           <p id="emergency-fund-time" class="text-xs text-emerald-400 font-semibold mt-2">Set aside money to see your estimated timeline.</p>
         </div>
         <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center text-xs">
-          <span class="text-[#A38A7E]">Monthly savings priority</span>
+          <span class="text-[#A38A7E]">Money going here each month</span>
           <span id="emergency-fund-alloc-value" class="font-bold text-emerald-400">100% until target is met</span>
         </div>
       </div>
@@ -752,20 +810,28 @@
     <details class="card-dark rounded-2xl border-emerald-500/40 mt-4" id="roth-ira-module">
       <summary class="cursor-pointer list-none p-4">
       <div class="flex justify-between items-center">
-        <div class="flex items-center gap-2"><svg aria-hidden="true" class="h-5 w-5 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-8 0-14 3-14 10a6 6 0 0 0 6 6c7 0 10-6 8-16Z"/><path d="M4 21c3-5 7-8 13-11"/></svg><div><h4 class="font-bold text-sm text-emerald-400">Retirement savings</h4><p class="text-xs text-[#A38A7E] mt-1">Customize your long-term plan</p></div></div>
+        <div class="flex items-center gap-2"><svg aria-hidden="true" class="h-5 w-5 flex-shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c-8 0-14 3-14 10a6 6 0 0 0 6 6c7 0 10-6 8-16Z"/><path d="M4 21c3-5 7-8 13-11"/></svg><div><h4 class="font-bold text-sm text-emerald-400">Save for later</h4><p class="text-xs text-[#A38A7E] mt-1">Optional long-term savings</p></div></div>
         <span id="ret-alloc-badge" class="text-xs font-extrabold text-emerald-400">$0/mo</span>
       </div>
       </summary>
       <div class="px-4 pb-4 space-y-4">
       <div class="grid grid-cols-2 gap-2 text-xs">
         <div>
-          <label class="text-[10px] text-[#A38A7E]">Current Age</label>
+          <label class="text-[10px] text-[#A38A7E]">Your age</label>
           <input type="number" id="ret-curr-age" value="20" oninput="handleRetirementInput('currAge', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded p-2 text-[#FDFBF7]">
         </div>
         <div>
-          <label class="text-[10px] text-[#A38A7E]">Retirement Age</label>
+          <label class="text-[10px] text-[#A38A7E]">Age you want to stop working</label>
           <input type="number" id="ret-target-age" value="60" oninput="handleRetirementInput('targetAge', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded p-2 text-[#FDFBF7]">
         </div>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <label class="text-[10px] text-[#A38A7E]">Current balance ($)
+          <input type="number" min="0" step="0.01" id="ret-starting-balance" oninput="handleRetirementInput('startingBalance', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded p-2 text-[#FDFBF7]">
+        </label>
+        <label class="text-[10px] text-[#A38A7E]">Employer match (%)
+          <input type="number" min="0" max="100" step="0.01" id="ret-employer-match" oninput="handleRetirementInput('employerMatchPercent', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded p-2 text-[#FDFBF7]">
+        </label>
       </div>
       <div>
         <label class="text-[10px] text-[#A38A7E] flex justify-between mb-1">
@@ -776,7 +842,7 @@
       </div>
       <div>
         <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
-          <span>Share of money left each month</span>
+          <span>How much to save each month</span>
           <span id="ret-alloc-val" class="font-bold text-emerald-400">20%</span>
         </label>
         <input type="range" id="ret-alloc-slider" min="0" max="100" step="1" value="20" oninput="handleRetirementInput('allocPercent', this.value)">
@@ -872,6 +938,7 @@
         <span id="profile-setup-status" class="font-semibold text-[#FDFBF7]"></span>
       </div>
       <p class="text-[11px] leading-relaxed text-[#A38A7E]">Sign-in and syncing between devices aren’t available yet. Your data stays on this device.</p>
+      <button type="button" onclick="reopenSetupGuide()" class="w-full rounded-xl border border-[#806344] px-4 py-3 text-sm font-bold text-[#E2B887]">View setup guide again</button>
     </section>
 
     <section class="card-dark p-5 rounded-2xl space-y-4">
@@ -942,6 +1009,7 @@
       <button type="button" onclick="openDeleteAllDataDialog()" class="w-full rounded-xl border border-red-700 px-4 py-3 text-sm font-bold text-red-300">Delete all my data</button>
       <p id="delete-all-data-error" class="hidden text-xs text-red-300" role="alert"></p>
     </section>
+    <p id="profile-app-version" class="pb-2 text-center text-[11px] text-[#A38A7E]"></p>
   </main>
 
   <!-- ================= BOTTOM NAVIGATION BAR ================= -->
@@ -1014,8 +1082,26 @@
     monthlyBudgets: {},
     squadGoalId: null,
     expenses: [],
+    variableExpenses: {
+      fuel: 0,
+      dining: 0,
+      subscriptions: 0,
+      medical: 0,
+      other: 0
+    },
+    debt: {
+      monthlyPayments: 0,
+      totalBalance: 0,
+      averageRate: 0
+    },
+    balances: {
+      cashSavings: 0,
+      retirementSavings: 0
+    },
     get totalExpenses() { 
-      return this.expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0); 
+      const recurring = this.expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+      const variable = Object.values(this.variableExpenses).reduce((sum, amount) => sum + (Number(amount) || 0), 0);
+      return recurring + variable + (Number(this.debt.monthlyPayments) || 0);
     },
     get netCashflow() { 
       return this.monthlyIncome - this.totalExpenses; 
@@ -1035,7 +1121,9 @@
       currAge: 20,
       targetAge: 60,
       returnRate: 8.0,
-      allocPercent: 0
+      allocPercent: 0,
+      startingBalance: 0,
+      employerMatchPercent: 0
     },
     goals: []
   };
@@ -1152,6 +1240,7 @@
     return legacyColorSchemes[savedScheme] || defaultColorScheme;
   }
 
+  const APP_VERSION = '1.0.0';
   const goalTypeSettings = {
     general: { label: 'General Asset', target: 'your asset', downPercent: 100, loanTermMonths: 0, interestRate: 0 },
     car: { label: 'Auto Purchase', target: 'your car', downPercent: 20, loanTermMonths: 60, interestRate: 6.5 },
@@ -1183,6 +1272,10 @@
 
   function getGoalDownPercent(goal) {
     return goal.type === 'general' ? 100 : Math.min(100, Math.max(0, Number(goal.downPercent) || 0));
+  }
+
+  function getGoalSavingsTarget(goal) {
+    return Math.max(0, (Number(goal.totalCost) || 0) * getGoalDownPercent(goal) / 100 + (Number(goal.extraCost) || 0));
   }
 
   function getEmergencyFundTarget() {
@@ -1376,11 +1469,13 @@
     const totalLabel = document.getElementById('allocation-total-label');
     const totalBar = document.getElementById('allocation-total-bar');
     const roomLabel = document.getElementById('allocation-room-label');
+    const availableEl = document.getElementById('plan-monthly-available');
     if(totalLabel) totalLabel.innerText = `${Number(total.toFixed(2))}% allocated`;
+    if(availableEl) availableEl.innerText = `$${getCurrentPeriodInvestmentRoom().toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
     if(totalBar) totalBar.style.width = `${Math.min(100, total)}%`;
-    if(roomLabel) roomLabel.innerText = remaining > 0
-      ? `${Number(remaining.toFixed(2))}% left to plan`
-      : 'All available money is assigned.';
+    if(roomLabel) roomLabel.innerText = total > 0
+      ? `$${(getCurrentPeriodInvestmentRoom() * total / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })} planned so far.`
+      : 'This is what’s left after your regular expenses.';
     state.goals.forEach(goal => {
       const percent = getGoalAllocationPercent(goal);
       const storedPercent = getStoredGoalAllocationPercent(goal);
@@ -1509,6 +1604,11 @@
             }]));
         }
         if(parsed.expenses && Array.isArray(parsed.expenses)) state.expenses = parsed.expenses;
+        if(parsed.variableExpenses && typeof parsed.variableExpenses === 'object') {
+          state.variableExpenses = { ...state.variableExpenses, ...parsed.variableExpenses };
+        }
+        if(parsed.debt && typeof parsed.debt === 'object') state.debt = { ...state.debt, ...parsed.debt };
+        if(parsed.balances && typeof parsed.balances === 'object') state.balances = { ...state.balances, ...parsed.balances };
         if(parsed.emergencyFund && typeof parsed.emergencyFund === 'object') {
           state.emergencyFund = { ...state.emergencyFund, ...parsed.emergencyFund };
         } else {
@@ -1557,6 +1657,9 @@
       monthlyBudgets: state.monthlyBudgets,
       squadGoalId: state.squadGoalId,
       expenses: state.expenses,
+      variableExpenses: state.variableExpenses,
+      debt: state.debt,
+      balances: state.balances,
       emergencyFund: state.emergencyFund,
       retirement: state.retirement,
       goals: state.goals
@@ -1566,6 +1669,7 @@
   function renderProfile() {
     const nameInput = document.getElementById('profile-name');
     const createdDate = document.getElementById('profile-created-date');
+    document.getElementById('profile-app-version').textContent = `AssetGoal version ${APP_VERSION}`;
     applyColorScheme();
     renderColorSchemeControl();
     const showSquad = Boolean(state.profile?.showSquad);
@@ -1774,10 +1878,15 @@
     if(!isSetupGuideActive() || !state.profile) return;
     const complete = isSetupStepComplete();
     const nextButton = document.getElementById('setup-guide-next');
+    const backButton = document.getElementById('setup-guide-back');
     const skipButton = document.getElementById('setup-guide-skip');
+    const stepIndex = setupGuideSteps.findIndex(step => step.id === state.profile.setupStep);
     nextButton.disabled = !complete;
     nextButton.classList.toggle('opacity-50', !complete);
     nextButton.classList.toggle('cursor-not-allowed', !complete);
+    backButton.disabled = stepIndex <= 0;
+    backButton.classList.toggle('opacity-50', stepIndex <= 0);
+    backButton.classList.toggle('cursor-not-allowed', stepIndex <= 0);
     skipButton.disabled = false;
     skipButton.classList.remove('opacity-50', 'cursor-not-allowed');
     const hasMonthlyBills = state.expenses.some(expense => Number(expense.amount) > 0);
@@ -1984,6 +2093,23 @@
     startSetupGuide(state.profile.setupStep);
   }
 
+  function goBackSetupGuide() {
+    if(!state.profile || state.profile.setupComplete || !isSetupGuideActive()) return;
+    const stepIndex = setupGuideSteps.findIndex(step => step.id === state.profile.setupStep);
+    if(stepIndex <= 0) return;
+    state.profile.setupStep = setupGuideSteps[stepIndex - 1].id;
+    saveData();
+    startSetupGuide(state.profile.setupStep);
+  }
+
+  function reopenSetupGuide() {
+    if(!state.profile || isSetupGuideActive()) return;
+    state.profile.setupComplete = false;
+    state.profile.setupStep = state.profile.setupStep || 'income';
+    saveData();
+    startSetupGuide(state.profile.setupStep);
+  }
+
   function skipSetupGuide() {
     if(!state.profile || state.profile.setupComplete || !isSetupGuideActive()) return;
     document.getElementById('setup-skip-dialog').showModal();
@@ -2029,7 +2155,7 @@
       checkAmount = state.paycheckAmount;
     }
 
-    state.monthlyIncome = Math.round(checkAmount * state.payPeriodsPerYear / 12);
+    state.monthlyIncome = Math.round(checkAmount * state.payPeriodsPerYear / 12 * 100) / 100;
     saveData();
     updateSummaryDisplays();
     renderOneOffs();
@@ -2412,14 +2538,55 @@
     updateSummaryDisplays();
   }
 
+  function handleVariableExpenseInput(field, rawVal) {
+    state.variableExpenses[field] = Math.max(0, Number(rawVal) || 0);
+    saveData();
+    updateSummaryDisplays();
+  }
+
+  function handleDebtInput(field, rawVal) {
+    state.debt[field] = Math.max(0, Number(rawVal) || 0);
+    saveData();
+    updateDebtPayoffEstimate();
+    updateSummaryDisplays();
+  }
+
+  function updateDebtPayoffEstimate() {
+    const element = document.getElementById('debt-payoff-estimate');
+    if(!element) return;
+    const balance = Number(state.debt.totalBalance) || 0;
+    const payment = Number(state.debt.monthlyPayments) || 0;
+    const monthlyRate = (Number(state.debt.averageRate) || 0) / 1200;
+    if(balance <= 0) {
+      element.textContent = 'Add a balance to estimate payoff time.';
+      return;
+    }
+    if(payment <= 0 || (monthlyRate > 0 && payment <= balance * monthlyRate)) {
+      element.textContent = 'Add a payment greater than the monthly interest to estimate payoff time.';
+      return;
+    }
+    const months = monthlyRate > 0
+      ? Math.ceil(-Math.log(1 - balance * monthlyRate / payment) / Math.log(1 + monthlyRate))
+      : Math.ceil(balance / payment);
+    element.textContent = `Estimated payoff: about ${months} month${months === 1 ? '' : 's'} at the current payment.`;
+  }
+
+  function handleBalanceInput(field, rawVal) {
+    state.balances[field] = Math.max(0, Number(rawVal) || 0);
+    saveData();
+    renderChart();
+  }
+
   function handleGoalInput(goalId, field, rawVal, input = null) {
     const goal = state.goals.find(g => g.id === goalId);
     if(!goal) return;
 
-    if(rawVal === '') {
+    if(field === 'targetDate') {
+      goal[field] = String(rawVal || '');
+    } else if(rawVal === '') {
       goal[field] = '';
     } else {
-      const num = parseFloat(rawVal.replace(/,/g, ''));
+      const num = parseFloat(String(rawVal).replace(/,/g, ''));
       goal[field] = isNaN(num) ? '' : num;
     }
 
@@ -2458,8 +2625,7 @@
     const finEl = document.getElementById(`fin-${goalId}`);
     const loanEl = document.getElementById(`loan-${goalId}`);
     const allocValEl = document.getElementById(`val-${goalId}-allocPercent`);
-
-    if(allocValEl) allocValEl.innerText = `${goal.allocPercent || 0}%`;
+    const deadlineEl = document.getElementById(`deadline-${goalId}`);
 
     const totalCost = parseFloat(goal.totalCost) || 0;
     const startingSaved = parseFloat(goal.startingSaved) || 0;
@@ -2467,10 +2633,11 @@
     const interestRate = parseFloat(goal.interestRate) || 0;
     const loanTermMonths = parseFloat(goal.loanTermMonths) || 0;
 
-    const targetDown = totalCost * (getGoalDownPercent(goal) / 100);
+    const targetDown = getGoalSavingsTarget(goal);
     const remaining = Math.max(0, targetDown - startingSaved);
     const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocPercent / 100);
     const recurringAlloc = getMonthlySavingsRoom() * (allocPercent / 100);
+    if(allocValEl) allocValEl.innerText = `$${Math.round(monthlyAlloc).toLocaleString()}/mo`;
     const r = (state.hysaRate / 100) / 12;
 
     const monthsToGoal = estimateMonthsToGoal(remaining, recurringAlloc, r);
@@ -2479,8 +2646,14 @@
     const homeContributionEl = document.getElementById(`home-monthly-contribution-${goalId}`);
     if(homeContributionEl) homeContributionEl.innerText = `$${Math.round(monthlyAlloc).toLocaleString()}/mo`;
     if(timeEl) timeEl.innerText = formatGoalTimeline(monthsToGoal);
+    if(deadlineEl) {
+      const deadlineStatus = getGoalDeadlineStatus(goal, monthsToGoal);
+      deadlineEl.innerText = deadlineStatus;
+      deadlineEl.classList.toggle('text-emerald-400', deadlineStatus.startsWith('On track'));
+      deadlineEl.classList.toggle('text-red-400', deadlineStatus.startsWith('Behind'));
+    }
 
-    const loanPrincipal = Math.max(0, totalCost - targetDown);
+    const loanPrincipal = Math.max(0, totalCost - totalCost * getGoalDownPercent(goal) / 100);
     const estLoan = calculateMonthlyLoanPayment(loanPrincipal, interestRate, loanTermMonths);
 
     if(finEl) finEl.innerText = `$${Math.round(loanPrincipal).toLocaleString()} financed`;
@@ -2635,7 +2808,12 @@
     const retYears = Math.max(1, targetAge - currAge);
     const retMonths = retYears * 12;
     const retR = (returnRate / 100) / 12;
-    const nestEgg = retR > 0 ? Math.round(retMonthlyPmt * ((Math.pow(1 + retR, retMonths) - 1) / retR)) : Math.round(retMonthlyPmt * retMonths);
+    const startingBalance = Math.max(0, Number(ret.startingBalance) || 0);
+    const matchRate = Math.max(0, Math.min(100, Number(ret.employerMatchPercent) || 0)) / 100;
+    const matchedMonthlyPmt = retMonthlyPmt * (1 + matchRate);
+    const nestEgg = retR > 0
+      ? Math.round(startingBalance * Math.pow(1 + retR, retMonths) + matchedMonthlyPmt * ((Math.pow(1 + retR, retMonths) - 1) / retR))
+      : Math.round(startingBalance + matchedMonthlyPmt * retMonths);
 
     if(nestEggEl) nestEggEl.innerText = `$${nestEgg.toLocaleString()}`;
   }
@@ -2690,6 +2868,9 @@
     const cost = parseFloat(document.getElementById('new-goal-cost').value.replace(/,/g, '')) || 15000;
     const start = parseFloat(document.getElementById('new-goal-start').value.replace(/,/g, '')) || 0;
     const type = document.getElementById('new-goal-type').value;
+    const targetDate = document.getElementById('new-goal-date').value;
+    const monthlyOwnershipCost = Math.max(0, Number(document.getElementById('new-goal-monthly-cost')?.value) || 0);
+    const extraCost = Math.max(0, Number(document.getElementById('new-goal-extra-cost').value) || 0);
     const typeSettings = goalTypeSettings[type];
     if(!typeSettings) {
       console.error(`Unsupported savings goal type: ${type}`);
@@ -2701,6 +2882,9 @@
       name,
       type,
       totalCost: cost,
+      targetDate,
+      monthlyOwnershipCost,
+      extraCost,
       startingSaved: start,
       downPercent: typeSettings.downPercent,
       loanTermMonths: typeSettings.loanTermMonths,
@@ -2711,6 +2895,9 @@
     document.getElementById('new-goal-name').value = '';
     document.getElementById('new-goal-cost').value = '';
     document.getElementById('new-goal-start').value = '';
+    document.getElementById('new-goal-date').value = '';
+    if(document.getElementById('new-goal-monthly-cost')) document.getElementById('new-goal-monthly-cost').value = '';
+    document.getElementById('new-goal-extra-cost').value = '';
     saveData();
     renderApp();
     updateFormActions();
@@ -2723,6 +2910,18 @@
     const r = (annualRate / 100) / 12;
     if(r === 0) return Math.round(principal / termMonths);
     return Math.round(principal * (r * Math.pow(1 + r, termMonths)) / (Math.pow(1 + r, termMonths) - 1));
+  }
+
+  function getGoalDeadlineStatus(goal, monthsToGoal) {
+    if(!goal.targetDate) return '';
+    const deadline = new Date(`${goal.targetDate}T00:00:00`);
+    if(Number.isNaN(deadline.getTime())) return '';
+    const monthsAvailable = Math.max(0,
+      (deadline.getFullYear() - new Date().getFullYear()) * 12 +
+      deadline.getMonth() - new Date().getMonth());
+    return Number.isFinite(monthsToGoal) && monthsToGoal <= monthsAvailable
+      ? `On track for ${deadline.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`
+      : `Behind target date: ${deadline.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`;
   }
 
   function unlockProTier() {
@@ -2770,7 +2969,17 @@
     document.getElementById('home-interest-earned').innerText = `+$${interestEarned.toLocaleString()}`;
     document.getElementById('chart-investment-note').innerText = currentCashflow < 0
       ? 'You’re spending more than your income this month, so there’s no money left to put toward savings.'
-      : `$${getCurrentPeriodInvestmentRoom().toLocaleString(undefined, { maximumFractionDigits: 2 })} is available for savings after this month’s bills and extra income or spending.`;
+      : `$${getCurrentPeriodInvestmentRoom().toLocaleString(undefined, { maximumFractionDigits: 2 })} is available for savings after this month’s bills and extra income or spending. Estimates assume your income, expenses, rates, and contributions remain steady.`;
+    const warning = document.getElementById('planning-warning');
+    const warnings = [];
+    const ownershipCosts = state.goals.reduce((sum, goal) => sum + (Number(goal.monthlyOwnershipCost) || 0), 0);
+    if(state.netCashflow < 0) warnings.push('Your recurring expenses are higher than your monthly take-home pay.');
+    if(state.currentMonthCashflow < 0) warnings.push('This month is over budget after one-time activity.');
+    if(state.debt.totalBalance > 0 && state.debt.monthlyPayments <= 0) warnings.push('Add debt minimum payments to avoid overstating available savings.');
+    if(ownershipCosts > state.currentMonthCashflow && ownershipCosts > 0) warnings.push('Planned ownership costs exceed this month’s available cash flow.');
+    if(getTotalAllocationPercent() > 100) warnings.push('Your savings allocations exceed 100% of available money.');
+    warning.textContent = warnings.join(' ');
+    warning.classList.toggle('hidden', warnings.length === 0);
     state.goals.forEach(goal => recalculateGoalCard(goal.id));
     recalculateRetirementModule();
     updateAllocationControls();
@@ -2790,7 +2999,7 @@
     } else {
       allocContainer.innerHTML = state.goals.map(g => {
         const totalCost = parseFloat(g.totalCost) || 0;
-        const targetDown = totalCost * (getGoalDownPercent(g) / 100);
+        const targetDown = getGoalSavingsTarget(g);
         const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
         const allocationPercent = getGoalAllocationPercent(g);
         const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocationPercent / 100);
@@ -2799,7 +3008,7 @@
         const monthsToGoal = estimateMonthsToGoal(remaining, recurringAlloc, r);
         const typeSettings = goalTypeSettings[g.type] || goalTypeSettings.general;
 
-        const loanPrincipal = Math.max(0, totalCost - targetDown);
+        const loanPrincipal = Math.max(0, totalCost - totalCost * getGoalDownPercent(g) / 100);
         const estLoan = calculateMonthlyLoanPayment(loanPrincipal, parseFloat(g.interestRate) || 0, parseFloat(g.loanTermMonths) || 0);
 
         return `
@@ -2807,25 +3016,34 @@
             <summary class="cursor-pointer list-none space-y-3">
               <div class="pr-16">
                 <h4 class="font-bold text-base text-[#FDFBF7] break-words">${escapeHtml(g.name)}</h4>
-                <p class="text-xs text-[#A38A7E] mt-1">${typeSettings.label} · Saving toward ${typeSettings.target}</p>
+                <p class="text-xs text-[#A38A7E] mt-1">${typeSettings.label} · Saving for ${typeSettings.target}</p>
               </div>
               <div class="rounded-xl bg-[#170F0B] p-3 flex justify-between items-center gap-3">
                 <div>
-                  <p class="text-xs text-[#A38A7E]">Available for this goal this month</p>
+                  <p class="text-xs text-[#A38A7E]">Planned for this each month</p>
                   <p id="contribution-${g.id}" class="text-lg font-extrabold text-[#E2B887]">$${Math.round(monthlyAlloc).toLocaleString()}</p>
                 </div>
                 <p class="text-right text-xs text-[#A38A7E]"><span id="time-${g.id}" class="font-semibold text-emerald-400">${formatGoalTimeline(monthsToGoal)}</span><br>to your savings target</p>
+              </div>
+              ${g.targetDate ? `<p id="deadline-${g.id}" class="text-[11px] ${getGoalDeadlineStatus(g, monthsToGoal).startsWith('On track') ? 'text-emerald-400' : 'text-red-400'}">${getGoalDeadlineStatus(g, monthsToGoal)}</p>` : ''}
+              <div class="rounded-xl border border-[#3D2A20] bg-[#170F0B] p-3" onclick="event.stopPropagation()">
+                <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
+                  <span>How much should go here each month?</span>
+                  <span id="val-${g.id}-allocPercent" class="text-xs text-[#E2B887] font-bold">${g.allocPercent || 0}%</span>
+                </label>
+                <input id="goal-allocation-${g.id}" type="range" min="0" max="100" step="1" value="${g.allocPercent || 0}" oninput="handleGoalInput(${g.id}, 'allocPercent', this.value)" onclick="event.stopPropagation()">
+                <p id="goal-allocation-summary-${g.id}" class="text-[11px] text-[#A38A7E] mt-1"></p>
               </div>
             </summary>
             <button onclick="requestGoalDeletion(${g.id})" aria-label="Remove ${escapeHtml(g.name)}" class="absolute right-4 top-4 text-xs text-[#A38A7E] hover:text-red-400 px-2.5 py-1 rounded-lg">Remove</button>
 
             <div class="pt-3 space-y-3">
               <div class="border-t border-[#3D2A20] pt-3">
-                <h5 class="text-xs font-semibold text-[#E2B887]">Edit goal details and estimates</h5>
+                <h5 class="text-xs font-semibold text-[#E2B887]">Change this plan</h5>
                 <div class="pt-3 space-y-3">
                   <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <label class="text-[10px] text-[#A38A7E]">Goal cost ($)</label>
+                      <label class="text-[10px] text-[#A38A7E]">Total price</label>
                       <input type="text" inputmode="decimal" value="${formatGoalAmountValue(g.totalCost)}" oninput="handleGoalInput(${g.id}, 'totalCost', this.value)" onblur="formatGoalAmount(this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
                     </div>
                     <div>
@@ -2834,31 +3052,30 @@
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-3 gap-2 text-xs pt-1">
+                  <details class="rounded-xl border border-[#3D2A20] p-3">
+                    <summary class="cursor-pointer text-xs font-semibold text-[#A38A7E]">More options (optional)</summary>
+                  <div class="grid grid-cols-3 gap-2 text-xs pt-3">
                     <div>
-                      <label class="text-[10px] text-[#A38A7E]">Amount to put down (%)</label>
+                      <label class="text-[10px] text-[#A38A7E]">Pay upfront (%)</label>
                       <input type="number" min="0" max="100" value="${g.downPercent}" oninput="handleGoalInput(${g.id}, 'downPercent', this.value, this)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
                     </div>
                     <div>
-                      <label class="text-[10px] text-[#A38A7E]">Loan interest (%)</label>
+                      <label class="text-[10px] text-[#A38A7E]">Loan rate (%)</label>
                       <input type="number" step="0.25" value="${g.interestRate}" oninput="handleGoalInput(${g.id}, 'interestRate', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
                     </div>
                     <div>
-                      <label class="text-[10px] text-[#A38A7E]">Loan length (months)</label>
+                      <label class="text-[10px] text-[#A38A7E]">Pay over (months)</label>
                       <input type="number" step="12" value="${g.loanTermMonths}" oninput="handleGoalInput(${g.id}, 'loanTermMonths', this.value)" class="w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]">
                     </div>
                   </div>
-
-                  <div>
-                    <label class="text-xs text-[#A38A7E] flex justify-between mb-1">
-                      <span>Share of money left each month</span>
-                      <span id="val-${g.id}-allocPercent" class="text-xs text-[#E2B887] font-bold">${g.allocPercent || 0}%</span>
-                    </label>
-                    <input id="goal-allocation-${g.id}" type="range" min="0" max="100" step="1" value="${g.allocPercent || 0}" oninput="handleGoalInput(${g.id}, 'allocPercent', this.value)">
-                    <p id="goal-allocation-summary-${g.id}" class="text-[11px] text-[#A38A7E]"></p>
+                  <div class="grid grid-cols-3 gap-2 text-xs pt-1">
+                    <label class="text-[10px] text-[#A38A7E]">Target date<input type="date" value="${g.targetDate || ''}" oninput="handleGoalInput(${g.id}, 'targetDate', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+                    <label class="text-[10px] text-[#A38A7E]">Monthly ownership<input type="number" min="0" step="0.01" value="${Number(g.monthlyOwnershipCost) || 0}" oninput="handleGoalInput(${g.id}, 'monthlyOwnershipCost', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
+                    <label class="text-[10px] text-[#A38A7E]">One-time costs<input type="number" min="0" step="0.01" value="${Number(g.extraCost) || 0}" oninput="handleGoalInput(${g.id}, 'extraCost', this.value)" class="mt-1 w-full bg-[#170F0B] border border-[#3D2A20] rounded-xl p-3 text-[#FDFBF7]"></label>
                   </div>
+                  </details>
 
-                  <div class="p-2.5 bg-[#170F0B] rounded-xl flex justify-between text-[11px] border border-[#3D2A20]">
+                  <div class="mt-3 p-2.5 bg-[#170F0B] rounded-xl flex justify-between text-[11px] border border-[#3D2A20]">
                     <div>
                       <p class="text-[#A38A7E]">Estimated loan amount</p>
                       <p id="fin-${g.id}" class="text-xs font-bold text-[#FDFBF7]">$${Math.round(loanPrincipal).toLocaleString()}</p>
@@ -2886,11 +3103,11 @@
     renderProfile();
     const goalLimitReached = !state.isPro && state.goals.length >= 2;
     document.getElementById('goal-add-title').textContent =
-      goalLimitReached ? 'Unlock more savings goals' : '+ Add a savings goal';
+      goalLimitReached ? 'Unlock more things to save for' : '+ Add something to save for';
     document.getElementById('goal-add-description').textContent =
-      goalLimitReached ? 'Upgrade to Pro to add another goal.' : 'What are you saving up for?';
+      goalLimitReached ? 'Upgrade to Pro to add another plan.' : 'For example: a car, trip, computer, or home.';
     document.getElementById('add-goal-btn').textContent =
-      goalLimitReached ? 'Upgrade to Pro' : 'Save goal';
+      goalLimitReached ? 'Upgrade to Pro' : 'Add to my plan';
     document.getElementById('goal-count-badge').innerText = state.isPro
       ? `${state.goals.length} ${state.goals.length === 1 ? 'goal' : 'goals'}`
       : `${state.goals.length}/2 goals`;
@@ -2914,7 +3131,7 @@
       </div>
     ` : state.goals.map(g => {
       const totalCost = parseFloat(g.totalCost) || 0;
-      const targetDown = totalCost * (getGoalDownPercent(g) / 100);
+      const targetDown = getGoalSavingsTarget(g);
       const remaining = Math.max(0, targetDown - (parseFloat(g.startingSaved) || 0));
       const allocationPercent = getGoalAllocationPercent(g);
       const monthlyAlloc = getCurrentPeriodInvestmentRoom() * (allocationPercent / 100);
@@ -3005,7 +3222,7 @@
       const isEmergencyFund = goal.type === 'emergency';
       const targetDown = isEmergencyFund
         ? emergencyTarget || Math.max(0, Number(state.emergencyFund.startingSaved) || 0)
-        : (parseFloat(goal.totalCost) || 0) * (getGoalDownPercent(goal) / 100);
+      : getGoalSavingsTarget(goal);
       const fund = {
         goal,
         balance: Math.max(0, parseFloat(goal.startingSaved) || 0),
@@ -3030,14 +3247,15 @@
       return fund;
     });
 
-    let retirementBalance = 0;
-    let unallocatedBalance = 0;
+    let retirementBalance = Math.max(0, Number(state.retirement.startingBalance) || Number(state.balances.retirementSavings) || 0);
+    let unallocatedBalance = Math.max(0, Number(state.balances.cashSavings) || 0);
     const retirementRate = (parseFloat(state.retirement.returnRate) || 0) / 1200;
+    const retirementMatchMultiplier = 1 + Math.max(0, Math.min(100, Number(state.retirement.employerMatchPercent) || 0)) / 100;
     const retirementContribution = getMonthlySavingsRoom() *
-      (getStoredRetirementAllocationPercent() / 100) * allocationScale;
+      (getStoredRetirementAllocationPercent() / 100) * allocationScale * retirementMatchMultiplier;
     const currentAllocationBase = getCurrentPeriodInvestmentRoom();
     const currentRetirementContribution = currentAllocationBase *
-      (getRetirementAllocationPercent() / 100) * allocationScale;
+      (getRetirementAllocationPercent() / 100) * allocationScale * retirementMatchMultiplier;
     const redirectSurplus = (amount, month) => {
       let remaining = amount;
       while(remaining > 0) {
@@ -3301,6 +3519,16 @@
     renderSquad();
   }
 
+  function triggerHaptic(duration = 8) {
+    if(typeof navigator.vibrate === 'function') navigator.vibrate(duration);
+  }
+
+  document.addEventListener('pointerdown', event => {
+    if(!(event.target instanceof Element)) return;
+    const button = event.target.closest('button');
+    if(button && !button.disabled) triggerHaptic();
+  }, { capture: true });
+
   let touchStart = null;
   document.addEventListener('touchstart', event => {
     touchStart = null;
@@ -3346,6 +3574,7 @@
     const currentIndex = swipeTabs.indexOf(currentTab);
     const nextIndex = currentIndex + (deltaX < 0 ? 1 : -1);
     if(currentIndex >= 0 && nextIndex >= 0 && nextIndex < swipeTabs.length) {
+      triggerHaptic(12);
       switchTab(swipeTabs[nextIndex], deltaX < 0 ? 'left' : 'right');
     }
   }, { passive: true, capture: true });
@@ -3376,8 +3605,20 @@
     // Set Roth IRA initial input values
     document.getElementById('ret-curr-age').value = state.retirement.currAge;
     document.getElementById('ret-target-age').value = state.retirement.targetAge;
+    document.getElementById('ret-starting-balance').value = state.retirement.startingBalance || 0;
+    document.getElementById('ret-employer-match').value = state.retirement.employerMatchPercent || 0;
     document.getElementById('ret-rate-slider').value = state.retirement.returnRate;
     document.getElementById('ret-alloc-slider').value = state.retirement.allocPercent;
+    Object.entries(state.variableExpenses).forEach(([field, amount]) => {
+      const input = document.querySelector(`[oninput="handleVariableExpenseInput('${field}', this.value)"]`);
+      if(input) input.value = amount;
+    });
+    document.getElementById('debt-monthly-payments').value = state.debt.monthlyPayments || 0;
+    document.getElementById('debt-total-balance').value = state.debt.totalBalance || 0;
+    document.getElementById('debt-average-rate').value = state.debt.averageRate || 0;
+    document.getElementById('balance-cash-savings').value = state.balances.cashSavings || 0;
+    document.getElementById('balance-retirement-savings').value = state.balances.retirementSavings || 0;
+    updateDebtPayoffEstimate();
 
     calculateIncome();
     renderOneOffs();
